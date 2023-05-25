@@ -1,1 +1,321 @@
 
+
+1.6.2 switch 문
+enum Status{
+  approved,
+  pending,
+  rejected
+}
+
+void main(){
+  Status status = Status.approved;
+  
+  switch (status){
+    case Status.approved:
+      print('승인 상태입니다.');
+      break;
+    case Status.pending:
+      print('대기 상태입니다.');
+      
+      break;
+    case Status.rejected:
+      print('거절 상태입니다.');
+      break;
+    default:
+      print('알 수 없는 상태입니다.');
+  }
+  print(Status.values);
+}
+
+1.6.3 for 문
+
+void main() {
+  //for loop
+ int total = 0;
+  
+  List<int> numbers = [1, 2, 3, 4, 5, 6];
+  
+  for(int i = 0; i < numbers.length; i++){
+    total += numbers[i];
+  }
+  
+  print(total);
+  
+  total = 0;
+  
+  for(int number in numbers){
+   total += number;
+  }
+  print(total);
+}
+
+1.6.4 while문과 do...while문
+void main(){
+  //while loop
+  
+  int total = 0;
+  
+  while (total < 10){
+    total += 1;
+  } 
+  
+  print(total);
+}
+
+void main() {
+  //while loop
+
+  int total = 0;
+
+  while (total < 10) {
+    total += 1;
+
+    if (total == 5) {
+      break; //break는 중단, continue는 5만 제외하고 계속
+    }
+  }
+  print(total);
+}
+※error사 할 거 같 다.
+1.7 함수와 람다
+
+void main(){
+  addNumbers(y: 20, x: 10);
+  
+  addNumbers(x: 10, y: 30, z:40);
+  
+  
+}
+
+addNumbers({
+  required int x,
+  required int y,
+  int z = 30,
+}) {
+  int sum = x + y + z;
+  
+  print('x : $x');
+  print('y : $y');
+  print('z : $z');
+  
+  if(sum % 2 == 0){
+    print('짝수입니다.');
+    
+  }else{
+    print('홀수입니다.');
+  }
+}
+1.7.1 일반적인 함수의 특징
+// 순서가 고정된 매개변수
+int addTwoNumbers(int a, int b) {
+  return a + b;  
+  }
+
+void main() {
+  print(addTwoNumbers(1, 2));
+}
+
+// 이름이 있는 매개변수
+int addTwoNumbers({
+  required int a,
+  required int b,
+}) {
+  return a + b;
+}
+
+void main(){
+  print(addTwoNumbers(a: 1, b: 2));
+}
+
+//기본값 설정
+int addTwoNumbers(int a, [int b = 2]) {
+  return a+b;
+}
+
+void main(){
+  print(addTwoNumbers(1));
+}
+
+//포지셔널 파라미터와 네임드 파라미터 믹스
+int addTwoNumbers(
+int a, {
+  required int b,
+  int c = 4,
+}) {
+  return a + b + c;
+}
+
+1.7.2 익명 함수와 람다 함수
+void main() {
+  print(addTwoNumbers(1, b: 3, c: 7));
+}
+
+void main(){
+  List<int> numbers = [1, 2, 3, 4, 5];
+  
+  //일반 함수로 모든 값 더하기
+  final allMembers = numbers.reduce((value, element){
+    return value + element;
+});
+
+print(allMembers);
+}
+
+void main() {
+  List<int> numbers = [1, 2, 3, 4, 5];
+  
+  //람다 함수로 모든 값 더하기
+  final allMembers = numbers.reduce((value, element) => value + element);
+  
+  print(allMembers);
+  }
+  
+  1.7.3 typedef와 함수
+  typedef Operation = void Function(int x, int y);
+
+void add(int x, int y){
+  print('결괏값 : ${x + y}');
+  
+}
+
+void subtract(int x, int y) {
+  print('결괏값 : ${x - y}');
+  
+}
+
+void main(){
+  // typedef는 일반적인 변수의 type처럼 사용 가능
+  Operation oper = add;
+  oper(1, 2);
+  
+  //subtract() 함수도 Operation에 해당되는
+  //시그니처이므로 oper 변수에 저장 가능
+  oper = subtract;
+  oper(1,2);
+  }
+  
+1.7.3 typedef와 함수
+void main(){
+  Operation operation = add;
+  
+  int result = operation(10, 20, 30);
+  
+  print(result);
+  
+  operation = subtract;
+  
+  int result2 = operation(10,20,30);
+  
+  print(result2);
+  
+  int result3 = calculation(30, 40, 50, add);
+  
+  print(result3);
+  
+  int result4 = calculation(40,50,60, subtract);
+  
+  print(result4);
+}
+
+typedef Operation = int Function(int x, int y, int z);
+
+int add(int x, int y, int z) => x + y + z;
+int subtract(int x, int y, int z) => x - y- z;
+int calculation(int x, int y, int z, Operation operation){
+  return operation(x, y, z);
+}
+※
+typedef Operation = void Function(int x, int y);
+
+void add(int x, int y){
+  print('결괏값 : ${x + y}');
+}
+
+void calculate(int x, int y, Operation oper) {
+  oper(x, y);
+}
+
+void main(){
+  calculate(1, 2, add);
+}
+
+
+2.2객체지향 프로그래밍의 시작, 클래스
+
+  
+  //class 키워드를 입력 후 클래스명을 지정해 클래스를 선언합니다.
+  class Idol {
+  //클래스에 종속되는 변수를 지정할 수 있습니다.
+  String name = '블랙핑크';
+  
+  //클래스에 종속되는 함수를 지정할 수 있습니다.
+  //클래스에 종속되는 함수를 메서드라고 부릅니다.
+  void sayName() {
+    
+    //클래스 내부의 속성을 지칭하고 싶을 때는 this 키워드를 사용하면 됩니다.
+    //결과적으로 this.name은 Idol 클래스의 name 변수를 지칭합니다.
+    print('저는 ${this.name}입니다.');
+    //스코프 안에 같은 속성 이름이 하나만 존재한다면 this를 생략할 수 있습니다.
+  print('저는 $name입니다.');
+  }
+}
+
+void main(){
+  //변수 타입을 Idol로 지정하고 Idol의 인스턴스를 생성할 수 있습니다.
+  //인스턴스를 생성할 때는 함수를 실행하는 것처럼 인스턴스화하고 싶은 클래스에 괄호를 열고 닫아줍니다.
+  Idol blackPink = Idol();
+  blackPink.sayName();
+}
+
+2.2.1 생성자
+class Idol{
+  final String name;
+  
+  Idol(String name) : this.name = name;
+  
+  void sayName(){
+    print('저는 ${this.name}입니다.');
+  }
+}
+
+void main(){
+  //name에 '블랙핑크' 저장
+  Idol blackPink = Idol('블랙핑크');
+  blackPink.sayName();
+  
+  Idol bts = Idol('BTS');
+  bts.sayName();
+}
+
+2.2.2 네임드 생성자 
+class Idol {
+  final String name;
+  final int membersCount;
+  
+  Idol(String name, int membersCount)
+//1개 이상의 변수를 저장하고 싶을 때는, 기호로 연결해주면 됩니다.
+    : this.name = name,
+      this.membersCount = membersCount;
+  //네임드 생성자
+  //{클래스명.네임드 생성자명} 형식
+  //나머지 과정은 기본 생성자와 같습니다.
+  
+  Idol.fromMap(Map<String, dynamic>map)
+      :this.name = map['name'],
+       this.membersCount = map['membersCount'];
+  
+  
+  void sayName(){
+    print('저는 ${this.name}입니다. ${this.name} 멤버는 ${this.membersCount}명입니다.');
+  }
+ }
+void main(){
+  Idol blackPink = Idol('블랙핑크', 4);
+  blackPink.sayName();
+  
+  Idol bts = Idol.fromMap({
+    'name' : 'BTS',
+    'membersCount' : 7,
+  });
+  bts.sayName();
+}
