@@ -1,0 +1,91 @@
+//constructor, instance 생성
+//name 변수를 선언하고, Idol(this.name) 여기 안에 적는 이름을 name함수에 집어넣어라.
+//sayName 메서드 선언, Idol 클래스 jaewon에 이름 '재원'을 집어넣고, 메서드 실행.
+class Idol{
+  final String name;
+  
+  Idol(this.name);
+  
+  void sayName(){
+    print('저의 이름은 $name입니다.');
+  }
+}
+
+void main(){
+  Idol jaewon = Idol('재원');
+  jaewon.sayName();
+}
+
+//Map은 key : value 형태의 playerJson 
+//name변수는 playerJson의 name 밸류이다
+//xp변수는 playerJson의 xp 밸류이다
+//team변수는 playerJson의 team 밸류이다
+//player라는 함수는 Player클래스의 네임드 생성자인 fromJson의 name, xp, team 키와 밸류의 3세트 저장함
+//그리고 sayHello메서드를 통해 세명 다 인사함.
+class Player {
+  final String name;
+  int xp;
+  String team;
+  
+  Player.fromJson(Map<String, dynamic> playerJson)
+: name = playerJson['name'],
+  xp = playerJson['xp'],
+  team = playerJson['team'];
+  
+  void sayHello(){
+    print("Hi my name is $name");
+  }
+  }
+
+void main(){
+  var apiData = [
+    {"name": "nico",
+    "team" : "red",
+    "xp" : 0,},
+    {"name" : "lynn",
+    "team" : "red",
+    "xp" : 0,},
+    {"name" : "dali",
+    "team" : "red",
+    "xp" : 0,},
+  ];
+  
+  apiData.forEach((playerJson){
+    var player = Player.fromJson(playerJson);
+    player.sayHello();
+  }
+  );
+}
+
+class Human {
+  final String name;
+  Human(this.name);
+  void sayHello(){
+    print("Hi my name is $name");
+    
+  }
+}
+
+enum Team{ blue, red}
+
+class Player extends Human{
+  final Team team;
+  Player({required this.team, 
+          required String name})
+    : super(name);
+  
+  @override
+  void sayHello(){
+    super.sayHello();
+    print('and I paly for ${team}');
+  }
+}
+
+void main(){
+  var player = Player(
+  team : Team.red,
+  name : 'nico',
+  );
+  
+  print(player);
+}
