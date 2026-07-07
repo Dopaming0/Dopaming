@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#e7dfcc" />
-<meta name="description" content="여덟글자 — 서른 해 넘게 명리를 공부한 전문가가 직접 풀이하는 사주명리 상담소" />
+<meta name="description" content="여덟글자 — 서른두 해 명리를 읽어 온 전문가의 사주풀이. 생일만 넣으면 무료로 명식을 세워드립니다." />
 <title>여덟글자 — 사주명리 상담소</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -29,7 +29,7 @@
     font-family: 'Pretendard Variable', Pretendard, -apple-system, 'Noto Sans KR', sans-serif;
     font-weight: 400;
     letter-spacing: -0.025em;
-    line-height: 1.75;
+    line-height: 1.7;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
   }
@@ -44,175 +44,88 @@
     background: radial-gradient(ellipse at center, transparent 60%, rgba(75,66,50,.14) 100%);
   }
   main { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; }
-  section { padding: 76px 26px; position: relative; }
+  section { padding: 60px 26px; position: relative; }
 
   .hanja { font-family: 'Song Myung', serif; letter-spacing: 0; }
   .mj { font-family: 'Gowun Batang', 'Nanum Myeongjo', serif; letter-spacing: -0.02em; }
 
-  .section-label { display: flex; align-items: center; gap: 12px; margin-bottom: 34px; }
+  .section-label { display: flex; align-items: center; gap: 12px; margin-bottom: 26px; }
   .section-label .seal-box {
-    width: 44px; height: 44px; flex: none;
+    width: 42px; height: 42px; flex: none;
     background: var(--seal); color: #f3ead8;
     display: grid; place-items: center;
     font-family: 'Song Myung', serif; font-size: 14px; line-height: 1; letter-spacing: 2px; text-indent: 2px;
-    border-radius: 3px 6px 4px 5px; /* 손도장의 삐뚠 모서리 */
+    border-radius: 3px 6px 4px 5px;
     box-shadow: 1px 2px 6px rgba(43,39,33,.25);
     transform: rotate(-3deg);
   }
-  .section-label .label-text { font-size: 13px; font-weight: 500; letter-spacing: .18em; color: var(--ink-faint); }
-  h2 { font-size: 25px; font-weight: 800; line-height: 1.5; margin-bottom: 18px; letter-spacing: -0.035em; word-break: keep-all; }
+  .section-label .label-text { font-size: 13px; font-weight: 500; letter-spacing: .16em; color: var(--ink-faint); }
+  h2 { font-size: 25px; font-weight: 800; line-height: 1.45; margin-bottom: 12px; letter-spacing: -0.035em; word-break: keep-all; }
   h2 .accent { color: var(--seal); }
-  p.body { font-size: 15.5px; color: var(--ink-soft); word-break: keep-all; }
+  p.body { font-size: 15px; color: var(--ink-soft); word-break: keep-all; }
   p.body strong, strong, b { color: var(--ink); font-weight: 800; }
-  p.body + p.body { margin-top: 14px; }
 
-  /* 손으로 그은 밑줄 */
-  .uline { position: relative; white-space: nowrap; }
-  .uline::after {
-    content: ''; position: absolute; left: -2px; right: -4px; bottom: 1px; height: 7px; z-index: -1;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 8' preserveAspectRatio='none'%3E%3Cpath d='M1 5 Q 25 2, 50 4.5 T 99 3.5' stroke='%23a8332e' stroke-width='2.6' fill='none' stroke-linecap='round' opacity='0.55'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
-  }
-
-  /* 붓으로 쓴 여백 주석 (명조) */
-  .margin-note { font-family: 'Gowun Batang', serif; font-size: 13.5px; color: var(--ink-faint); transform: rotate(-.8deg); letter-spacing: -0.02em; }
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }
+  .reveal.on { opacity: 1; transform: none; }
 
   /* 섹션 사이 먹산 안개 띠 */
   .ink-band { max-width: 480px; margin: 0 auto; padding: 0 0 8px; }
   .ink-band svg { display: block; width: 100%; height: auto; }
 
-  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .9s ease, transform .9s ease; }
-  .reveal.on { opacity: 1; transform: none; }
-
-  /* 먹산 구분 그림 */
-  .ink-divider { display: block; width: 100%; height: auto; margin: -10px 0; opacity: .9; }
-
-  /* ══ 1. 히어로 ══ */
+  /* ══ 1. 후킹: 히어로 ══ */
   #hero {
     min-height: 100svh; display: flex; flex-direction: column;
     justify-content: flex-start; align-items: center; text-align: center;
-    padding: 96px 26px 0; overflow: hidden;
+    padding: 90px 26px 0; overflow: hidden;
   }
   .hero-brand {
-    font-size: 12px; letter-spacing: .42em; text-indent: .42em; color: var(--ink-faint);
-    margin-bottom: 30px; opacity: 0; animation: fadeUp 1.1s .2s ease forwards;
+    font-size: 12px; letter-spacing: .4em; text-indent: .4em; color: var(--ink-faint);
+    margin-bottom: 28px; opacity: 0; animation: fadeUp 1.1s .2s ease forwards;
   }
   .hero-title {
-    font-size: 54px; font-weight: 800; line-height: 1.26; letter-spacing: -0.035em;
-    opacity: 0; animation: inkIn 1.5s .6s ease forwards;
+    font-size: 56px; font-weight: 800; line-height: 1.24; letter-spacing: -0.035em;
+    opacity: 0; animation: inkIn 1.5s .5s ease forwards;
   }
-  .hero-title .hanja-sub { display: block; font-family: 'Song Myung', serif; font-weight: 400; font-size: 17px; letter-spacing: .8em; text-indent: .8em; color: var(--ink-faint); margin-top: 10px; }
+  .hero-title .hanja-sub { display: block; font-family: 'Song Myung', serif; font-weight: 400; font-size: 16px; letter-spacing: .7em; text-indent: .7em; color: var(--ink-faint); margin-top: 10px; }
   .hero-sub {
-    margin-top: 26px; font-size: 15.5px; color: var(--ink-soft); word-break: keep-all;
-    opacity: 0; animation: fadeUp 1.1s 1.3s ease forwards;
+    margin-top: 22px; font-size: 16px; color: var(--ink-soft); word-break: keep-all; line-height: 1.75;
+    opacity: 0; animation: fadeUp 1.1s 1.1s ease forwards;
   }
-  .hero-note {
-    margin-top: 18px; font-family: 'Gowun Batang', serif; font-size: 15px; line-height: 1.8;
-    color: var(--ink-faint); transform: rotate(-.6deg); word-break: keep-all; letter-spacing: -0.02em;
-    opacity: 0; animation: fadeUp 1.1s 1.9s ease forwards;
+  .hero-sub b { font-weight: 800; color: var(--ink); }
+  .btn-hero {
+    display: inline-block; margin-top: 30px; padding: 16px 44px;
+    background: var(--seal); color: #f6efdf; text-decoration: none;
+    font-size: 16.5px; font-weight: 700; letter-spacing: .1em; text-indent: .1em;
+    border-radius: 3px 7px 4px 8px; box-shadow: 2px 4px 14px rgba(168,51,46,.4);
+    opacity: 0; animation: fadeUp 1s 1.7s ease forwards; transition: transform .15s ease;
   }
+  .btn-hero:active { transform: scale(.97); }
+  .hero-free { margin-top: 12px; font-size: 12.5px; color: var(--ink-faint); opacity: 0; animation: fadeUp 1s 2s ease forwards; }
   .hero-seal {
-    margin-top: 26px; width: 58px; height: 58px;
+    margin-top: 22px; width: 54px; height: 54px;
     background: var(--seal); color: #f3ead8;
     display: grid; place-items: center; text-align: center;
-    font-family: 'Song Myung', serif; font-size: 15px; line-height: 1.25;
+    font-family: 'Song Myung', serif; font-size: 14px; line-height: 1.25;
     border-radius: 4px 8px 5px 7px;
     box-shadow: 1px 2px 8px rgba(43,39,33,.3);
-    transform: rotate(4deg) scale(0); animation: stamp .5s 2.5s cubic-bezier(.2,2.2,.4,1) forwards;
+    transform: rotate(4deg) scale(0); animation: stamp .5s 2.3s cubic-bezier(.2,2.2,.4,1) forwards;
   }
   .hero-mountain { margin-top: auto; width: 100vw; max-width: 480px; }
   .hero-mountain svg { display: block; width: 100%; height: auto; }
-  .scroll-cue {
-    position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
-    font-size: 11px; letter-spacing: .28em; color: var(--ink-faint); white-space: nowrap;
-    opacity: 0; animation: fadeUp 1s 3s ease forwards;
-  }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   @keyframes inkIn { from { opacity: 0; filter: blur(7px); } to { opacity: 1; filter: blur(0); } }
   @keyframes stamp { to { transform: rotate(-3deg) scale(1); } }
 
-  /* ══ 2. 주인의 말 ══ */
-  #letter { padding-top: 64px; }
-  .letter-paper {
-    background: var(--mist); border: 1px solid rgba(43,39,33,.14);
-    padding: 34px 26px 30px; position: relative; transform: rotate(-.4deg);
-    box-shadow: 2px 4px 14px rgba(43,39,33,.08);
-  }
-  .letter-paper::before { /* 접힌 자국 */
-    content: ''; position: absolute; left: 0; right: 0; top: 46%; height: 1px;
-    background: rgba(43,39,33,.06);
-  }
-  .letter-paper p { font-family: 'Gowun Batang', serif; font-size: 15px; line-height: 1.95; letter-spacing: -0.02em; color: var(--ink-soft); word-break: keep-all; }
-  .letter-paper p + p { margin-top: 16px; }
-  .letter-sign {
-    margin-top: 26px; display: flex; justify-content: flex-end; align-items: center; gap: 10px;
-  }
-  .letter-sign .mj { font-size: 18px; font-weight: 700; color: var(--ink); transform: rotate(-1.5deg); }
-  .letter-sign .mini-seal {
-    width: 30px; height: 30px; background: var(--seal); color: #f3ead8;
-    display: grid; place-items: center; font-family: 'Song Myung', serif; font-size: 13px;
-    border-radius: 3px 5px 4px 6px; transform: rotate(6deg);
-  }
-
-  /* ══ 3. 유래 ══ */
-  .timeline { position: relative; margin-top: 6px; padding-left: 24px; }
-  .timeline::before {
-    content: ''; position: absolute; left: 5px; top: 8px; bottom: 8px; width: 2px;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 100' preserveAspectRatio='none'%3E%3Cpath d='M2 0 Q 0.5 25, 2.5 50 T 2 100' stroke='%236f6759' stroke-width='1.6' fill='none' opacity='.5'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
-  }
-  .t-item { position: relative; padding-bottom: 40px; }
-  .t-item:last-child { padding-bottom: 0; }
-  .t-item::before {
-    content: ''; position: absolute; left: -23px; top: 10px; width: 9px; height: 9px;
-    background: var(--seal); border-radius: 42% 58% 55% 45%;
-  }
-  .t-era { font-size: 12px; letter-spacing: .26em; color: var(--seal); margin-bottom: 6px; }
-  .t-title { font-size: 18px; font-weight: 800; margin-bottom: 7px; }
-  .t-title .hanja { color: var(--ink-faint); font-weight: 400; font-size: 14px; margin-left: 7px; }
-  .t-item p { font-size: 14.5px; color: var(--ink-soft); word-break: keep-all; }
-
-  .quote-block { margin-top: 50px; padding: 28px 20px; text-align: center; position: relative; }
-  .quote-block::before, .quote-block::after {
-    content: ''; position: absolute; left: 12%; right: 12%; height: 3px;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 4' preserveAspectRatio='none'%3E%3Cpath d='M0 2 Q 30 0.5, 55 2.4 T 100 1.8' stroke='%232b2721' stroke-width='1.4' fill='none' opacity='.4'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
-  }
-  .quote-block::before { top: 0; } .quote-block::after { bottom: 0; }
-  .quote-block .q-hanja { font-family: 'Song Myung', serif; font-size: 19px; color: var(--ink); letter-spacing: .26em; margin-bottom: 10px; }
-  .quote-block .q-ko { font-family: 'Gowun Batang', serif; font-size: 15px; letter-spacing: -0.02em; color: var(--ink-soft); word-break: keep-all; }
-  .quote-block .q-src { margin-top: 10px; font-size: 12px; color: var(--ink-faint); letter-spacing: .12em; }
-
-  /* ══ 4. 원리 ══ */
-  .pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; margin: 32px 0 12px; }
-  .pillar {
-    border: 1.5px solid rgba(43,39,33,.35); background: rgba(242,236,221,.6);
-    padding: 15px 5px 12px; text-align: center; border-radius: 2px 4px 3px 5px;
-  }
-  .pillar:nth-child(1) { transform: rotate(-.6deg); }
-  .pillar:nth-child(2) { transform: rotate(.4deg); }
-  .pillar:nth-child(3) { transform: rotate(-.3deg); }
-  .pillar:nth-child(4) { transform: rotate(.7deg); }
-  .pillar .p-hanja { font-family: 'Song Myung', serif; font-size: 23px; line-height: 1.3; color: var(--ink); }
-  .pillar .p-name { margin-top: 9px; font-size: 12px; color: var(--seal); letter-spacing: .08em; }
-  .pillar .p-desc { font-size: 11px; color: var(--ink-faint); margin-top: 3px; }
-  .pillars-caption { text-align: center; font-size: 13px; color: var(--ink-faint); margin-bottom: 44px; word-break: keep-all; }
-
-  .ohaeng-wrap { margin: 36px auto 8px; width: 272px; height: 272px; position: relative; }
-  .ohaeng-wrap svg { width: 100%; height: 100%; overflow: visible; }
-  .ohaeng-ring { animation: spin 70s linear infinite; transform-origin: 136px 136px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .ohaeng-caption { text-align: center; font-size: 12.5px; color: var(--ink-faint); margin-top: 16px; word-break: keep-all; }
-  .ohaeng-center { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
-  .ohaeng-center span { font-family: 'Song Myung', serif; font-size: 40px; color: rgba(43,39,33,.5); }
-
-  /* ══ 5. 체감 — 명식 세우기 ══ */
-  #taste { background: linear-gradient(rgba(168,51,46,.045), transparent 45%); }
+  /* ══ 2. 무료 맛보기 ══ */
+  #taste { background: linear-gradient(rgba(168,51,46,.045), transparent 45%); padding-top: 56px; }
   .taste-card {
     border: 1.5px solid rgba(43,39,33,.4); background: var(--mist);
-    padding: 30px 22px; margin-top: 30px; border-radius: 3px 6px 4px 7px;
+    padding: 28px 22px; margin-top: 24px; border-radius: 3px 6px 4px 7px;
     box-shadow: 2px 4px 14px rgba(43,39,33,.08); transform: rotate(-.3deg);
   }
-  .taste-card .field { margin-bottom: 18px; }
-  .taste-card label { display: block; font-size: 13px; letter-spacing: .14em; color: var(--ink-soft); margin-bottom: 8px; }
-  .taste-card label .opt { color: var(--ink-faint); letter-spacing: 0; font-size: 12px; }
+  .taste-card .field { margin-bottom: 16px; }
+  .taste-card label { display: block; font-size: 13px; letter-spacing: -0.01em; font-weight: 600; color: var(--ink-soft); margin-bottom: 8px; }
+  .taste-card label .opt { color: var(--ink-faint); font-weight: 400; font-size: 12px; }
   .taste-card input[type="date"], .taste-card select {
     width: 100%; background: #fbf7ec; border: 1.5px solid rgba(43,39,33,.3);
     color: var(--ink); font-family: inherit; font-size: 16.5px; padding: 13px 12px;
@@ -223,32 +136,30 @@
     background-repeat: no-repeat; background-position: right 14px center;
   }
   .taste-card input:focus, .taste-card select:focus { border-color: var(--seal); }
-  .field-note { margin-top: 6px; font-family: 'Gowun Batang', serif; font-size: 13px; line-height: 1.7; letter-spacing: -0.02em; color: var(--ink-faint); word-break: keep-all; }
+  .field-note { margin-top: 6px; font-family: 'Gowun Batang', serif; font-size: 12.5px; letter-spacing: -0.02em; color: var(--ink-faint); word-break: keep-all; }
   .btn-reveal {
     width: 100%; margin-top: 4px; padding: 15px;
     background: var(--ink); color: var(--paper); border: none; cursor: pointer;
-    font-family: inherit; font-size: 16px; font-weight: 700; letter-spacing: .14em; text-indent: .14em;
+    font-family: inherit; font-size: 16px; font-weight: 700; letter-spacing: .1em; text-indent: .1em;
     border-radius: 2px 5px 3px 6px; box-shadow: 2px 3px 10px rgba(43,39,33,.3);
     transition: transform .15s ease;
   }
   .btn-reveal:active { transform: scale(.97); }
 
-  #result { display: none; margin-top: 28px; }
+  #result { display: none; margin-top: 26px; }
   #result.show { display: block; animation: fadeUp .8s ease; }
-  .myeongsik-title { text-align: center; font-size: 13px; letter-spacing: .3em; color: var(--ink-faint); margin-bottom: 14px; }
+  .myeongsik-title { text-align: center; font-size: 13px; letter-spacing: .24em; color: var(--ink-faint); margin-bottom: 12px; }
   .myeongsik { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
   .ms-col { text-align: center; }
-  .ms-head { font-size: 11.5px; color: var(--ink-faint); margin-bottom: 6px; letter-spacing: .06em; }
+  .ms-head { font-size: 11.5px; color: var(--ink-faint); margin-bottom: 6px; }
   .ms-cell {
     background: #fbf7ec; border: 1.5px solid rgba(43,39,33,.35);
     border-radius: 2px 4px 3px 5px; padding: 12px 2px;
     font-family: 'Song Myung', serif; font-size: 26px; line-height: 1.45;
     position: relative; min-height: 96px; display: grid; place-items: center;
   }
-  .ms-cell small { display: block; font-family: 'Gowun Batang', serif; font-size: 10.5px; color: var(--ink-faint); margin-top: 3px; }
-  .ms-sealed {
-    background: repeating-linear-gradient(-45deg, #efe8d7, #efe8d7 5px, #e9e1cd 5px, #e9e1cd 10px);
-  }
+  .ms-cell small { display: block; font-family: 'Pretendard Variable', Pretendard, sans-serif; font-size: 10.5px; color: var(--ink-faint); margin-top: 3px; letter-spacing: -0.02em; }
+  .ms-sealed { background: repeating-linear-gradient(-45deg, #efe8d7, #efe8d7 5px, #e9e1cd 5px, #e9e1cd 10px); }
   .ms-sealed .seal-cover {
     width: 40px; height: 40px; background: var(--seal); color: #f3ead8;
     display: grid; place-items: center; font-family: 'Song Myung', serif; font-size: 20px;
@@ -257,53 +168,39 @@
   }
   .ms-sealed small { color: var(--seal); }
   .ms-unknown { color: rgba(43,39,33,.35); }
-  .result-read { margin-top: 26px; text-align: center; }
+  .result-read { margin-top: 24px; text-align: center; }
   .result-day-char {
-    width: 92px; height: 92px; margin: 4px auto 16px;
+    width: 88px; height: 88px; margin: 4px auto 14px;
     display: grid; place-items: center; color: #f6efdf;
-    font-family: 'Song Myung', serif; font-size: 38px;
+    font-family: 'Song Myung', serif; font-size: 36px;
     border-radius: 5px 9px 6px 10px;
     box-shadow: 2px 3px 10px rgba(43,39,33,.3);
     transform: scale(0); animation: stamp .5s .15s cubic-bezier(.2,2.2,.4,1) forwards;
   }
-  .result-name { font-size: 15px; color: var(--ink-faint); margin-bottom: 6px; }
-  .result-epithet { font-size: 19px; font-weight: 800; margin-bottom: 10px; }
+  .result-name { font-size: 14px; color: var(--ink-faint); margin-bottom: 5px; }
+  .result-epithet { font-size: 19px; font-weight: 800; margin-bottom: 8px; }
   .result-desc { font-size: 14.5px; color: var(--ink-soft); word-break: keep-all; }
-  .result-note { margin-top: 14px; font-family: 'Gowun Batang', serif; font-size: 13px; line-height: 1.7; letter-spacing: -0.02em; color: var(--ink-faint); word-break: keep-all; }
+  .result-note { margin-top: 12px; font-family: 'Gowun Batang', serif; font-size: 12.5px; letter-spacing: -0.02em; color: var(--ink-faint); word-break: keep-all; }
   .result-tease {
-    margin-top: 24px; padding: 18px 16px; text-align: center;
+    margin-top: 22px; padding: 16px; text-align: center;
     background: rgba(168,51,46,.06); border: 1px dashed rgba(168,51,46,.45); border-radius: 3px;
     font-size: 14px; color: var(--ink-soft); word-break: keep-all;
   }
   .result-tease b { color: var(--seal); }
 
-  /* ══ 6. 풀이 안내 ══ */
-  .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 30px; }
-  .menu-card {
-    background: var(--mist); border: 1.5px solid rgba(43,39,33,.3);
-    padding: 20px 16px 18px; border-radius: 3px 6px 4px 7px;
-    box-shadow: 1px 3px 10px rgba(43,39,33,.07);
-  }
-  .menu-card:nth-child(odd) { transform: rotate(-.5deg); }
-  .menu-card:nth-child(even) { transform: rotate(.5deg); }
-  .menu-card .m-hanja { font-family: 'Song Myung', serif; font-size: 22px; color: var(--seal); }
-  .menu-card .m-name { font-size: 16px; font-weight: 800; margin-top: 6px; }
-  .menu-card .m-desc { font-size: 12.5px; color: var(--ink-soft); margin-top: 5px; word-break: keep-all; line-height: 1.6; }
-  .menu-note { margin-top: 18px; text-align: center; }
-
-  /* ══ 7. 다녀가신 분들 ══ */
-  .review { margin-top: 26px; position: relative; padding: 24px 22px 20px; background: var(--mist); border: 1px solid rgba(43,39,33,.16); box-shadow: 2px 3px 10px rgba(43,39,33,.07); }
-  .review:nth-child(odd) { transform: rotate(-.7deg); }
-  .review:nth-child(even) { transform: rotate(.6deg); }
-  .review .r-text { font-family: 'Gowun Batang', serif; font-size: 15px; line-height: 1.95; letter-spacing: -0.02em; color: var(--ink-soft); word-break: keep-all; }
-  .review .r-who { margin-top: 12px; font-size: 12.5px; color: var(--ink-faint); text-align: right; }
+  /* ══ 3. 리뷰 ══ */
+  .review { margin-top: 20px; position: relative; padding: 20px 20px 16px; background: var(--mist); border: 1px solid rgba(43,39,33,.16); box-shadow: 2px 3px 10px rgba(43,39,33,.07); }
+  .review:nth-child(odd) { transform: rotate(-.6deg); }
+  .review:nth-child(even) { transform: rotate(.5deg); }
+  .review .r-text { font-family: 'Gowun Batang', serif; font-size: 15px; line-height: 1.8; letter-spacing: -0.02em; color: var(--ink-soft); word-break: keep-all; }
+  .review .r-who { margin-top: 8px; font-size: 12px; color: var(--ink-faint); text-align: right; }
   .review::before {
-    content: ''; position: absolute; top: -7px; left: 24px; width: 52px; height: 14px;
-    background: rgba(168,51,46,.28); transform: rotate(-2deg); /* 붙여둔 종이 테이프 */
+    content: ''; position: absolute; top: -7px; left: 24px; width: 48px; height: 13px;
+    background: rgba(168,51,46,.28); transform: rotate(-2deg);
   }
 
-  /* ══ 8. 주인장 · CTA ══ */
-  .host-card { margin-top: 30px; display: flex; gap: 18px; align-items: flex-start; }
+  /* ══ 4. 주인장 ══ */
+  .host-card { margin-top: 24px; display: flex; gap: 18px; align-items: flex-start; }
   .host-photo {
     flex: none; width: 88px; height: 108px; background: var(--ink); color: var(--paper);
     display: grid; place-items: center; font-family: 'Song Myung', serif; font-size: 30px;
@@ -313,26 +210,85 @@
   .host-info .h-name { font-size: 18px; font-weight: 800; }
   .host-info .h-name .hanja { font-weight: 400; font-size: 14px; color: var(--ink-faint); margin-left: 6px; }
   .host-info ul { list-style: none; margin-top: 8px; }
-  .host-info li { font-size: 13px; color: var(--ink-soft); padding-left: 14px; position: relative; word-break: keep-all; }
+  .host-info li { font-size: 13.5px; color: var(--ink-soft); padding-left: 14px; position: relative; word-break: keep-all; }
   .host-info li + li { margin-top: 3px; }
   .host-info li::before { content: '·'; position: absolute; left: 2px; color: var(--seal); }
+  .host-word {
+    margin-top: 24px; padding: 20px 18px; text-align: center; position: relative;
+    background: var(--mist); border: 1px solid rgba(43,39,33,.14); transform: rotate(-.4deg);
+    box-shadow: 2px 3px 10px rgba(43,39,33,.07);
+  }
+  .host-word .hw-text { font-family: 'Gowun Batang', serif; font-size: 15.5px; line-height: 1.85; letter-spacing: -0.02em; color: var(--ink); word-break: keep-all; }
+  .host-word .hw-sign { margin-top: 8px; font-size: 12px; color: var(--ink-faint); }
 
-  #cta { text-align: center; padding-bottom: 40px; }
-  #cta h2 { font-size: 23px; }
+  /* ══ 5. 소구점: 점이 아니라 학문 ══ */
+  .why-row {
+    display: flex; gap: 16px; align-items: center; margin-top: 18px;
+    padding: 16px 18px; background: rgba(242,236,221,.6); border-left: 2.5px solid var(--seal);
+  }
+  .why-row .w-hanja { flex: none; width: 64px; font-family: 'Song Myung', serif; font-size: 21px; color: var(--seal); line-height: 1.3; }
+  .why-row .w-txt { font-size: 14px; color: var(--ink-soft); word-break: keep-all; line-height: 1.6; }
+  .why-row .w-txt b { display: block; font-size: 15px; margin-bottom: 2px; }
+
+  .pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; margin: 34px 0 10px; }
+  .pillar {
+    border: 1.5px solid rgba(43,39,33,.35); background: rgba(242,236,221,.6);
+    padding: 14px 5px 11px; text-align: center; border-radius: 2px 4px 3px 5px;
+  }
+  .pillar:nth-child(1) { transform: rotate(-.6deg); }
+  .pillar:nth-child(2) { transform: rotate(.4deg); }
+  .pillar:nth-child(3) { transform: rotate(-.3deg); }
+  .pillar:nth-child(4) { transform: rotate(.7deg); }
+  .pillar .p-hanja { font-family: 'Song Myung', serif; font-size: 22px; line-height: 1.3; color: var(--ink); }
+  .pillar .p-name { margin-top: 8px; font-size: 12px; color: var(--seal); }
+  .pillar .p-desc { font-size: 11px; color: var(--ink-faint); margin-top: 2px; }
+  .pillars-caption { text-align: center; font-size: 12.5px; color: var(--ink-faint); word-break: keep-all; }
+
+  /* ══ 6. 풀이 안내 ══ */
+  .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+  .menu-card {
+    background: var(--mist); border: 1.5px solid rgba(43,39,33,.3);
+    padding: 18px 16px 16px; border-radius: 3px 6px 4px 7px;
+    box-shadow: 1px 3px 10px rgba(43,39,33,.07);
+  }
+  .menu-card:nth-child(odd) { transform: rotate(-.5deg); }
+  .menu-card:nth-child(even) { transform: rotate(.5deg); }
+  .menu-card .m-hanja { font-family: 'Song Myung', serif; font-size: 21px; color: var(--seal); }
+  .menu-card .m-name { font-size: 16px; font-weight: 800; margin-top: 5px; }
+  .menu-card .m-desc { font-size: 12.5px; color: var(--ink-soft); margin-top: 4px; word-break: keep-all; line-height: 1.55; }
+  .menu-note { margin-top: 16px; text-align: center; font-family: 'Gowun Batang', serif; font-size: 13px; color: var(--ink-faint); transform: rotate(-.8deg); letter-spacing: -0.02em; }
+
+  /* ══ 7. FAQ ══ */
+  .faq details {
+    margin-top: 12px; background: var(--mist); border: 1px solid rgba(43,39,33,.2);
+    border-radius: 2px 5px 3px 5px; overflow: hidden;
+  }
+  .faq summary {
+    list-style: none; cursor: pointer; padding: 15px 18px;
+    font-size: 15px; font-weight: 700; color: var(--ink);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::before { content: '問'; font-family: 'Song Myung', serif; font-weight: 400; color: var(--seal); font-size: 14px; }
+  .faq details[open] summary { border-bottom: 1px dashed rgba(43,39,33,.2); }
+  .faq .a { padding: 13px 18px 16px; font-family: 'Gowun Batang', serif; font-size: 14px; line-height: 1.85; letter-spacing: -0.02em; color: var(--ink-soft); word-break: keep-all; }
+
+  /* ══ 8. CTA ══ */
+  #cta { text-align: center; padding-bottom: 36px; }
+  #cta h2 { font-size: 24px; }
   .btn-cta {
-    display: inline-block; margin-top: 24px; padding: 17px 50px;
+    display: inline-block; margin-top: 20px; padding: 17px 50px;
     background: var(--seal); color: #f6efdf; text-decoration: none;
-    font-family: inherit; font-size: 17px; font-weight: 700; letter-spacing: .14em; text-indent: .14em;
+    font-family: inherit; font-size: 17px; font-weight: 700; letter-spacing: .1em; text-indent: .1em;
     border-radius: 3px 7px 4px 8px; box-shadow: 2px 4px 14px rgba(168,51,46,.4);
     transition: transform .15s ease;
   }
   .btn-cta:active { transform: scale(.97); }
-  #cta .cta-note { margin-top: 16px; font-size: 12.5px; color: var(--ink-faint); }
+  #cta .cta-note { margin-top: 14px; font-size: 12.5px; color: var(--ink-faint); word-break: keep-all; }
 
   footer {
-    padding: 30px 26px calc(30px + env(safe-area-inset-bottom));
-    text-align: center; font-size: 11.5px; color: var(--ink-faint);
-    word-break: keep-all;
+    padding: 28px 26px calc(28px + env(safe-area-inset-bottom));
+    text-align: center; font-size: 11.5px; color: var(--ink-faint); word-break: keep-all;
   }
   footer .f-brand { font-family: 'Song Myung', serif; font-size: 13px; letter-spacing: .3em; margin-bottom: 6px; color: var(--ink-soft); }
   @media (prefers-reduced-motion: reduce) {
@@ -343,12 +299,13 @@
 <body>
 <main>
 
-  <!-- ══ 1. 히어로: 인왕제색도풍 먹산 ══ -->
+  <!-- ══ 1. 후킹 ══ -->
   <section id="hero">
     <p class="hero-brand">사주명리 상담소</p>
     <h1 class="hero-title">여덟 글자<span class="hanja-sub">四柱八字</span></h1>
-    <p class="hero-sub">태어난 해와 달, 날과 시.<br/>사람은 누구나 여덟 글자를 안고 태어납니다.</p>
-    <p class="hero-note">그 글자들을 서른 해 넘게 읽어 온 사람이,<br/>처음 오시는 분께 드리는 안내입니다.</p>
+    <p class="hero-sub">태어난 순간 정해진 여덟 글자,<br/><b>서른두 해 읽어 온 사람</b>이 풀어드립니다.</p>
+    <a class="btn-hero" href="#taste">내 명식 무료로 보기</a>
+    <p class="hero-free">생일만 넣으면 10초, 가입 없음</p>
     <div class="hero-seal" aria-hidden="true">八<br/>字</div>
 
     <!-- 정선 진경산수풍 먹산: 비 갠 뒤의 인왕산 -->
@@ -373,16 +330,12 @@
             <stop offset="1" stop-color="#57503f"/>
           </linearGradient>
         </defs>
-        <!-- 먼 산 (엷은 먹) -->
         <path filter="url(#brushSoft)" fill="#9d9078" opacity=".38"
           d="M-10 240 Q 40 170 95 195 Q 130 150 180 178 Q 215 132 260 168 Q 305 128 350 170 Q 400 140 440 185 Q 465 168 490 190 L490 300 L-10 300 Z"/>
-        <!-- 중간 산 (중묵) -->
         <path filter="url(#brushSoft)" fill="#6b6250" opacity=".55"
           d="M-10 262 Q 30 205 80 222 Q 120 175 170 205 Q 210 160 255 200 Q 310 158 355 205 Q 405 175 450 225 L490 235 L490 300 L-10 300 Z"/>
-        <!-- 주봉: 비에 젖은 바위 봉우리 (농묵) -->
         <path filter="url(#brush)" fill="url(#peakInk)" opacity=".92"
           d="M-10 300 L-10 276 Q 40 232 90 244 Q 122 172 162 200 Q 198 96 242 70 Q 272 88 296 150 Q 332 128 354 194 Q 398 208 432 254 Q 462 250 490 272 L490 300 Z"/>
-        <!-- 수직준: 바위면을 쓸어내린 마른 붓질 -->
         <g stroke="#1c1813" fill="none" stroke-linecap="round" filter="url(#brushSoft)">
           <path d="M238 86 q4 42 -2 80" stroke-width="2.4" opacity=".3"/>
           <path d="M252 96 q6 38 2 72" stroke-width="2" opacity=".26"/>
@@ -394,10 +347,8 @@
           <path d="M350 206 q5 24 2 44" stroke-width="1.8" opacity=".2"/>
           <path d="M96 252 q2 20 -2 36" stroke-width="1.8" opacity=".16"/>
         </g>
-        <!-- 산허리 안개 -->
         <ellipse cx="150" cy="252" rx="150" ry="20" fill="#e7dfcc" opacity=".5" filter="url(#brushSoft)"/>
         <ellipse cx="360" cy="238" rx="120" ry="16" fill="#e7dfcc" opacity=".42" filter="url(#brushSoft)"/>
-        <!-- 능선의 수목 점묘 -->
         <g fill="#2b2721" opacity=".75" filter="url(#brushSoft)">
           <ellipse cx="238" cy="102" rx="7" ry="3.4"/><ellipse cx="228" cy="112" rx="6" ry="3"/>
           <ellipse cx="250" cy="114" rx="6.4" ry="3"/><ellipse cx="220" cy="126" rx="5.4" ry="2.6"/>
@@ -406,9 +357,7 @@
           <ellipse cx="182" cy="206" rx="5" ry="2.4"/><ellipse cx="348" cy="206" rx="5.4" ry="2.6"/>
           <ellipse cx="338" cy="214" rx="4.8" ry="2.3"/>
         </g>
-        <!-- 발치 안개로 본문과 잇기 -->
         <rect x="-10" y="256" width="500" height="46" fill="url(#mistFade)"/>
-        <!-- 전경 소나무: 안개 위로 솟은 노송 -->
         <g filter="url(#brushSoft)">
           <path d="M62 300 C 66 274, 54 260, 64 240 C 70 228, 60 220, 68 208 C 72 202, 68 196, 72 190"
             stroke="#241f19" stroke-width="5" fill="none" stroke-linecap="round"/>
@@ -426,147 +375,25 @@
         </g>
       </svg>
     </div>
-    <div class="scroll-cue">천천히 내려오시지요</div>
   </section>
 
-  <!-- ══ 2. 주인의 말 ══ -->
-  <section id="letter">
-    <div class="section-label reveal">
-      <div class="seal-box">安<br/>寧</div>
-      <span class="label-text">먼저, 인사부터</span>
-    </div>
-    <!-- 아래 이름·이력은 자리 표시용입니다. 실제 전문가 정보로 바꿔 주세요. -->
-    <div class="letter-paper reveal">
-      <p>안녕하세요. 명리를 공부한 지 올해로 서른두 해가 된 사람입니다.</p>
-      <p>처음 오시는 분들이 가장 많이 하시는 말씀이 "사주는 미신 아닌가요?"입니다. 저는 그 물음이 반갑습니다. 의심하는 분일수록, 풀이가 끝나면 가장 오래 앉아 계시거든요.</p>
-      <p>사주는 앞날을 맞히는 요술이 아니라 <span class="uline">타고난 결을 읽고 때를 헤아리는 공부</span>입니다. 같은 비라도 벼는 반기고 보리는 싫어하듯, 같은 해가 와도 사람마다 겪는 계절이 다릅니다. 제가 하는 일은 당신이 어떤 곡식인지, 지금이 어느 계절인지 일러드리는 것뿐입니다.</p>
-      <p>겁을 드리는 풀이는 하지 않습니다. 그건 제 스승께서 가장 엄하게 이르신 법도입니다.</p>
-      <div class="letter-sign">
-        <span class="mj">청호 올림</span>
-        <span class="mini-seal" aria-hidden="true">湖</span>
-      </div>
-    </div>
-  </section>
-
-  <div class="ink-band" aria-hidden="true">
-    <svg viewBox="0 0 480 64" preserveAspectRatio="none">
-      <path d="M0 50 Q 55 26 115 42 Q 168 16 228 38 Q 288 12 342 36 Q 402 18 480 46 L480 64 L0 64 Z" fill="#6b6250" opacity=".16"/>
-      <path d="M0 58 Q 90 38 162 52 Q 242 32 322 50 Q 402 36 480 56 L480 64 L0 64 Z" fill="#2b2721" opacity=".12"/>
-    </svg>
-  </div>
-
-  <!-- ══ 3. 유래 ══ -->
-  <section id="origin">
-    <div class="section-label reveal">
-      <div class="seal-box">由<br/>來</div>
-      <span class="label-text">첫째 이야기 · 유래</span>
-    </div>
-    <h2 class="reveal">어제오늘 생긴 점술이<br/><span class="accent">아닙니다</span></h2>
-    <p class="body reveal">사주명리는 하늘의 움직임과 사람의 삶을 잇대어 읽으려던 이들이 삼천 년 가까이 다듬어 온 학문입니다. 그 내력을 짧게 적어봅니다.</p>
-
-    <div class="timeline" style="margin-top:40px;">
-      <div class="t-item reveal">
-        <div class="t-era">아주 오랜 옛날</div>
-        <div class="t-title">음양오행의 눈<span class="hanja">陰陽五行</span></div>
-        <p>해와 달, 물과 불, 나무와 쇠와 흙. 옛사람들은 만물이 다섯 기운의 어울림으로 돌아간다고 보았습니다. 사주의 뿌리가 여기에 있습니다.</p>
-      </div>
-      <div class="t-item reveal">
-        <div class="t-era">당나라 — 이허중</div>
-        <div class="t-title">세 기둥으로 명을 읽다<span class="hanja">三柱</span></div>
-        <p>태어난 해·달·날을 기둥 삼아 사람의 명(命)을 헤아리는 법이 세워졌습니다. 운명이 처음으로 '글자'가 된 순간입니다.</p>
-      </div>
-      <div class="t-item reveal">
-        <div class="t-era">송나라 — 서자평</div>
-        <div class="t-title">여덟 글자의 완성<span class="hanja">四柱八字</span></div>
-        <p>여기에 태어난 '시(時)'가 더해져 네 기둥, 여덟 글자의 체계가 완성됩니다. 오늘 제가 쓰는 풀이법도 이 학맥 위에 서 있습니다.</p>
-      </div>
-      <div class="t-item reveal">
-        <div class="t-era">조선 — 관상감</div>
-        <div class="t-title">나라가 가르치던 학문<span class="hanja">觀象監</span></div>
-        <p>조선은 <strong>관상감(觀象監)</strong>이라는 관청을 두어 명과학(命課學)을 연구했고, 과거시험(잡과)으로 명과학자를 뽑았습니다. 왕실의 혼례 날짜도 이들이 정했지요. 사주는 이 땅에서 오백 년간 <strong>나라의 학문</strong>이었습니다.</p>
-      </div>
-    </div>
-
-    <div class="quote-block reveal">
-      <div class="q-hanja">知命者 不怨天</div>
-      <div class="q-ko">"명을 아는 사람은 하늘을 원망하지 않는다."</div>
-      <div class="q-src">— 순자(荀子)</div>
-    </div>
-  </section>
-
-  <!-- ══ 4. 원리 ══ -->
-  <section id="principle">
-    <div class="section-label reveal">
-      <div class="seal-box">原<br/>理</div>
-      <span class="label-text">둘째 이야기 · 원리</span>
-    </div>
-    <h2 class="reveal">여덟 글자는<br/><span class="accent">이렇게 세웁니다</span></h2>
-    <p class="body reveal">태어난 <strong>해·달·날·시각</strong>이 각각 한 기둥이 되고, 기둥마다 하늘의 글자(천간)와 땅의 글자(지지)가 하나씩 얹힙니다. 그래서 <strong>네 기둥, 여덟 글자</strong>. 이 여덟 글자의 조합은 오십만 가지가 넘어, 당신과 똑같은 명식을 가진 사람은 좀처럼 만나기 어렵습니다.</p>
-
-    <div class="pillars reveal" role="img" aria-label="사주의 네 기둥: 년주, 월주, 일주, 시주">
-      <div class="pillar"><div class="p-hanja">年<br/>柱</div><div class="p-name">년주</div><div class="p-desc">뿌리 · 조상</div></div>
-      <div class="pillar"><div class="p-hanja">月<br/>柱</div><div class="p-name">월주</div><div class="p-desc">줄기 · 사회</div></div>
-      <div class="pillar" style="border-color: var(--seal);"><div class="p-hanja">日<br/>柱</div><div class="p-name">일주</div><div class="p-desc">꽃 · 나 자신</div></div>
-      <div class="pillar"><div class="p-hanja">時<br/>柱</div><div class="p-name">시주</div><div class="p-desc">열매 · 말년</div></div>
-    </div>
-    <p class="pillars-caption reveal">가운데 붉은 기둥, '일주'의 첫 글자가 곧 타고난 나의 바탕입니다.</p>
-
-    <p class="body reveal">여덟 글자는 저마다 <strong>木·火·土·金·水</strong> 다섯 기운을 품고, 서로 살리기도(상생) 누르기도(상극) 합니다. 어느 기운이 넘치고 어느 기운이 마른지 — 그 균형을 읽는 것이 풀이의 알맹이입니다.</p>
-
-    <div class="ohaeng-wrap reveal">
-      <svg viewBox="0 0 272 272" aria-label="오행 상생 순환도: 목 화 토 금 수">
-        <defs>
-          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-            <path d="M0,0 L10,5 L0,10 z" fill="#6f6759"/>
-          </marker>
-        </defs>
-        <g class="ohaeng-ring">
-          <circle cx="136" cy="136" r="97" fill="none" stroke="rgba(43,39,33,.3)" stroke-width="1" stroke-dasharray="2 7"/>
-          <g fill="none" stroke="#6f6759" stroke-width="1.4">
-            <path d="M 163 44 A 97 97 0 0 1 224 109" marker-end="url(#arrow)"/>
-            <path d="M 231 163 A 97 97 0 0 1 182 220" marker-end="url(#arrow)"/>
-            <path d="M 119 231 A 97 97 0 0 1 57 194" marker-end="url(#arrow)"/>
-            <path d="M 41 119 A 97 97 0 0 1 67 67"  marker-end="url(#arrow)"/>
-            <path d="M 94 46 A 97 97 0 0 1 114 40"  marker-end="url(#arrow)"/>
-          </g>
-          <g font-family="'Song Myung',serif" font-size="21" text-anchor="middle">
-            <g><circle cx="136" cy="39"  r="25" fill="#f2ecdd" stroke="#3d6b4a" stroke-width="2"/><text x="136" y="47"  fill="#3d6b4a">木</text></g>
-            <g><circle cx="228" cy="106" r="25" fill="#f2ecdd" stroke="#a8332e" stroke-width="2"/><text x="228" y="114" fill="#a8332e">火</text></g>
-            <g><circle cx="193" cy="215" r="25" fill="#f2ecdd" stroke="#8c6d2c" stroke-width="2"/><text x="193" y="223" fill="#8c6d2c">土</text></g>
-            <g><circle cx="79"  cy="215" r="25" fill="#f2ecdd" stroke="#5c584e" stroke-width="2"/><text x="79"  y="223" fill="#5c584e">金</text></g>
-            <g><circle cx="44"  cy="106" r="25" fill="#f2ecdd" stroke="#33566e" stroke-width="2"/><text x="44"  y="114" fill="#33566e">水</text></g>
-          </g>
-        </g>
-      </svg>
-      <div class="ohaeng-center"><span aria-hidden="true">生</span></div>
-    </div>
-    <p class="ohaeng-caption reveal">나무는 불을 살리고, 불은 흙을, 흙은 쇠를, 쇠는 물을, 물은 다시 나무를 살립니다.</p>
-  </section>
-
-  <div class="ink-band" aria-hidden="true" style="transform: scaleX(-1);">
-    <svg viewBox="0 0 480 64" preserveAspectRatio="none">
-      <path d="M0 50 Q 55 26 115 42 Q 168 16 228 38 Q 288 12 342 36 Q 402 18 480 46 L480 64 L0 64 Z" fill="#6b6250" opacity=".16"/>
-      <path d="M0 58 Q 90 38 162 52 Q 242 32 322 50 Q 402 36 480 56 L480 64 L0 64 Z" fill="#2b2721" opacity=".12"/>
-    </svg>
-  </div>
-
-  <!-- ══ 5. 체감 — 명식 세워보기 ══ -->
+  <!-- ══ 2. 무료 맛보기 ══ -->
   <section id="taste">
     <div class="section-label reveal">
       <div class="seal-box">體<br/>感</div>
-      <span class="label-text">셋째 이야기 · 맛보기</span>
+      <span class="label-text">무료 맛보기</span>
     </div>
-    <h2 class="reveal">말로만 하면 심심하지요.<br/><span class="accent">직접 세워드리겠습니다</span></h2>
-    <p class="body reveal">생일을 넣어 보세요. 만세력의 60갑자 이치대로 당신의 명식(사주판)을 그 자리에서 세워드립니다. 태어난 시각을 아시면 <strong>시주까지 여섯 글자</strong>가 나옵니다.</p>
+    <h2 class="reveal">생일만<br/><span class="accent">넣어 보세요</span></h2>
+    <p class="body reveal">만세력 그대로, 그 자리에서 명식을 세워드립니다.</p>
 
     <div class="taste-card reveal">
       <div class="field">
         <label for="birth">생년월일 <span class="opt">(양력)</span></label>
         <input type="date" id="birth" min="1930-01-01" max="2026-12-31" />
-        <p class="field-note">음력만 아시는 분은 상담 때 말씀해 주세요. 만세력으로 바꿔 세워드립니다.</p>
+        <p class="field-note">음력 생일은 상담 때 바꿔 세워드립니다.</p>
       </div>
       <div class="field">
-        <label for="btime">태어난 시각 <span class="opt">(모르셔도 됩니다)</span></label>
+        <label for="btime">태어난 시각 <span class="opt">(몰라도 됩니다)</span></label>
         <select id="btime">
           <option value="-1" selected>모름 · 나중에 확인</option>
           <option value="0">자시 子 (밤 11시 ~ 새벽 1시)</option>
@@ -602,67 +429,56 @@
           <p class="result-note" id="rNote"></p>
         </div>
 
-        <div class="result-tease" id="rTease">
-          재물과 직업의 자리인 <b>월주(月柱)</b>는 절기력을 놓고 따져야 해서 봉해 두었습니다.<br/>
-          여덟 글자를 다 펴놓고 읽는 일은, 제가 마주 앉아 해드리겠습니다.
+        <div class="result-tease">
+          재물과 직업의 자리, <b>월주(月柱)</b>는 봉해 두었습니다.<br/>나머지는 마주 앉아 풀어드립니다.
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ══ 6. 풀이 안내 ══ -->
-  <section id="menu">
-    <div class="section-label reveal">
-      <div class="seal-box">案<br/>內</div>
-      <span class="label-text">넷째 이야기 · 풀이 안내</span>
-    </div>
-    <h2 class="reveal">이런 풀이를<br/><span class="accent">해드립니다</span></h2>
-    <p class="body reveal">조선 관상감이 하던 일과 크게 다르지 않습니다. 명을 읽고, 해를 살피고, 연을 맞추고, 날을 고릅니다.</p>
-
-    <div class="menu-grid">
-      <div class="menu-card reveal">
-        <div class="m-hanja">平生</div>
-        <div class="m-name">평생사주</div>
-        <div class="m-desc">타고난 그릇과 평생의 큰 흐름. 처음 오시는 분께 권합니다.</div>
-      </div>
-      <div class="menu-card reveal">
-        <div class="m-hanja">新年</div>
-        <div class="m-name">신년운세</div>
-        <div class="m-desc">한 해의 흐름을 절기 따라 짚습니다. 벌릴 때와 다질 때.</div>
-      </div>
-      <div class="menu-card reveal">
-        <div class="m-hanja">宮合</div>
-        <div class="m-name">궁합</div>
-        <div class="m-desc">두 명식을 나란히 놓고 서로 살리는 기운과 부딪히는 기운을 봅니다.</div>
-      </div>
-      <div class="menu-card reveal">
-        <div class="m-hanja">擇日</div>
-        <div class="m-name">택일</div>
-        <div class="m-desc">혼례·개업·이사. 좋은 날을 고르는 일은 관상감의 본업이었습니다.</div>
-      </div>
-    </div>
-    <p class="menu-note margin-note reveal">* 풀이 값과 예약은 맨 아래 단추를 눌러 물어봐 주세요.</p>
-  </section>
-
-  <!-- ══ 7. 다녀가신 분들 ══ -->
+  <!-- ══ 3. 리뷰 ══ -->
   <section id="reviews">
     <div class="section-label reveal">
       <div class="seal-box">所<br/>感</div>
-      <span class="label-text">다섯째 이야기 · 다녀가신 분들</span>
+      <span class="label-text">다녀가신 분들</span>
     </div>
-    <h2 class="reveal">다녀가신 분들이<br/><span class="accent">남긴 말</span></h2>
+    <h2 class="reveal">다녀가신 분들의<br/><span class="accent">한 마디</span></h2>
     <!-- 후기는 자리 표시용 예시입니다. 실제 후기로 바꿔 주세요. -->
     <div class="review reveal">
-      <p class="r-text">"말씀 안 드렸는데 재작년에 직장 옮긴 걸 딱 짚으셨을 때 솔직히 소름이었어요. 올해는 벌리지 말고 다지라는 말, 수첩에 적어놨습니다."</p>
+      <p class="r-text">"직장 옮긴 해를 딱 짚으셨어요. 소름."</p>
       <p class="r-who">— 마흔둘, 회사원 김○영</p>
     </div>
     <div class="review reveal">
-      <p class="r-text">"궁합 보러 갔다가 둘 다 혼나고 왔습니다(웃음). 그런데 그 혼나는 말이 다 맞아서, 결혼 준비하는 내내 생각나요."</p>
+      <p class="r-text">"궁합 보다 둘 다 혼났는데(웃음), 그 말이 다 맞아요."</p>
       <p class="r-who">— 서른셋, 이○진</p>
     </div>
     <div class="review reveal">
-      <p class="r-text">"어머니를 모시고 갔는데, 나오시면서 '옛날 어른들한테 듣던 그 말투다' 하시더라고요. 그 말이 제일 큰 후기 아닐까요."</p>
+      <p class="r-text">"어머니의 한 줄 평 — '옛날 어른들 말투다.'"</p>
       <p class="r-who">— 두 번째 방문, 박○호</p>
+    </div>
+  </section>
+
+  <!-- ══ 4. 주인장 ══ -->
+  <section id="host">
+    <div class="section-label reveal">
+      <div class="seal-box">主<br/>人</div>
+      <span class="label-text">풀이하는 사람</span>
+    </div>
+    <h2 class="reveal">간판보다,<br/><span class="accent">사람을 보고 오십시오</span></h2>
+    <!-- 아래 프로필·인용은 자리 표시용입니다. 실제 전문가 정보로 바꿔 주세요. -->
+    <div class="host-card reveal">
+      <div class="host-photo" aria-hidden="true">湖</div>
+      <div class="host-info">
+        <div class="h-name">청호 선생<span class="hanja">靑湖</span></div>
+        <ul>
+          <li>명리 입문 32년 · 자평명리 정통 학맥</li>
+          <li>대면·전화 상담 누적 1만여 회</li>
+        </ul>
+      </div>
+    </div>
+    <div class="host-word reveal">
+      <p class="hw-text">"겁을 드리는 풀이는 하지 않습니다.<br/>그건 제 스승의 법도입니다."</p>
+      <p class="hw-sign">— 청호</p>
     </div>
   </section>
 
@@ -673,36 +489,113 @@
     </svg>
   </div>
 
-  <!-- ══ 8. 주인장 · CTA ══ -->
-  <section id="cta">
+  <!-- ══ 5. 소구점 ══ -->
+  <section id="why">
     <div class="section-label reveal">
-      <div class="seal-box">主<br/>人</div>
-      <span class="label-text">마지막 · 주인장</span>
+      <div class="seal-box">原<br/>理</div>
+      <span class="label-text">왜 사주인가</span>
     </div>
-    <!-- 아래 프로필은 자리 표시용입니다. 실제 전문가 정보로 바꿔 주세요. -->
-    <div class="host-card reveal" style="text-align:left;">
-      <div class="host-photo" aria-hidden="true">湖</div>
-      <div class="host-info">
-        <div class="h-name">청호 선생<span class="hanja">靑湖</span></div>
-        <ul>
-          <li>명리 입문 32년, 자평명리 정통 학맥</li>
-          <li>대면·전화 상담 누적 1만여 회</li>
-          <li>겁주는 풀이는 하지 않습니다</li>
-        </ul>
-      </div>
+    <h2 class="reveal">점이 아니라,<br/><span class="accent">학문입니다</span></h2>
+
+    <div class="why-row reveal">
+      <div class="w-hanja">三千年</div>
+      <div class="w-txt"><b>삼천 년 다듬어진 명리학</b>당·송을 거쳐 완성된 체계 그대로 풀이합니다.</div>
+    </div>
+    <div class="why-row reveal">
+      <div class="w-hanja">觀象監</div>
+      <div class="w-txt"><b>조선 왕실의 공식 학문</b>관청을 두고 과거시험으로 명과학자를 뽑았습니다.</div>
+    </div>
+    <div class="why-row reveal">
+      <div class="w-hanja">五十萬</div>
+      <div class="w-txt"><b>오십만 분의 일, 나의 명식</b>같은 여덟 글자를 가진 사람은 좀처럼 없습니다.</div>
     </div>
 
-    <div style="margin-top:60px;">
-      <h2 class="reveal">궁금한 것이 생기셨다면,<br/>그게 시작입니다</h2>
-      <p class="body reveal" style="margin-top:4px;">차 한 잔 놓고 천천히 이야기 나누시지요.</p>
-      <a class="btn-cta reveal" href="#taste" id="ctaBtn">풀이 문의하기</a>
-      <p class="cta-note reveal">위 맛보기 명식을 미리 세워 오시면 이야기가 빨라집니다.</p>
+    <div class="pillars reveal" role="img" aria-label="사주의 네 기둥: 년주, 월주, 일주, 시주">
+      <div class="pillar"><div class="p-hanja">年<br/>柱</div><div class="p-name">년주</div><div class="p-desc">뿌리</div></div>
+      <div class="pillar"><div class="p-hanja">月<br/>柱</div><div class="p-name">월주</div><div class="p-desc">줄기</div></div>
+      <div class="pillar" style="border-color: var(--seal);"><div class="p-hanja">日<br/>柱</div><div class="p-name" style="font-weight:700;">일주</div><div class="p-desc">나 자신</div></div>
+      <div class="pillar"><div class="p-hanja">時<br/>柱</div><div class="p-name">시주</div><div class="p-desc">열매</div></div>
     </div>
+    <p class="pillars-caption reveal">붉은 기둥 '일주'가 타고난 나의 바탕입니다.</p>
+  </section>
+
+  <!-- ══ 6. 풀이 안내 ══ -->
+  <section id="menu">
+    <div class="section-label reveal">
+      <div class="seal-box">案<br/>內</div>
+      <span class="label-text">풀이 안내</span>
+    </div>
+    <h2 class="reveal">이런 풀이를<br/><span class="accent">해드립니다</span></h2>
+
+    <div class="menu-grid">
+      <div class="menu-card reveal">
+        <div class="m-hanja">平生</div>
+        <div class="m-name">평생사주</div>
+        <div class="m-desc">타고난 그릇과 큰 흐름</div>
+      </div>
+      <div class="menu-card reveal">
+        <div class="m-hanja">新年</div>
+        <div class="m-name">신년운세</div>
+        <div class="m-desc">벌릴 때와 다질 때</div>
+      </div>
+      <div class="menu-card reveal">
+        <div class="m-hanja">宮合</div>
+        <div class="m-name">궁합</div>
+        <div class="m-desc">살리는 기운, 부딪히는 기운</div>
+      </div>
+      <div class="menu-card reveal">
+        <div class="m-hanja">擇日</div>
+        <div class="m-name">택일</div>
+        <div class="m-desc">혼례·개업·이사의 좋은 날</div>
+      </div>
+    </div>
+    <p class="menu-note reveal">* 값과 예약은 아래 단추로 물어봐 주세요.</p>
+  </section>
+
+  <!-- ══ 7. FAQ ══ -->
+  <section id="faq" class="faq">
+    <div class="section-label reveal">
+      <div class="seal-box">問<br/>答</div>
+      <span class="label-text">자주 묻는 것</span>
+    </div>
+    <h2 class="reveal">망설여지는 것,<br/><span class="accent">먼저 답해드립니다</span></h2>
+
+    <details class="reveal">
+      <summary>음력 생일인데요?</summary>
+      <div class="a">그대로 말씀만 주세요. 만세력으로 바꿔 세워드립니다.</div>
+    </details>
+    <details class="reveal">
+      <summary>태어난 시각을 몰라요</summary>
+      <div class="a">여섯 글자로도 풀이는 충분히 됩니다. 출생증명서나 어머님이 기억하시는 경우도 많고요.</div>
+    </details>
+    <details class="reveal">
+      <summary>겁나는 말을 들을까 무서워요</summary>
+      <div class="a">겁을 드리는 풀이는 하지 않습니다. 때를 알려드리고, 방향을 함께 잡아드릴 뿐입니다.</div>
+    </details>
+    <details class="reveal">
+      <summary>상담은 어떻게 진행되나요?</summary>
+      <div class="a">대면·전화 모두 가능합니다. 아래 단추로 문의 주시면 일정을 잡아드립니다.</div>
+    </details>
+  </section>
+
+  <div class="ink-band" aria-hidden="true" style="transform: scaleX(-1);">
+    <svg viewBox="0 0 480 64" preserveAspectRatio="none">
+      <path d="M0 50 Q 55 26 115 42 Q 168 16 228 38 Q 288 12 342 36 Q 402 18 480 46 L480 64 L0 64 Z" fill="#6b6250" opacity=".16"/>
+      <path d="M0 58 Q 90 38 162 52 Q 242 32 322 50 Q 402 36 480 56 L480 64 L0 64 Z" fill="#2b2721" opacity=".12"/>
+    </svg>
+  </div>
+
+  <!-- ══ 8. CTA ══ -->
+  <section id="cta">
+    <h2 class="reveal">먼저 알면,<br/>덜 흔들립니다</h2>
+    <p class="body reveal">차 한 잔 놓고 천천히 이야기하시지요.</p>
+    <a class="btn-cta reveal" href="#taste" id="ctaBtn">풀이 문의하기</a>
+    <p class="cta-note reveal">맛보기 명식을 들고 오시면 이야기가 빨라집니다.</p>
   </section>
 
   <footer>
     <div class="f-brand">여덟글자 · 四柱八字</div>
-    풀이는 전통 명리학에 근거한 조언입니다.<br/>삶의 선택은 언제나 당신의 몫이고, 저는 등불 하나 들어드릴 뿐입니다.
+    풀이는 전통 명리학에 근거한 조언입니다. 선택은 언제나 당신의 몫입니다.
   </footer>
 </main>
 
@@ -715,16 +608,16 @@
 
   // ── 60갑자 일진: 기준일 1949-10-01 = 갑자일(甲子日) ──
   const STEMS = [
-    { han: '甲', ko: '갑', elem: '목', color: 'linear-gradient(160deg,#3d6b4a,#28492f)', epithet: '곧게 뻗은 큰 나무', desc: '굽히기보다 부러지기를 택하는 기상이 있습니다. 시작하는 힘이 남달라, 사람들을 이끄는 자리에 자주 서게 됩니다.' },
-    { han: '乙', ko: '을', elem: '목', color: 'linear-gradient(160deg,#5a8a5f,#3d6b4a)', epithet: '바람에 눕는 들풀', desc: '휘어질지언정 꺾이지 않습니다. 부드러워 보여도, 어느 틈에 담장을 다 덮는 덩굴의 끈기가 있습니다.' },
-    { han: '丙', ko: '병', elem: '화', color: 'linear-gradient(160deg,#a8332e,#7c1f1c)', epithet: '한낮의 태양', desc: '숨기려 해도 숨겨지지 않는 밝음이 있습니다. 곁에 있는 사람을 저도 모르게 데우는, 타고난 화통함입니다.' },
-    { han: '丁', ko: '정', elem: '화', color: 'linear-gradient(160deg,#b95744,#8a3428)', epithet: '어둠 속 등불', desc: '요란하지 않되 쉽게 꺼지지 않는 불입니다. 남이 못 보는 것을 비추는 섬세한 눈이 있습니다.' },
-    { han: '戊', ko: '무', elem: '토', color: 'linear-gradient(160deg,#8c6d2c,#5f4a1e)', epithet: '우뚝 선 큰 산', desc: '풍파에도 자리를 지키는 묵직함이 있습니다. 사람들이 기대어 쉬어 가는 산의 품입니다.' },
-    { han: '己', ko: '기', elem: '토', color: 'linear-gradient(160deg,#a08544,#6e5a2c)', epithet: '기름진 밭', desc: '드러내지 않고 거두는 실속이 있습니다. 품에 든 것을 어떻게든 길러내는 힘이지요.' },
-    { han: '庚', ko: '경', elem: '금', color: 'linear-gradient(160deg,#6e6a5f,#47443c)', epithet: '벼려지기 전의 무쇠', desc: '끊을 때 끊는 결단과 의리가 있습니다. 다듬어질수록 큰일을 가르는 보검이 되는 그릇입니다.' },
-    { han: '辛', ko: '신', elem: '금', color: 'linear-gradient(160deg,#8a847a,#5c584e)', epithet: '세공을 마친 보석', desc: '예리한 감각과 단단한 자존심이 있습니다. 스스로에게 엄격한 만큼 그 빛이 쉬이 바래지 않습니다.' },
-    { han: '壬', ko: '임', elem: '수', color: 'linear-gradient(160deg,#33566e,#22394a)', epithet: '넓고 깊은 바다', desc: '가늠하기 어려운 포부와 자유로운 지혜가 있습니다. 막히면 돌아가되 끝내 바다에 이르는 물입니다.' },
-    { han: '癸', ko: '계', elem: '수', color: 'linear-gradient(160deg,#4a708c,#33566e)', epithet: '만물을 적시는 봄비', desc: '소리 없이 스며드는 총명함이 있습니다. 부드럽게 적시어 어느새 싹을 틔우는 힘이지요.' }
+    { han: '甲', ko: '갑', elem: '목', color: 'linear-gradient(160deg,#3d6b4a,#28492f)', epithet: '곧게 뻗은 큰 나무', desc: '굽히기보다 부러지기를 택하는 기상. 시작하는 힘이 남다릅니다.' },
+    { han: '乙', ko: '을', elem: '목', color: 'linear-gradient(160deg,#5a8a5f,#3d6b4a)', epithet: '바람에 눕는 들풀', desc: '휘어질지언정 꺾이지 않는, 덩굴의 끈기가 있습니다.' },
+    { han: '丙', ko: '병', elem: '화', color: 'linear-gradient(160deg,#a8332e,#7c1f1c)', epithet: '한낮의 태양', desc: '숨겨지지 않는 밝음. 곁의 사람을 데우는 화통함입니다.' },
+    { han: '丁', ko: '정', elem: '화', color: 'linear-gradient(160deg,#b95744,#8a3428)', epithet: '어둠 속 등불', desc: '요란하지 않되 꺼지지 않는 불. 남이 못 보는 것을 비춥니다.' },
+    { han: '戊', ko: '무', elem: '토', color: 'linear-gradient(160deg,#8c6d2c,#5f4a1e)', epithet: '우뚝 선 큰 산', desc: '풍파에도 자리를 지키는 묵직함. 사람들이 기대는 산의 품입니다.' },
+    { han: '己', ko: '기', elem: '토', color: 'linear-gradient(160deg,#a08544,#6e5a2c)', epithet: '기름진 밭', desc: '드러내지 않고 거두는 실속. 품에 든 것을 길러내는 힘입니다.' },
+    { han: '庚', ko: '경', elem: '금', color: 'linear-gradient(160deg,#6e6a5f,#47443c)', epithet: '벼려지기 전의 무쇠', desc: '끊을 때 끊는 결단과 의리. 다듬을수록 보검이 되는 그릇입니다.' },
+    { han: '辛', ko: '신', elem: '금', color: 'linear-gradient(160deg,#8a847a,#5c584e)', epithet: '세공을 마친 보석', desc: '예리한 감각과 단단한 자존심. 그 빛이 쉬이 바래지 않습니다.' },
+    { han: '壬', ko: '임', elem: '수', color: 'linear-gradient(160deg,#33566e,#22394a)', epithet: '넓고 깊은 바다', desc: '가늠하기 어려운 포부. 막히면 돌아가되 끝내 바다에 이릅니다.' },
+    { han: '癸', ko: '계', elem: '수', color: 'linear-gradient(160deg,#4a708c,#33566e)', epithet: '만물을 적시는 봄비', desc: '소리 없이 스며드는 총명함. 어느새 싹을 틔우는 힘입니다.' }
   ];
   const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
   const BRANCHES_KO = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
@@ -768,12 +661,12 @@
       const hourStem = ((dayStem % 5) * 2 + hourBranch) % 10;
       msHour.innerHTML = pillarHTML(hourStem, hourBranch);
       rNote.textContent = hourBranch === 0
-        ? '* 밤 11시 넘어 나셨군요. 자시(子時)는 날짜를 어디에 두느냐로 옛날부터 논쟁이 있어, 상담에서 정밀하게 다시 세워드립니다.'
+        ? '* 자시(子時) 출생은 날짜를 두고 논쟁이 있어, 상담에서 정밀히 다시 세웁니다.'
         : '';
       rNote.style.display = hourBranch === 0 ? 'block' : 'none';
     } else {
       msHour.innerHTML = '<div class="ms-unknown">?<br/>?<small>시각 미상</small></div>';
-      rNote.textContent = '* 태어난 시각은 어머님이나 출생증명서가 알고 있는 경우가 많습니다. 확인되면 시주까지 마저 세워드립니다.';
+      rNote.textContent = '* 시각은 출생증명서가 기억하는 경우가 많습니다. 확인되면 마저 세워드립니다.';
       rNote.style.display = 'block';
     }
 
