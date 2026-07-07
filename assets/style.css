@@ -1,0 +1,318 @@
+/* ═══════════════════════════════════════════════════════
+   여덟글자 — 정선 진경산수화풍 디자인
+   토큰: 한지(paper) 바탕 + 먹(ink) + 인주(seal) + 오행색
+   타이포: 본문 Pretendard(자간 -2~-4%), 감성 파트 고운바탕(명조),
+          한자 Song Myung. 강조는 ExtraBold(800).
+   ═══════════════════════════════════════════════════════ */
+:root {
+  --paper: #e7dfcc;          /* 한지 */
+  --paper-deep: #ddd3bc;
+  --ink: #2b2721;            /* 먹 */
+  --ink-soft: #4a443a;
+  --ink-faint: #625a4b;
+  --seal: #a8332e;           /* 인주 */
+  --mist: #f2ecdd;
+  --wood: #3d6b4a; --fire: #a8332e; --earth: #8c6d2c; --metal: #4e4a41; --water: #33566e;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, 'Noto Sans KR', sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.7;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+/* 한지 섬유 질감 */
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.25 0 0 0 0 0.22 0 0 0 0 0.17 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+body::after {
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(75,66,50,.14) 100%);
+}
+main { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; }
+section { padding: 60px 26px; position: relative; }
+
+.hanja { font-family: 'Song Myung', serif; letter-spacing: 0; }
+.mj { font-family: 'Gowun Batang', 'Nanum Myeongjo', serif; letter-spacing: -0.02em; }
+
+/* 오행 색 */
+.e-wood { color: var(--wood); }
+.e-fire { color: var(--fire); }
+.e-earth { color: var(--earth); }
+.e-metal { color: var(--metal); }
+.e-water { color: var(--water); }
+
+/* 키보드 포커스 */
+:focus-visible { outline: 2px solid var(--seal); outline-offset: 2px; border-radius: 2px; }
+
+.section-label { display: flex; align-items: center; gap: 12px; margin-bottom: 26px; }
+.section-label .seal-box {
+  width: 42px; height: 42px; flex: none;
+  background: var(--seal); color: #f3ead8;
+  display: grid; place-items: center;
+  font-family: 'Song Myung', serif; font-size: 14px; line-height: 1; letter-spacing: 2px; text-indent: 2px;
+  border-radius: 3px 6px 4px 5px; /* 손도장의 삐뚠 모서리 */
+  box-shadow: 1px 2px 6px rgba(43,39,33,.25);
+  transform: rotate(-3deg);
+}
+.section-label .label-text { font-size: 13px; font-weight: 500; letter-spacing: .16em; color: var(--ink-faint); }
+h2 { font-size: 25px; font-weight: 800; line-height: 1.45; margin-bottom: 12px; letter-spacing: -0.035em; word-break: keep-all; }
+h2 .accent { color: var(--seal); }
+p.body { font-size: 15px; color: var(--ink-soft); word-break: keep-all; }
+p.body strong, strong, b { color: var(--ink); font-weight: 800; }
+
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }
+.reveal.on { opacity: 1; transform: none; }
+
+/* 섹션 사이 먹산 안개 띠 */
+.ink-band { max-width: 480px; margin: 0 auto; padding: 0 0 8px; }
+.ink-band svg { display: block; width: 100%; height: auto; }
+
+/* ══ 1. 후킹: 히어로 ══ */
+#hero {
+  min-height: 100svh; display: flex; flex-direction: column;
+  justify-content: flex-start; align-items: center; text-align: center;
+  padding: 90px 26px 0; overflow: hidden;
+}
+.hero-brand {
+  font-size: 12px; letter-spacing: .4em; text-indent: .4em; color: var(--ink-faint);
+  margin-bottom: 28px; opacity: 0; animation: fadeUp 1.1s .2s ease forwards;
+}
+.hero-title {
+  font-size: 56px; font-weight: 800; line-height: 1.24; letter-spacing: -0.035em;
+  opacity: 0; animation: inkIn 1.5s .5s ease forwards;
+}
+.hero-title .hanja-sub { display: block; font-family: 'Song Myung', serif; font-weight: 400; font-size: 16px; letter-spacing: .7em; text-indent: .7em; color: var(--ink-faint); margin-top: 10px; }
+.hero-sub {
+  margin-top: 22px; font-size: 16px; color: var(--ink-soft); word-break: keep-all; line-height: 1.75;
+  opacity: 0; animation: fadeUp 1.1s 1.1s ease forwards;
+}
+.hero-sub b { font-weight: 800; color: var(--ink); }
+.btn-hero {
+  display: inline-block; margin-top: 30px; padding: 16px 44px;
+  background: var(--seal); color: #f6efdf; text-decoration: none;
+  font-size: 16.5px; font-weight: 700; letter-spacing: .1em; text-indent: .1em;
+  border-radius: 3px 7px 4px 8px; box-shadow: 2px 4px 14px rgba(168,51,46,.4);
+  opacity: 0; animation: fadeUp 1s 1.7s ease forwards;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn-hero:active { transform: scale(.97); }
+.hero-free { margin-top: 12px; font-size: 12.5px; color: var(--ink-faint); opacity: 0; animation: fadeUp 1s 2s ease forwards; }
+.hero-seal {
+  margin-top: 22px; width: 54px; height: 54px;
+  background: var(--seal); color: #f3ead8;
+  display: grid; place-items: center; text-align: center;
+  font-family: 'Song Myung', serif; font-size: 14px; line-height: 1.25;
+  border-radius: 4px 8px 5px 7px;
+  box-shadow: 1px 2px 8px rgba(43,39,33,.3);
+  transform: rotate(4deg) scale(0); animation: stamp .5s 2.3s cubic-bezier(.2,2.2,.4,1) forwards;
+}
+.hero-mountain { margin-top: auto; width: 100vw; max-width: 480px; }
+.hero-mountain svg { display: block; width: 100%; height: auto; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes inkIn { from { opacity: 0; filter: blur(7px); } to { opacity: 1; filter: blur(0); } }
+@keyframes stamp { to { transform: rotate(-3deg) scale(1); } }
+
+/* ══ 2. 무료 맛보기 ══ */
+#taste { background: linear-gradient(rgba(168,51,46,.045), transparent 45%); padding-top: 56px; }
+.taste-card {
+  border: 1.5px solid rgba(43,39,33,.4); background: var(--mist);
+  padding: 28px 22px; margin-top: 24px; border-radius: 3px 6px 4px 7px;
+  box-shadow: 2px 4px 14px rgba(43,39,33,.08); transform: rotate(-.3deg);
+}
+.taste-card .field { margin-bottom: 16px; }
+.taste-card label { display: block; font-size: 13px; letter-spacing: -0.01em; font-weight: 600; color: var(--ink-soft); margin-bottom: 8px; }
+.taste-card label .opt { color: var(--ink-faint); font-weight: 400; font-size: 12px; }
+.taste-card input[type="date"], .taste-card select {
+  width: 100%; background: #fbf7ec; border: 1.5px solid rgba(43,39,33,.3);
+  color: var(--ink); font-family: inherit; font-size: 16.5px; padding: 13px 12px;
+  border-radius: 2px; outline: none; appearance: none; -webkit-appearance: none;
+}
+.taste-card select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1 L6 6 L11 1' stroke='%234a443a' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+}
+.taste-card input:focus, .taste-card select:focus { border-color: var(--seal); }
+.field-note { margin-top: 6px; font-family: 'Gowun Batang', serif; font-size: 12.5px; letter-spacing: -0.02em; color: var(--ink-faint); word-break: keep-all; }
+.btn-reveal {
+  width: 100%; margin-top: 4px; padding: 15px;
+  background: var(--ink); color: var(--paper); border: none; cursor: pointer;
+  font-family: inherit; font-size: 16px; font-weight: 700; letter-spacing: .1em; text-indent: .1em;
+  border-radius: 2px 5px 3px 6px; box-shadow: 2px 3px 10px rgba(43,39,33,.3);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn-reveal:active { transform: scale(.97); }
+
+/* 결과: 명식표 → 도장 → 풀이 순서로 등장 */
+#result { display: none; margin-top: 26px; }
+#result.show { display: block; }
+.myeongsik-title { text-align: center; font-size: 13px; letter-spacing: .24em; color: var(--ink-faint); margin-bottom: 12px; }
+#result.show .myeongsik-title { opacity: 0; animation: fadeUp .5s ease forwards; }
+.myeongsik { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+#result.show .ms-col { opacity: 0; animation: fadeUp .5s ease forwards; }
+#result.show .ms-col:nth-child(1) { animation-delay: .08s; }
+#result.show .ms-col:nth-child(2) { animation-delay: .18s; }
+#result.show .ms-col:nth-child(3) { animation-delay: .28s; }
+#result.show .ms-col:nth-child(4) { animation-delay: .38s; }
+.ms-col { text-align: center; }
+.ms-head { font-size: 11.5px; color: var(--ink-faint); margin-bottom: 6px; }
+.ms-cell {
+  background: #fbf7ec; border: 1.5px solid rgba(43,39,33,.35);
+  border-radius: 2px 4px 3px 5px; padding: 12px 2px;
+  font-family: 'Song Myung', serif; font-size: 26px; line-height: 1.45;
+  position: relative; min-height: 96px; display: grid; place-items: center;
+}
+.ms-cell small { display: block; font-family: 'Pretendard Variable', Pretendard, sans-serif; font-size: 10.5px; color: var(--ink-faint); margin-top: 3px; letter-spacing: -0.02em; }
+.ms-sealed { background: repeating-linear-gradient(-45deg, #efe8d7, #efe8d7 5px, #e9e1cd 5px, #e9e1cd 10px); }
+.ms-sealed .seal-cover {
+  width: 40px; height: 40px; background: var(--seal); color: #f3ead8;
+  display: grid; place-items: center; font-family: 'Song Myung', serif; font-size: 20px;
+  border-radius: 3px 6px 4px 7px; transform: rotate(-6deg);
+  box-shadow: 1px 2px 6px rgba(43,39,33,.3);
+}
+.ms-sealed small { color: var(--seal); }
+.ms-unknown { color: rgba(43,39,33,.35); }
+.result-read { margin-top: 24px; text-align: center; }
+.result-day-char {
+  width: 88px; height: 88px; margin: 4px auto 14px;
+  display: grid; place-items: center; color: #f6efdf;
+  font-family: 'Song Myung', serif; font-size: 36px;
+  border-radius: 5px 9px 6px 10px;
+  box-shadow: 2px 3px 10px rgba(43,39,33,.3);
+  transform: scale(0);
+}
+#result.show .result-day-char { animation: stamp .5s .65s cubic-bezier(.2,2.2,.4,1) forwards; }
+#result.show .result-read p { opacity: 0; animation: fadeUp .6s 1s ease forwards; }
+.result-name { font-size: 14px; color: var(--ink-faint); margin-bottom: 5px; }
+.result-epithet { font-size: 19px; font-weight: 800; margin-bottom: 8px; }
+.result-desc { font-size: 14.5px; color: var(--ink-soft); word-break: keep-all; }
+.result-note { margin-top: 12px; font-family: 'Gowun Batang', serif; font-size: 12.5px; letter-spacing: -0.02em; color: var(--ink-faint); word-break: keep-all; }
+.result-tease {
+  margin-top: 22px; padding: 16px; text-align: center;
+  background: rgba(168,51,46,.06); border: 1px dashed rgba(168,51,46,.45); border-radius: 3px;
+  font-size: 14px; color: var(--ink-soft); word-break: keep-all;
+}
+#result.show .result-tease { opacity: 0; animation: fadeUp .6s 1.3s ease forwards; }
+.result-tease b { color: var(--seal); }
+
+/* ══ 3. 리뷰 ══ */
+.review { margin-top: 20px; position: relative; padding: 20px 20px 16px; background: var(--mist); border: 1px solid rgba(43,39,33,.16); box-shadow: 2px 3px 10px rgba(43,39,33,.07); }
+.review:nth-child(odd) { transform: rotate(-.6deg); }
+.review:nth-child(even) { transform: rotate(.5deg); }
+.review .r-text { font-family: 'Gowun Batang', serif; font-size: 15px; line-height: 1.8; letter-spacing: -0.02em; color: var(--ink-soft); word-break: keep-all; }
+.review .r-who { margin-top: 8px; font-size: 12px; color: var(--ink-faint); text-align: right; }
+.review::before { /* 종이를 붙여둔 테이프 */
+  content: ''; position: absolute; top: -7px; left: 24px; width: 48px; height: 13px;
+  background: rgba(168,51,46,.28); transform: rotate(-2deg);
+}
+
+/* ══ 4. 주인장 ══ */
+.host-card { margin-top: 24px; display: flex; gap: 18px; align-items: flex-start; }
+.host-photo {
+  flex: none; width: 88px; height: 108px; background: var(--ink); color: var(--paper);
+  display: grid; place-items: center; font-family: 'Song Myung', serif; font-size: 30px;
+  border-radius: 3px 6px 4px 7px; transform: rotate(-2deg);
+  box-shadow: 2px 3px 10px rgba(43,39,33,.3);
+}
+.host-info .h-name { font-size: 18px; font-weight: 800; }
+.host-info .h-name .hanja { font-weight: 400; font-size: 14px; color: var(--ink-faint); margin-left: 6px; }
+.host-info ul { list-style: none; margin-top: 8px; }
+.host-info li { font-size: 13.5px; color: var(--ink-soft); padding-left: 14px; position: relative; word-break: keep-all; }
+.host-info li + li { margin-top: 3px; }
+.host-info li::before { content: '·'; position: absolute; left: 2px; color: var(--seal); }
+.host-word {
+  margin-top: 24px; padding: 20px 18px; text-align: center; position: relative;
+  background: var(--mist); border: 1px solid rgba(43,39,33,.14); transform: rotate(-.4deg);
+  box-shadow: 2px 3px 10px rgba(43,39,33,.07);
+}
+.host-word .hw-text { font-family: 'Gowun Batang', serif; font-size: 15.5px; line-height: 1.85; letter-spacing: -0.02em; color: var(--ink); word-break: keep-all; }
+.host-word .hw-sign { margin-top: 8px; font-size: 12px; color: var(--ink-faint); }
+
+/* ══ 5. 소구점 ══ */
+.why-row {
+  display: flex; gap: 16px; align-items: center; margin-top: 18px;
+  padding: 16px 18px; background: rgba(242,236,221,.6); border-left: 2.5px solid var(--seal);
+}
+.why-row .w-hanja { flex: none; width: 64px; font-family: 'Song Myung', serif; font-size: 21px; color: var(--seal); line-height: 1.3; }
+.why-row .w-txt { font-size: 14px; color: var(--ink-soft); word-break: keep-all; line-height: 1.6; }
+.why-row .w-txt b { display: block; font-size: 15px; margin-bottom: 2px; }
+
+.pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; margin: 34px 0 10px; }
+.pillar {
+  border: 1.5px solid rgba(43,39,33,.35); background: rgba(242,236,221,.6);
+  padding: 14px 5px 11px; text-align: center; border-radius: 2px 4px 3px 5px;
+}
+.pillar:nth-child(1) { transform: rotate(-.6deg); }
+.pillar:nth-child(2) { transform: rotate(.4deg); }
+.pillar:nth-child(3) { transform: rotate(-.3deg); }
+.pillar:nth-child(4) { transform: rotate(.7deg); }
+.pillar .p-hanja { font-family: 'Song Myung', serif; font-size: 22px; line-height: 1.3; color: var(--ink); }
+.pillar .p-name { margin-top: 8px; font-size: 12px; color: var(--seal); }
+.pillar .p-desc { font-size: 11px; color: var(--ink-faint); margin-top: 2px; }
+.pillars-caption { text-align: center; font-size: 12.5px; color: var(--ink-faint); word-break: keep-all; }
+
+/* ══ 6. 풀이 안내 ══ */
+.menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+.menu-card {
+  background: var(--mist); border: 1.5px solid rgba(43,39,33,.3);
+  padding: 18px 16px 16px; border-radius: 3px 6px 4px 7px;
+  box-shadow: 1px 3px 10px rgba(43,39,33,.07);
+}
+.menu-card:nth-child(odd) { transform: rotate(-.5deg); }
+.menu-card:nth-child(even) { transform: rotate(.5deg); }
+.menu-card .m-hanja { font-family: 'Song Myung', serif; font-size: 21px; color: var(--seal); }
+.menu-card .m-name { font-size: 16px; font-weight: 800; margin-top: 5px; }
+.menu-card .m-desc { font-size: 12.5px; color: var(--ink-soft); margin-top: 4px; word-break: keep-all; line-height: 1.55; }
+.menu-note { margin-top: 16px; text-align: center; font-family: 'Gowun Batang', serif; font-size: 13px; color: var(--ink-faint); transform: rotate(-.8deg); letter-spacing: -0.02em; }
+
+/* ══ 7. FAQ ══ */
+.faq details {
+  margin-top: 12px; background: var(--mist); border: 1px solid rgba(43,39,33,.2);
+  border-radius: 2px 5px 3px 5px; overflow: hidden;
+}
+.faq summary {
+  list-style: none; cursor: pointer; padding: 15px 18px;
+  font-size: 15px; font-weight: 700; color: var(--ink);
+  display: flex; align-items: center; gap: 10px;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::before { content: '問'; font-family: 'Song Myung', serif; font-weight: 400; color: var(--seal); font-size: 14px; }
+.faq details[open] summary { border-bottom: 1px dashed rgba(43,39,33,.2); }
+.faq .a { padding: 13px 18px 16px; font-family: 'Gowun Batang', serif; font-size: 14px; line-height: 1.85; letter-spacing: -0.02em; color: var(--ink-soft); word-break: keep-all; }
+
+/* ══ 8. CTA ══ */
+#cta { text-align: center; padding-bottom: 36px; }
+#cta h2 { font-size: 24px; }
+.btn-cta {
+  display: inline-block; margin-top: 20px; padding: 17px 50px;
+  background: var(--seal); color: #f6efdf; text-decoration: none;
+  font-family: inherit; font-size: 17px; font-weight: 700; letter-spacing: .1em; text-indent: .1em;
+  border-radius: 3px 7px 4px 8px; box-shadow: 2px 4px 14px rgba(168,51,46,.4);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn-cta:active { transform: scale(.97); }
+#cta .cta-note { margin-top: 14px; font-size: 12.5px; color: var(--ink-faint); word-break: keep-all; }
+
+footer {
+  padding: 28px 26px calc(28px + env(safe-area-inset-bottom));
+  text-align: center; font-size: 11.5px; color: var(--ink-faint); word-break: keep-all;
+}
+footer .f-brand { font-family: 'Song Myung', serif; font-size: 13px; letter-spacing: .3em; margin-bottom: 6px; color: var(--ink-soft); }
+
+/* 데스크톱 호버 */
+@media (hover: hover) {
+  .btn-hero:hover, .btn-cta:hover { transform: translateY(-2px); box-shadow: 3px 7px 20px rgba(168,51,46,.5); }
+  .btn-reveal:hover { transform: translateY(-2px); box-shadow: 3px 5px 14px rgba(43,39,33,.4); }
+  .faq summary:hover { color: var(--seal); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01s !important; animation-delay: 0s !important; transition-duration: .01s !important; }
+}
