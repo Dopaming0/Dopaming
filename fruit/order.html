@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#f2f4f6" />
+<meta name="description" content="쿠팡 발주서를 도매처별 발주서로 변환해드려요. 파일은 브라우저 안에서만 처리됩니다." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%233182f6'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle'%3E📦%3C/text%3E%3C/svg%3E" />
+<title>발주서 변환 — 과일사장님</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<link rel="stylesheet" href="assets/style.css" />
+<script src="assets/vendor/xlsx.full.min.js" defer></script>
+<script src="assets/order.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <a class="back" href="index.html" aria-label="홈으로">‹</a>
+    <span class="bar-title">발주서 변환</span>
+  </div>
+
+  <header class="page-head">
+    <h1>쿠팡 발주서,<br/>도매처별로 나눠드릴게요</h1>
+    <p class="sub">쿠팡윙에서 받은 발주서(엑셀)를 올려주세요.<br/>파일은 브라우저 안에서만 처리돼요. 🔒</p>
+  </header>
+
+  <!-- ══ STEP 1. 파일 올리기 ══ -->
+  <section class="card" id="step1">
+    <span class="step-tag">1단계</span>
+    <h2>발주서 올리기</h2>
+    <p class="card-sub">쿠팡윙 → 주문/배송 관리 → 주문 목록 다운로드 파일이에요.</p>
+
+    <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="엑셀 파일 올리기">
+      <div class="dz-icon">📄</div>
+      <div class="dz-main">여기를 눌러 파일을 선택하거나<br/>끌어다 놓으세요</div>
+      <div class="dz-sub">.xlsx · .xls · .csv</div>
+    </div>
+    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" class="hidden" />
+
+    <div class="file-done hidden" id="fileDone">
+      <span class="fd-icon">✅</span>
+      <span class="fd-name" id="fileName"></span>
+      <button class="text-btn" id="resetBtn">다시 올리기</button>
+    </div>
+
+    <div style="text-align:center; margin-top:12px">
+      <button class="text-btn" id="sampleBtn">파일이 없어요, 샘플로 체험하기</button>
+    </div>
+
+    <div class="notice error hidden" id="parseError" style="margin-top:14px"></div>
+
+    <div id="summaryArea" class="hidden" style="margin-top:16px">
+      <div class="chips" id="chips"></div>
+      <details class="mapping" id="mappingBox">
+        <summary>열을 잘못 읽었다면 여기서 고쳐주세요</summary>
+        <div class="map-grid" id="mapGrid"></div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ══ STEP 2. 도매처 지정 ══ -->
+  <section class="card hidden" id="step2">
+    <span class="step-tag">2단계</span>
+    <h2>옵션마다 도매처 적기</h2>
+    <p class="card-sub">한 번 적으면 다음부터 자동으로 채워드려요.<br/>도매처가 하나뿐이면 건너뛰어도 돼요.</p>
+    <div class="option-list" id="optionList"></div>
+  </section>
+
+  <!-- ══ STEP 3. 다운로드 ══ -->
+  <section class="card hidden" id="step3">
+    <span class="step-tag">3단계</span>
+    <h2>발주서 받기</h2>
+    <p class="card-sub">도매처에 그대로 보내면 되는 엑셀 파일이에요.</p>
+    <div class="notice warn hidden" id="unassignedNotice"></div>
+    <div class="dl-list" id="dlList"></div>
+    <button class="btn btn-primary hidden" id="dlAllBtn" style="margin-top:14px">📥 한 파일로 모아 받기 · 도매처별 시트</button>
+  </section>
+
+  <footer class="foot">
+    받는 분 이름 · 전화번호 · 주소 · 상품 · 수량 · 배송메세지를<br/>
+    표준 발주 양식으로 정리해드려요
+  </footer>
+
+</div>
+</body>
+</html>
