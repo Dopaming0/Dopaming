@@ -1,0 +1,369 @@
+<title>K-뷰티 출시 인텔리전스 · 2026.07</title>
+<style>
+:root{
+  --surface:#FAF7F4; --card:#FFFFFF; --ink:#2B2430; --muted:#6E6373;
+  --hairline:#E6DEE0; --accent:#A63D57; --accent-soft:#F3E3E8;
+  --s1:#A63D57; --s2:#2F6DA4; --s3:#9C6A1D;
+  --good:#2E6E4E; --warn:#8A5A12;
+  --grid:#EDE6E3; --tip-bg:#2B2430; --tip-ink:#FAF7F4;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --surface:#201B24; --card:#2A2430; --ink:#EFE8EC; --muted:#A79DAD;
+    --hairline:#3A3340; --accent:#C25873; --accent-soft:#3B2A31;
+    --s1:#C25873; --s2:#3F86C7; --s3:#B07A21;
+    --good:#5FA97F; --warn:#C89A4B;
+    --grid:#332C3A; --tip-bg:#EFE8EC; --tip-ink:#201B24;
+  }
+}
+:root[data-theme="dark"]{
+  --surface:#201B24; --card:#2A2430; --ink:#EFE8EC; --muted:#A79DAD;
+  --hairline:#3A3340; --accent:#C25873; --accent-soft:#3B2A31;
+  --s1:#C25873; --s2:#3F86C7; --s3:#B07A21;
+  --good:#5FA97F; --warn:#C89A4B;
+  --grid:#332C3A; --tip-bg:#EFE8EC; --tip-ink:#201B24;
+}
+:root[data-theme="light"]{
+  --surface:#FAF7F4; --card:#FFFFFF; --ink:#2B2430; --muted:#6E6373;
+  --hairline:#E6DEE0; --accent:#A63D57; --accent-soft:#F3E3E8;
+  --s1:#A63D57; --s2:#2F6DA4; --s3:#9C6A1D;
+  --good:#2E6E4E; --warn:#8A5A12;
+  --grid:#EDE6E3; --tip-bg:#2B2430; --tip-ink:#FAF7F4;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface);color:var(--ink);
+  font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",sans-serif;
+  line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1060px;margin:0 auto;padding:40px 24px 72px}
+header{border-bottom:1px solid var(--hairline);padding-bottom:20px;margin-bottom:28px}
+.eyebrow{font-size:12px;letter-spacing:.14em;color:var(--accent);font-weight:700;margin-bottom:6px}
+h1{font-size:clamp(24px,3.4vw,32px);margin:0 0 8px;font-weight:800;text-wrap:balance}
+.prov{font-size:13px;color:var(--muted)}
+.prov b{color:var(--ink);font-weight:600}
+.verdicts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:24px 0 40px}
+.verdict{background:var(--card);border:1px solid var(--hairline);border-radius:10px;padding:16px 18px}
+.verdict .tag{font-size:11px;letter-spacing:.12em;font-weight:700;color:var(--muted);margin-bottom:8px}
+.verdict .head{font-size:17px;font-weight:800;margin-bottom:6px}
+.verdict .sub{font-size:13px;color:var(--muted)}
+.verdict.k1{border-top:3px solid var(--s1)}
+.verdict.k2{border-top:3px solid var(--s3)}
+.verdict.k3{border-top:3px solid var(--s2)}
+.verdict.k4{border-top:3px solid var(--good)}
+section{margin-bottom:44px}
+.sec-label{font-size:12px;letter-spacing:.14em;color:var(--muted);font-weight:700;margin-bottom:4px}
+h2{font-size:20px;margin:0 0 4px;font-weight:800;text-wrap:balance}
+.sec-desc{font-size:14px;color:var(--muted);margin:0 0 16px;max-width:64ch}
+.card{background:var(--card);border:1px solid var(--hairline);border-radius:12px;padding:20px}
+.chart-wrap{position:relative}
+.chart-wrap svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px;font-size:13px}
+.legend .chip{display:inline-flex;align-items:center;gap:6px;color:var(--muted)}
+.legend .sw{width:10px;height:10px;border-radius:3px}
+.tooltip{position:absolute;pointer-events:none;background:var(--tip-bg);color:var(--tip-ink);
+  border-radius:8px;padding:8px 11px;font-size:12px;line-height:1.5;opacity:0;transform:translate(-50%,-100%);
+  white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.18);z-index:5;font-variant-numeric:tabular-nums}
+.tooltip b{font-weight:700}
+.callout{display:flex;gap:12px;background:var(--accent-soft);border-radius:10px;padding:14px 16px;margin-top:14px;font-size:14px}
+.callout .lab{flex:none;font-weight:800;color:var(--accent);font-size:13px;letter-spacing:.06em}
+.callout p{margin:0}
+details{margin-top:12px;font-size:13px;color:var(--muted)}
+details summary{cursor:pointer;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+th{font-size:12px;letter-spacing:.06em;color:var(--muted);font-weight:700;text-align:left;
+  border-bottom:1px solid var(--hairline);padding:8px 10px}
+td{padding:8px 10px;border-bottom:1px solid var(--hairline)}
+td.num,th.num{text-align:right}
+.table-scroll{overflow-x:auto}
+tr.hot td{background:var(--accent-soft)}
+.pill{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px}
+.pill.up{background:var(--accent-soft);color:var(--accent)}
+.pill.core{background:color-mix(in srgb,var(--good) 14%,transparent);color:var(--good)}
+.news{list-style:none;margin:0;padding:0}
+.news li{padding:12px 0;border-bottom:1px solid var(--hairline)}
+.news li:last-child{border-bottom:none}
+.news a{color:var(--ink);text-decoration:none;font-weight:600}
+.news a:hover,.news a:focus-visible{color:var(--accent);outline:none;text-decoration:underline}
+.news .meta{font-size:12px;color:var(--muted);margin-top:2px}
+.caveats{font-size:13px;color:var(--muted);border-top:1px solid var(--hairline);padding-top:18px}
+.caveats li{margin-bottom:6px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.two-col{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:no-preference){.tooltip{transition:opacity .12s ease}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">K-BEAUTY LAUNCH INTELLIGENCE</div>
+  <h1>신규 화장품 출시 판단 데이터 — 2026년 7월</h1>
+  <div class="prov">출처: <b>네이버 데이터랩 쇼핑인사이트 · 네이버 쇼핑 · 네이버 뉴스</b> (PlayMCP 실데이터) · 조회 <b>2026-07-18 (KST)</b> · 지수는 각 조회 기간 내 최대값=100인 상대 클릭 지수</div>
+</header>
+
+<div class="verdicts">
+  <div class="verdict k1">
+    <div class="tag">1순위 기회</div>
+    <div class="head">무기자차 선스틱</div>
+    <div class="sub">상승 클레임 × 성장 제형의 교차점. 실판매 단가 볼륨존 1.0~1.3만원/개</div>
+  </div>
+  <div class="verdict k2">
+    <div class="tag">성분 선택</div>
+    <div class="head">레티놀 ○ · PDRN △</div>
+    <div class="sub">레티놀은 연중 안정 수요, PDRN은 '25.11 정점 후 하락 — 하이프 후반</div>
+  </div>
+  <div class="verdict k3">
+    <div class="tag">출시 타이밍</div>
+    <div class="head">2~3월 입점</div>
+    <div class="sub">선케어 수요는 2→3월 한 달새 +44% 급증. 재고·마케팅은 그 전에</div>
+  </div>
+  <div class="verdict k4">
+    <div class="tag">시장 순풍</div>
+    <div class="head">K-선케어 수출 확대</div>
+    <div class="sub">미국 중심 수요 급증 보도 다수 — 내수+수출 겸용 카테고리</div>
+  </div>
+</div>
+
+<section>
+  <div class="sec-label">① 선케어 — 제형별 수요</div>
+  <h2>선크림은 계절재, 선스틱은 구조적으로 자리 잡은 2위 제형</h2>
+  <p class="sec-desc">최근 24개월 클릭 지수. 세 제형 모두 여름 피크의 강한 계절성을 보이며, 카테고리 내 비중으로 보면 선스틱은 봄 성수기 기준 선크림 대비 15~16% → 17~20%로 완만히 상승했다.</p>
+  <div class="card">
+    <div class="legend" id="lg-sun"></div>
+    <div class="chart-wrap" id="ch-sun"></div>
+    <details><summary>표로 보기</summary><div class="table-scroll" id="tb-sun"></div></details>
+  </div>
+  <div class="callout"><span class="lab">출시 판단</span>
+    <p>선스틱은 성수기(4~6월) 선크림 대비 비중이 '25년 17.1% → '26년 18.6%로 상승. 신규 브랜드가 대형 브랜드와 정면승부(선크림)를 피해 진입하기 좋은 제형이다. 선쿠션은 비중 정체 — 후순위.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-label">② 선케어 — 클레임 키워드</div>
+  <h2>‘무기자차’가 카테고리 침체 속에서도 관심 최고치</h2>
+  <p class="sec-desc">선크림 카테고리 내 검색 키워드 지수(12개월). 카테고리 전체 클릭이 전년 대비 절반 수준으로 줄어든 기간에 무기자차 지수는 '26.6월 최고치(100)를 기록 — 상대 관심도가 뚜렷하게 상승 중이다. 톤업은 3~4월 봄 피크형. ‘쿨링’은 검색량 자체가 미미해 클레임으로는 시기상조.</p>
+  <div class="card">
+    <div class="legend" id="lg-claim"></div>
+    <div class="chart-wrap" id="ch-claim"></div>
+    <details><summary>표로 보기</summary><div class="table-scroll" id="tb-claim"></div></details>
+  </div>
+  <div class="callout"><span class="lab">출시 판단</span>
+    <p>핵심 클레임은 <b>무기자차(논나노 징크옥사이드)</b> 고정, 봄 시즌 한정으로 톤업 배리에이션 추가가 데이터에 부합. ①의 제형 판단과 합치면 “무기자차 선스틱”이 상승 클레임과 성장 제형의 교차점이다.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-label">③ 스킨케어 — 성분 키워드</div>
+  <h2>PDRN은 정점을 지났고, 레티놀이 검증된 스테디셀러</h2>
+  <p class="sec-desc">에센스 카테고리 내 성분 키워드 지수(12개월). PDRN은 '25.11월 스파이크(72) 후 '26년 들어 12~20선까지 하락 — 하이프 사이클 후반부다. 레티놀은 50~100 구간에서 연중 유지. 글루타치온은 이 카테고리에서 검색량이 사실상 0이었다.</p>
+  <div class="card">
+    <div class="legend" id="lg-ing"></div>
+    <div class="chart-wrap" id="ch-ing"></div>
+    <details><summary>표로 보기</summary><div class="table-scroll" id="tb-ing"></div></details>
+  </div>
+  <div class="callout"><span class="lab">출시 판단</span>
+    <p>지금 개발을 시작해 출시가 6개월+ 뒤라면 PDRN 단독 소구는 위험하다. 레티놀 등 검증 성분을 축으로 삼고, 차기 성분은 <b>화해 성분 랭킹(관심 선행 신호)</b>에서 발굴해 이 지수로 확산 여부를 확인하는 2단계 검증을 권장.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-label">④ 색조 — 립 제형</div>
+  <h2>네이버에서 립은 전반 하락 — 립케어만 겨울 수요가 견고</h2>
+  <p class="sec-desc">최근 24개월 클릭 지수. 립스틱·립틴트는 추세 하락, 립케어는 매년 10~1월 뚜렷한 겨울 피크('24.12=100)를 반복한다. 단, ⑤의 연령 데이터가 보여주듯 네이버는 1020 색조 수요를 담지 못하는 채널이므로 “립틴트 하락”을 시장 전체로 일반화하면 안 된다.</p>
+  <div class="card">
+    <div class="legend" id="lg-lip"></div>
+    <div class="chart-wrap" id="ch-lip"></div>
+    <details><summary>표로 보기</summary><div class="table-scroll" id="tb-lip"></div></details>
+  </div>
+  <div class="callout"><span class="lab">출시 판단</span>
+    <p>색조 신제품의 수요 검증은 지그재그·무신사뷰티 랭킹으로 해야 한다(플랫폼 라우팅 설계 근거). 네이버 데이터에서 유효한 색조 신호는 하나 — <b>립케어의 겨울 계절성</b>. 가을(9~10월) 출시의 립밤·립마스크형 하이브리드가 데이터에 부합한다.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-label">⑤ 타깃 — 연령 분포</div>
+  <h2>네이버 쇼핑 구매층은 30~50대 — 1020 검증은 다른 채널에서</h2>
+  <p class="sec-desc">최근 12개월 클릭 지수의 연령 구성비. 1020 제품으로 알려진 립틴트조차 네이버에서는 30~40대가 64%를 차지하고 10대는 3%에 불과하다. 선스틱은 40~50대가 64%.</p>
+  <div class="card">
+    <div class="legend" id="lg-age"></div>
+    <div class="chart-wrap" id="ch-age"></div>
+    <details><summary>표로 보기</summary><div class="table-scroll" id="tb-age"></div></details>
+  </div>
+  <div class="callout"><span class="lab">출시 판단</span>
+    <p>이 대시보드의 수요 신호는 <b>3050 대중 시장</b> 기준이다. 무기자차 선스틱을 3050 타깃(피부 안전성·데일리 재도포 소구)으로 잡으면 네이버 데이터만으로 검증되지만, 1020 타깃이라면 지그재그·무신사뷰티 랭킹 교차 확인이 선행돼야 한다.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-label">⑥ 경쟁 — 실판매 제품·가격</div>
+  <h2>무기자차 선스틱 볼륨존: 개당 1.0~1.3만원</h2>
+  <p class="sec-desc">네이버 쇼핑 실검색 결과(2026-07-18, 관련도순). 묶음 상품은 개당 환산가로 비교. ODM은 한국콜마·코스맥스 집중 — 제조 파트너 확보는 용이한 시장이다.</p>
+  <div class="two-col">
+    <div class="card">
+      <h2 style="font-size:15px;margin-bottom:10px">무기자차 선스틱 (검색결과 3,797건)</h2>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>브랜드</th><th>제조</th><th class="num">판매가</th><th class="num">개당가</th></tr></thead>
+        <tbody>
+          <tr><td>바세린</td><td>유니레버</td><td class="num">8,000</td><td class="num">8,000</td></tr>
+          <tr><td>듀이트리 (2개입)</td><td>한국콜마</td><td class="num">16,200</td><td class="num">8,100</td></tr>
+          <tr><td>닥터벨머 (4개입)</td><td>LG생활건강</td><td class="num">36,450</td><td class="num">9,113</td></tr>
+          <tr class="hot"><td>도엘</td><td>코스맥스</td><td class="num">10,180</td><td class="num">10,180</td></tr>
+          <tr class="hot"><td>닥터지 (2개입)</td><td>한국콜마</td><td class="num">24,450</td><td class="num">12,225</td></tr>
+          <tr class="hot"><td>일리윤</td><td>코스비전</td><td class="num">12,390</td><td class="num">12,390</td></tr>
+          <tr class="hot"><td>조선미녀</td><td>—</td><td class="num">12,450</td><td class="num">12,450</td></tr>
+          <tr><td>벤튼</td><td>벤튼</td><td class="num">14,850</td><td class="num">14,850</td></tr>
+          <tr><td>익스트림모션</td><td>한국콜마</td><td class="num">27,000</td><td class="num">27,000</td></tr>
+          <tr><td>바이더퀄리티</td><td>코스맥스</td><td class="num">41,000</td><td class="num">41,000</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--muted);margin:10px 0 0"><span class="pill core">볼륨존</span> 개당 1.0~1.3만원 · 상단은 프리미엄 니치(2.7~4.1만)</p>
+    </div>
+    <div class="card">
+      <h2 style="font-size:15px;margin-bottom:10px">톤업 선크림 (검색결과 68,063건)</h2>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>브랜드</th><th>제조</th><th class="num">판매가</th><th class="num">개당가</th></tr></thead>
+        <tbody>
+          <tr><td>센텔리안24 (2개입)</td><td>동국제약</td><td class="num">20,900</td><td class="num">10,450</td></tr>
+          <tr><td>달바 (2개입)</td><td>한국콜마</td><td class="num">28,010</td><td class="num">14,005</td></tr>
+          <tr><td>비오진</td><td>—</td><td class="num">15,900</td><td class="num">15,900</td></tr>
+          <tr><td>헤라 (피치)</td><td>아모레퍼시픽</td><td class="num">22,620</td><td class="num">22,620</td></tr>
+          <tr><td>헤라</td><td>아모레퍼시픽</td><td class="num">24,940</td><td class="num">24,940</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--muted);margin:10px 0 0">경쟁 밀도가 선스틱의 <b>18배</b>(6.8만 vs 3.8천 건) — 선크림 직접 진입은 비추천 근거</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-label">⑦ 시장 뉴스</div>
+  <h2>K-선케어, 내수를 넘어 수출 모멘텀</h2>
+  <div class="card">
+    <ul class="news">
+      <li><a href="https://www.theguru.co.kr/news/article.html?no=104511" target="_blank" rel="noopener">코스맥스 밀고 한국콜마 끌었다 — K-뷰티, 2년간 매출 131% 폭발</a><div class="meta">더구루 · 2026-07-16 · 글로벌 스킨케어·선케어 ODM 생산 확대</div></li>
+      <li><a href="https://n.news.naver.com/mnews/article/215/0001258853?sid=101" target="_blank" rel="noopener">FDA도 '인정' — 미국, '메이드 인 코리아' 선크림에 열광</a><div class="meta">한국경제TV · 2026-07-15 · 미국 내 K-선케어 수요 급증</div></li>
+      <li><a href="http://www.apparelnews.co.kr/news/news_view/?idx=226396" target="_blank" rel="noopener">패션사 뷰티 브랜드 판도 바꾼 LF '아떼' — 선케어·립케어 히어로 제품 전략</a><div class="meta">어패럴뉴스 · 2026-07-15 · 선케어+립케어 히어로 제품으로 재구매 확보</div></li>
+      <li><a href="https://www.econovill.com/news/articleView.html?idxno=744422" target="_blank" rel="noopener">CJ올리브영, 美 뷰티시장 공략 — 2주 단위 트렌드 큐레이션</a><div class="meta">이코노믹리뷰 · 2026-07-15 · 토너패드·선케어가 K뷰티 대표 상품군</div></li>
+      <li><a href="https://n.news.naver.com/mnews/article/417/0001151653?sid=103" target="_blank" rel="noopener">브랜드 하나로는 안 된다 — 구다이글로벌의 K뷰티 성장 공식</a><div class="meta">시대일보 · 2026-07-14 · 라운드랩·티르티르 등 선케어 세부 카테고리 상위권</div></li>
+    </ul>
+  </div>
+</section>
+
+<div class="caveats">
+  <b>방법론·주의사항</b>
+  <ul>
+    <li>데이터랩 지수는 각 조회의 기간·그룹 내 <b>최대값=100 상대 클릭 지수</b>다. 절대 판매량이 아니며, 서로 다른 조회 간 수치 비교는 불가.</li>
+    <li>조회 기간 중 네이버 쇼핑 전 카테고리 지수가 하락 추세(플랫폼 트래픽 요인 추정) — 절대 YoY 대신 <b>카테고리 내 비중·키워드 상대 관심도</b>로 해석했다.</li>
+    <li>네이버 쇼핑 구매층은 30~50대 편중. 1020 트렌드(특히 색조)는 지그재그·무신사뷰티·올리브영 랭킹으로 교차 검증 필요 — 에이전트 파이프라인의 플랫폼 라우팅(sources.py)이 이 역할.</li>
+    <li>가격은 2026-07-18 네이버 쇼핑 최저가 기준, 묶음 상품은 개당 환산.</li>
+  </ul>
+</div>
+</div>
+
+<script>
+const M24=['24.7','24.8','24.9','24.10','24.11','24.12','25.1','25.2','25.3','25.4','25.5','25.6','25.7','25.8','25.9','25.10','25.11','25.12','26.1','26.2','26.3','26.4','26.5','26.6'];
+const M12=M24.slice(12);
+const DATA={
+ sun:{labels:M24,unit:'지수',series:[
+  {name:'선크림',v:[100,92.3,62.5,58,49.6,46.2,48.4,54.5,75.6,98.2,89.4,76.1,71.4,41.1,27.5,22.7,22.5,21.2,24.2,23.7,34,41.7,41.9,38.5]},
+  {name:'선스틱',v:[28.4,17.7,7.7,5.6,4.5,3.3,3.3,4.5,9.6,15.1,14.4,15,18.2,6.9,3.2,2.1,1.7,1.4,1.9,2,4.4,7.3,8.3,7.1]},
+  {name:'선파우더/쿠션',v:[12.1,10.2,5.6,4.5,3.3,2.9,3.3,3.7,8.1,9.6,9.3,8.9,10.5,4.5,2.4,1.5,1.3,1.2,1.4,1.6,2.8,3.7,4.4,3.6]}]},
+ claim:{labels:M12,unit:'지수',series:[
+  {name:'무기자차',v:[91,51.9,47,35,26.2,49.5,60.4,57.7,59.6,56.3,64.8,100]},
+  {name:'톤업',v:[31.1,20.5,16.1,26.8,15,16.4,10.4,13.4,41.3,41.5,28.7,15.3]}]},
+ ing:{labels:M12,unit:'지수',series:[
+  {name:'레티놀',v:[88.6,100,75.7,78.4,70.7,63.7,59.4,50.8,58.5,60.5,77.5,55.2]},
+  {name:'PDRN',v:[29.1,24,22.8,31.8,72,41.1,30.2,14.6,19.1,19.5,11.6,14.8]}]},
+ lip:{labels:M24,unit:'지수',series:[
+  {name:'립스틱',v:[77.6,78.1,76.7,77.3,71.3,74.1,72.3,69.3,64,56.5,54.2,47,48.3,43.6,41.6,43.8,41.3,41.6,46.8,34.6,36.3,31.9,29,24.3]},
+  {name:'립틴트',v:[86.7,88.9,77,76.4,68.8,64.1,65.9,63.9,60,55.2,52.7,44.9,47.1,36.3,31.4,29.9,26.3,25,25.9,20.6,21.3,19.3,18.8,17.7]},
+  {name:'립케어',v:[47.5,49.6,67,74,79.4,100,88.3,85.8,65.4,59.5,55.9,38.9,37,29.6,30.6,38,46.5,49.1,46.2,30.9,26.9,22.2,19,15.2]}]},
+ age:{labels:['10대','20대','30대','40대','50대','60대+'],unit:'%',series:[
+  {name:'선스틱',v:[0.7,5.6,18.3,35.7,28,11.8]},
+  {name:'립틴트',v:[3.1,15,30.1,34.2,14.8,2.9]}]}
+};
+const SC=['var(--s1)','var(--s2)','var(--s3)'];
+const NS='http://www.w3.org/2000/svg';
+function el(t,a){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e;}
+
+function legend(id,cfg){const g=document.getElementById(id);cfg.series.forEach((s,i)=>{
+  const c=document.createElement('span');c.className='chip';
+  c.innerHTML='<span class="sw" style="background:'+SC[i]+'"></span>'+s.name;g.appendChild(c);});}
+
+function dataTable(id,cfg){const t=['<table><thead><tr><th></th>'];
+  cfg.labels.forEach(l=>t.push('<th class="num">'+l+'</th>'));t.push('</tr></thead><tbody>');
+  cfg.series.forEach(s=>{t.push('<tr><td>'+s.name+'</td>');s.v.forEach(v=>t.push('<td class="num">'+v+'</td>'));t.push('</tr>');});
+  t.push('</tbody></table>');document.getElementById(id).innerHTML=t.join('');}
+
+function lineChart(id,cfg){
+  const host=document.getElementById(id),W=920,H=270,P={t:14,r:96,b:26,l:34};
+  const iw=W-P.l-P.r,ih=H-P.t-P.b,n=cfg.labels.length;
+  const ymax=Math.ceil(Math.max(...cfg.series.flatMap(s=>s.v))/25)*25;
+  const X=i=>P.l+iw*i/(n-1),Y=v=>P.t+ih*(1-v/ymax);
+  const svg=el('svg',{viewBox:'0 0 '+W+' '+H,role:'img','aria-label':cfg.series.map(s=>s.name).join(', ')+' 추이'});
+  for(let g=0;g<=ymax;g+=25){
+    svg.appendChild(el('line',{x1:P.l,x2:W-P.r,y1:Y(g),y2:Y(g),stroke:'var(--grid)','stroke-width':1}));
+    const t=el('text',{x:P.l-8,y:Y(g)+4,'text-anchor':'end','font-size':11,fill:'var(--muted)'});t.textContent=g;svg.appendChild(t);}
+  const step=Math.ceil(n/12);
+  cfg.labels.forEach((l,i)=>{if(i%step)return;
+    const t=el('text',{x:X(i),y:H-8,'text-anchor':'middle','font-size':11,fill:'var(--muted)'});t.textContent=l;svg.appendChild(t);});
+  const li=n-1;
+  const lys=cfg.series.map(s=>Y(s.v[li]));
+  const order=lys.map((y,i)=>[y,i]).sort((a,b)=>a[0]-b[0]);
+  for(let k=1;k<order.length;k++)if(order[k][0]-order[k-1][0]<15)order[k][0]=order[k-1][0]+15;
+  const ly={};order.forEach(([y,i])=>ly[i]=y);
+  cfg.series.forEach((s,si)=>{
+    const d=s.v.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)).join(' ');
+    svg.appendChild(el('path',{d:d,fill:'none',stroke:SC[si],'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'}));
+    svg.appendChild(el('circle',{cx:X(li),cy:Y(s.v[li]),r:3.5,fill:SC[si],stroke:'var(--card)','stroke-width':2}));
+    const t=el('text',{x:X(li)+9,y:ly[si]+4,'font-size':12,'font-weight':700,fill:SC[si]});t.textContent=s.name;svg.appendChild(t);});
+  const cross=el('line',{y1:P.t,y2:H-P.b,stroke:'var(--muted)','stroke-width':1,'stroke-dasharray':'3 3',opacity:0});
+  svg.appendChild(cross);
+  const dots=cfg.series.map((s,si)=>{const c=el('circle',{r:4,fill:SC[si],stroke:'var(--card)','stroke-width':2,opacity:0});svg.appendChild(c);return c;});
+  const tip=document.createElement('div');tip.className='tooltip';host.appendChild(tip);host.appendChild(svg);
+  const hit=el('rect',{x:P.l,y:P.t,width:iw,height:ih,fill:'transparent'});svg.appendChild(hit);
+  function move(ev){
+    const r=svg.getBoundingClientRect(),sx=W/r.width;
+    const i=Math.max(0,Math.min(n-1,Math.round(((ev.clientX-r.left)*sx-P.l)/(iw/(n-1)))));
+    cross.setAttribute('x1',X(i));cross.setAttribute('x2',X(i));cross.setAttribute('opacity',1);
+    cfg.series.forEach((s,si)=>{dots[si].setAttribute('cx',X(i));dots[si].setAttribute('cy',Y(s.v[si!==undefined?i:i]));dots[si].setAttribute('opacity',1);});
+    tip.innerHTML='<b>'+cfg.labels[i]+'</b><br>'+cfg.series.map((s,si)=>'<span style="color:'+(getComputedStyle(document.documentElement).getPropertyValue(['--s1','--s2','--s3'][si])||'')+'">●</span> '+s.name+' '+s.v[i]+(cfg.unit==='%'?'%':'')).join('<br>');
+    tip.style.left=(X(i)/sx)+'px';tip.style.top=(Y(Math.max(...cfg.series.map(s=>s.v[i])))/sx-10)+'px';tip.style.opacity=1;}
+  function out(){cross.setAttribute('opacity',0);dots.forEach(d=>d.setAttribute('opacity',0));tip.style.opacity=0;}
+  hit.addEventListener('mousemove',move);hit.addEventListener('mouseleave',out);
+}
+
+function barChart(id,cfg){
+  const host=document.getElementById(id),W=920,H=270,P={t:16,r:20,b:30,l:38};
+  const iw=W-P.l-P.r,ih=H-P.t-P.b,n=cfg.labels.length,ns=cfg.series.length;
+  const ymax=Math.ceil(Math.max(...cfg.series.flatMap(s=>s.v))/10)*10;
+  const Y=v=>P.t+ih*(1-v/ymax);
+  const svg=el('svg',{viewBox:'0 0 '+W+' '+H,role:'img','aria-label':'연령대별 구성비'});
+  for(let g=0;g<=ymax;g+=10){
+    svg.appendChild(el('line',{x1:P.l,x2:W-P.r,y1:Y(g),y2:Y(g),stroke:'var(--grid)','stroke-width':1}));
+    const t=el('text',{x:P.l-8,y:Y(g)+4,'text-anchor':'end','font-size':11,fill:'var(--muted)'});t.textContent=g+'%';svg.appendChild(t);}
+  const group=iw/n,bw=Math.min(34,(group-24)/ns);
+  const tip=document.createElement('div');tip.className='tooltip';host.appendChild(tip);
+  cfg.labels.forEach((l,i)=>{
+    const cx=P.l+group*i+group/2;
+    const t=el('text',{x:cx,y:H-8,'text-anchor':'middle','font-size':12,fill:'var(--muted)'});t.textContent=l;svg.appendChild(t);
+    cfg.series.forEach((s,si)=>{
+      const x=cx-(bw*ns+2*(ns-1))/2+si*(bw+2),v=s.v[i],y=Y(v),h=H-P.b-y,r=Math.min(4,h);
+      const d='M'+x+' '+(y+r)+' q0 -'+r+' '+r+' -'+r+' h'+(bw-2*r)+' q'+r+' 0 '+r+' '+r+' v'+(h-r)+' h-'+bw+' z';
+      const p=el('path',{d:d,fill:SC[si]});svg.appendChild(p);
+      p.addEventListener('mousemove',ev=>{const rc=svg.getBoundingClientRect(),sx=W/rc.width;
+        tip.innerHTML='<b>'+l+'</b><br>'+s.name+' '+v+'%';
+        tip.style.left=((x+bw/2)/sx)+'px';tip.style.top=(y/sx-8)+'px';tip.style.opacity=1;});
+      p.addEventListener('mouseleave',()=>tip.style.opacity=0);
+      if(v>=14){const vt=el('text',{x:x+bw/2,y:y-6,'text-anchor':'middle','font-size':11,'font-weight':700,fill:'var(--ink)'});vt.textContent=v+'%';svg.appendChild(vt);}
+    });});
+  host.appendChild(svg);
+}
+
+legend('lg-sun',DATA.sun);lineChart('ch-sun',DATA.sun);dataTable('tb-sun',DATA.sun);
+legend('lg-claim',DATA.claim);lineChart('ch-claim',DATA.claim);dataTable('tb-claim',DATA.claim);
+legend('lg-ing',DATA.ing);lineChart('ch-ing',DATA.ing);dataTable('tb-ing',DATA.ing);
+legend('lg-lip',DATA.lip);lineChart('ch-lip',DATA.lip);dataTable('tb-lip',DATA.lip);
+legend('lg-age',DATA.age);barChart('ch-age',DATA.age);dataTable('tb-age',DATA.age);
+</script>
