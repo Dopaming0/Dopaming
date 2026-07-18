@@ -125,6 +125,16 @@ header{
 .answer-box.locked .lock{font-size:1.3rem}
 .answer-box.locked .txt{font-size:.83rem;color:var(--ink-soft)}
 .streak{display:flex;align-items:center;gap:8px;background:#FFF3E2;color:#B0731B;border-radius:12px;padding:9px 13px;font-size:.82rem;font-weight:700;margin-top:4px}
+.stage-tag{font-size:.7rem;font-weight:800;color:#B0731B;background:#FFF3E2;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.react-row{display:flex;gap:6px;margin-top:10px}
+.react-btn{width:38px;height:38px;border-radius:12px;background:#fff;border:1.5px solid var(--line);font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.react-btn.sel{background:var(--primary-soft);border-color:var(--peach);transform:scale(1.12)}
+.react-chip{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:.72rem;font-weight:700;color:var(--ink-soft);margin-top:8px}
+.reply-row{display:flex;gap:8px;margin-top:10px}
+.reply-row input{flex:1;min-width:0}
+.reply-row .btn{width:auto;flex:0 0 auto;padding:0 16px}
+.reply-quote{margin-top:8px;background:#fff;border-left:3px solid var(--peach);border-radius:0 10px 10px 0;padding:8px 11px;font-size:.85rem;line-height:1.5;white-space:pre-wrap}
+.reply-quote b{font-size:.7rem;display:block;margin-bottom:2px}
 
 /* ---------- 문답 아카이브 ---------- */
 .qa-item{border-bottom:1px solid var(--line);padding:14px 2px}
@@ -497,7 +507,30 @@ const QUESTIONS = [
   "우리가 오래오래 가기 위한 너만의 다짐 하나를 들려줘.",
   "나의 하루 중 네가 제일 궁금한 시간대는 언제야?",
   "다시 태어나도 나를 만날 거야? 솔직하게!",
+  // --- 추가: 시작 질문 · 깊은 질문 ---
+  "내 첫인상 중에, 지금도 여전히 좋은 점은 뭐야?",
+  "네가 나에게조차 잘 보여주지 않으려는 모습이 있다면, 어떤 모습이야?",
+  "예전에 사랑받지 못한다고 느꼈던 기억이 있어? 내가 어떻게 다르게 해주면 좋을까?",
+  "우리가 언젠가 위기를 맞는다면 어떤 이유일 것 같아? 미리 막으려면 뭘 하면 될까?",
+  "먼 훗날 너에게 나는 어떤 사람으로 기억되고 싶어?",
+  "지금의 우리에게 가장 필요한 용기는 뭘까?",
 ];
+
+/* 질문 커리큘럼: 아론의 '36가지 질문' 원리처럼 오래 쓸수록 단계가 깊어진다.
+   1단계(가벼운 취향·일상)에서 시작해 5단계(취약한 이야기)까지 순차 진행.
+   한 바퀴를 다 돌면 아이스브레이킹(1단계)은 건너뛰고 2단계부터 다시 순환. */
+const range = (a,b)=>Array.from({length:b-a+1},(_,i)=>a+i);
+const STAGES = [
+  {name:"가볍게 열기",   idx:[100, ...range(40,49), ...range(75,84)]},
+  {name:"서로 발견하기", idx:[...range(0,9), ...range(10,19)]},
+  {name:"마음 꺼내기",   idx:[...range(20,29), ...range(50,59)]},
+  {name:"우리 그리기",   idx:[...range(30,39), ...range(85,99)]},
+  {name:"깊이 만나기",   idx:[...range(60,74), ...range(101,105)]},
+];
+const FLAT = [];
+STAGES.forEach((s,si)=>s.idx.forEach(qi=>FLAT.push({q:QUESTIONS[qi], stage:si})));
+const DEEP_FROM = STAGES[0].idx.length;
+const REACTIONS = ["❤️","🥹","😂","😮","👍","😘"];
 
 /* 주간 미션: 매주 하나씩, 함께 완료 체크 */
 const MISSIONS = [
@@ -572,7 +605,12 @@ function load(){
   try{
     const raw = localStorage.getItem(KEY);
     if(!raw) return defaultState();
-    return Object.assign(defaultState(), JSON.parse(raw));
+    const st = Object.assign(defaultState(), JSON.parse(raw));
+    // 커리큘럼 도입 이전 데이터: 기록 시작일을 첫 문답 날짜로 보정
+    if(st.couple && !st.couple.joined){
+      st.couple.joined = Object.keys(st.answers).sort()[0] || dateKey(new Date());
+    }
+    return st;
   }catch(e){ return defaultState(); }
 }
 function save(){ localStorage.setItem(KEY, JSON.stringify(S)); }
@@ -610,11 +648,13 @@ function weekKey(){
 }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 
-/* 오늘의 질문 인덱스: 사귄 날 기준으로 순차 진행 → 오래 써도 안 겹침 */
-function questionIndexFor(key){
-  const base = S.couple && S.couple.start ? S.couple.start : "2026-01-01";
+/* 오늘의 질문: 함께 기록을 시작한 날 기준으로 커리큘럼을 순차 진행.
+   답변 시점의 질문 번호(qi)를 기록에 저장해 아카이브가 어긋나지 않게 한다. */
+function qIndexFor(key){
+  const base = S.couple ? (S.couple.joined || S.couple.start) : "2026-01-01";
   const n = Math.max(0, diffDays(base, key));
-  return n % QUESTIONS.length;
+  if(n < FLAT.length) return n;
+  return DEEP_FROM + ((n - FLAT.length) % (FLAT.length - DEEP_FROM));
 }
 function missionIndex(){
   const wk = weekKey();
@@ -701,7 +741,7 @@ $("#ob-start").addEventListener("click",()=>{
   const start = $("#ob-date").value;
   if(!n1 || !n2){ toast("두 사람의 이름을 알려주세요"); return; }
   if(!start){ toast("처음 만난 날을 골라주세요"); return; }
-  S.couple = { n1, n2, start, title: $("#ob-title").value.trim() || "우리사이" };
+  S.couple = { n1, n2, start, joined: todayKey(), title: $("#ob-title").value.trim() || "우리사이" };
   save();
   $("#onboarding").style.display = "none";
   toast("우리의 기록, 시작해요 🌱");
@@ -777,8 +817,12 @@ function renderMood(){
 /* ---------- 오늘의 질문 (홈 요약) ---------- */
 function questionStateFor(key){
   const rec = S.answers[key] || {};
+  const fi = rec.qi !== undefined ? rec.qi : qIndexFor(key);
+  const item = FLAT[fi] || FLAT[0];
   return {
-    q: QUESTIONS[questionIndexFor(key)],
+    q: item.q,
+    stage: item.stage,
+    rec,
     mine: rec[S.current],
     theirs: rec[other(S.current)],
     both: !!(rec.p1 && rec.p2),
@@ -786,10 +830,12 @@ function questionStateFor(key){
 }
 function renderHomeQuestion(){
   const st = questionStateFor(todayKey());
-  let body = `<div class="q-text" style="font-size:1.02rem">${esc(st.q)}</div>`;
+  let body = `<div style="margin-bottom:6px"><span class="stage-tag">${st.stage+1}단계 · ${esc(STAGES[st.stage].name)}</span></div>
+    <div class="q-text" style="font-size:1.02rem">${esc(st.q)}</div>`;
   if(st.both){
+    const responded = (st.rec.react && st.rec.react[S.current]) || (st.rec.reply && st.rec.reply[S.current]);
     body += `<div class="mission-done">✅ 오늘의 문답 완성! 서로의 마음을 확인해보세요</div>
-      <div style="height:10px"></div><button class="btn sm ghost" data-go="qa">답 보러 가기</button>`;
+      <div style="height:10px"></div><button class="btn sm ghost" data-go="qa">${responded?"답 보러 가기":"💬 반응 남기러 가기"}</button>`;
   }else if(st.mine){
     body += `<div class="answer-box locked"><span class="lock">⏳</span>
       <div><b style="font-size:.85rem">${esc(nameOf(other(S.current)))}의 답을 기다리는 중</b>
@@ -892,45 +938,75 @@ $("#thank-save").addEventListener("click",()=>{
 function renderQaToday(){
   const k = todayKey();
   const st = questionStateFor(k);
-  const idx = questionIndexFor(k);
+  const me = S.current, yo = other(me);
+  const react = st.rec.react || {};
+  const reply = st.rec.reply || {};
   let html = `
-    <div class="q-label"><span class="badge">오늘의 질문</span><span class="num">${fmtShort(k)}</span></div>
+    <div class="q-label"><span class="badge">오늘의 질문</span><span class="stage-tag">${st.stage+1}단계 · ${esc(STAGES[st.stage].name)}</span><span class="num">${fmtShort(k)}</span></div>
     <div class="q-text">${esc(st.q)}</div>`;
   if(st.mine){
     html += `<div class="answer-box">
-      <div class="from" style="color:${colorOf(S.current)}">● ${esc(nameOf(S.current))} (나)</div>
-      <div class="txt">${esc(st.mine)}</div></div>`;
+      <div class="from" style="color:${colorOf(me)}">● ${esc(nameOf(me))} (나)</div>
+      <div class="txt">${esc(st.mine)}</div>
+      ${react[yo]?`<span class="react-chip">${react[yo]} ${esc(nameOf(yo))}의 반응</span>`:""}
+      ${reply[yo]?`<div class="reply-quote"><b style="color:${colorOf(yo)}">${esc(nameOf(yo))}의 답글</b>${esc(reply[yo])}</div>`:""}
+      </div>`;
   }else{
     html += `<textarea id="qa-input" placeholder="솔직하게, 편하게. 상대는 답하기 전엔 볼 수 없어요."></textarea>
       <div style="height:10px"></div><button class="btn" id="qa-submit">답변 남기기</button>`;
   }
   if(st.both){
-    const theirs = st.theirs;
     html += `<div class="answer-box">
-      <div class="from" style="color:${colorOf(other(S.current))}">● ${esc(nameOf(other(S.current)))}</div>
-      <div class="txt">${esc(theirs)}</div></div>`;
+      <div class="from" style="color:${colorOf(yo)}">● ${esc(nameOf(yo))}</div>
+      <div class="txt">${esc(st.theirs)}</div>
+      <div class="react-row">${REACTIONS.map(e=>`<button class="react-btn ${react[me]===e?"sel":""}" data-react="${e}">${e}</button>`).join("")}</div>
+      ${reply[me]
+        ?`<div class="reply-quote"><b style="color:${colorOf(me)}">내 답글</b>${esc(reply[me])}</div>`
+        :`<div class="reply-row"><input id="reply-input" maxlength="120" placeholder="한 줄 답글로 대화를 이어가요" /><button class="btn sm" id="reply-send">보내기</button></div>`}
+      </div>`;
   }else if(st.theirs){
     html += `<div class="answer-box locked"><span class="lock">🔒</span>
-      <div><b style="font-size:.85rem">${esc(nameOf(other(S.current)))}는 이미 답했어요</b>
+      <div><b style="font-size:.85rem">${esc(nameOf(yo))}는 이미 답했어요</b>
       <div class="txt">내 답을 남기면 바로 공개돼요</div></div></div>`;
   }else if(st.mine){
     html += `<div class="answer-box locked"><span class="lock">⏳</span>
-      <div><b style="font-size:.85rem">${esc(nameOf(other(S.current)))}의 답을 기다리는 중</b>
+      <div><b style="font-size:.85rem">${esc(nameOf(yo))}의 답을 기다리는 중</b>
       <div class="txt">기기를 넘겨서 답하게 해도 좋아요</div></div></div>`;
   }
   const sk = streak();
   if(sk>0) html += `<div class="streak">🔥 ${sk}일 연속으로 마음을 나누고 있어요</div>`;
   $("#qa-today-card").innerHTML = html;
+
   const btn = $("#qa-submit");
   if(btn) btn.addEventListener("click",()=>{
     const v = $("#qa-input").value.trim();
     if(!v){ toast("답을 적어주세요"); return; }
     const k2 = todayKey();
     if(!S.answers[k2]) S.answers[k2] = {};
-    S.answers[k2][S.current] = v;
-    save(); renderAll();
     const r = S.answers[k2];
+    if(r.qi === undefined) r.qi = qIndexFor(k2);
+    r[S.current] = v;
+    save(); renderAll();
     toast(r.p1&&r.p2 ? "🎉 둘 다 답했어요! 마음이 공개됐어요" : "저장 완료! 상대의 답을 기다려요");
+  });
+  document.querySelectorAll("#qa-today-card [data-react]").forEach(b=>b.addEventListener("click",()=>{
+    const r = S.answers[todayKey()];
+    if(!r || !(r.p1&&r.p2)) return;
+    if(!r.react) r.react = {};
+    if(r.react[S.current] === b.dataset.react) delete r.react[S.current];
+    else r.react[S.current] = b.dataset.react;
+    save(); renderAll();
+  }));
+  const sendBtn = $("#reply-send");
+  if(sendBtn) sendBtn.addEventListener("click",()=>{
+    const v = $("#reply-input").value.trim();
+    if(!v){ toast("답글을 적어주세요"); return; }
+    const r = S.answers[todayKey()];
+    if(!r) return;
+    if(!r.reply) r.reply = {};
+    r.reply[S.current] = v;
+    save(); renderAll();
+    toast("💬 답글을 남겼어요");
   });
 }
 
@@ -942,19 +1018,27 @@ function renderQaArchive(){
   }
   $("#qa-archive").innerHTML = keys.map(k=>{
     const rec = S.answers[k];
-    const q = QUESTIONS[questionIndexFor(k)];
+    const fi = rec.qi !== undefined ? rec.qi : qIndexFor(k);
+    const item = FLAT[fi] || FLAT[0];
     const both = rec.p1 && rec.p2;
     let answers = "";
     if(both){
-      answers = ["p1","p2"].map(p=>
-        `<div class="a"><span class="who-dot" style="background:${colorOf(p)}"></span>
-        <p><b style="font-size:.78rem;color:${colorOf(p)}">${esc(nameOf(p))}</b><br>${esc(rec[p])}</p></div>`).join("");
+      answers = ["p1","p2"].map(p=>{
+        const rc = rec.react && rec.react[other(p)]; // 상대가 이 답에 남긴 반응
+        return `<div class="a"><span class="who-dot" style="background:${colorOf(p)}"></span>
+        <p><b style="font-size:.78rem;color:${colorOf(p)}">${esc(nameOf(p))}</b>${rc?" "+rc:""}<br>${esc(rec[p])}</p></div>`;
+      }).join("");
+      answers += ["p1","p2"].map(p=>
+        rec.reply && rec.reply[p]
+          ? `<div class="reply-quote"><b style="color:${colorOf(p)}">${esc(nameOf(p))}의 답글</b>${esc(rec.reply[p])}</div>`
+          : ""
+      ).join("");
     }else{
       const who = rec.p1 ? "p1" : "p2";
       answers = `<div class="a"><span class="who-dot" style="background:#D8C2BB"></span>
         <p style="color:var(--ink-soft);font-size:.82rem">${esc(nameOf(who))}만 답했어요 — 둘 다 답해야 공개돼요</p></div>`;
     }
-    return `<div class="qa-item"><div class="date">${fmtShort(k)}</div><div class="q">${esc(q)}</div>${answers}</div>`;
+    return `<div class="qa-item"><div class="date">${fmtShort(k)} · ${item.stage+1}단계</div><div class="q">${esc(item.q)}</div>${answers}</div>`;
   }).join("");
 }
 
