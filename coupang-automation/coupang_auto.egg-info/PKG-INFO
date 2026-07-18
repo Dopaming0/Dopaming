@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: coupang-auto
+Version: 0.1.0
+Summary: 쿠팡 과일 위탁판매 자동화 (주문수집·발주·승인 파이프라인)
+Requires-Python: >=3.11
+Requires-Dist: requests>=2.31
+Requires-Dist: openpyxl>=3.1
+Requires-Dist: PyYAML>=6.0
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0; extra == "dev"

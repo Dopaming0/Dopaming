@@ -1,0 +1,2 @@
+[console_scripts]
+coupang-auto = coupang_auto.cli:main

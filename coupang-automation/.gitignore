@@ -1,0 +1,7 @@
+config.yaml
+data/
+*.db
+*.sqlite3
+__pycache__/
+*.pyc
+.pytest_cache/
