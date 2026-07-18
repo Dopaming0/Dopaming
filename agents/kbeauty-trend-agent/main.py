@@ -44,7 +44,7 @@ def main() -> int:
         with open(CLASSIFIED_CACHE, "w", encoding="utf-8") as f:
             json.dump(classified, f, ensure_ascii=False)
 
-    aggregated = aggregate(classified)
+    aggregated = aggregate(classified, signals)
 
     # Stage 2 — Opus 4.8 렌즈별 병렬 분석
     analyses = run_analyses(client, aggregated, signals)
