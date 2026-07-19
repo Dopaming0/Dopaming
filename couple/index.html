@@ -83,7 +83,7 @@ header{
 
 /* ---------- 홈 히어로 ---------- */
 .hero{
-  background:linear-gradient(135deg,#FF8E7E 0%,var(--primary) 55%,#E5568C 100%);
+  background:linear-gradient(135deg,var(--peach) 0%,var(--primary) 55%,var(--primary-deep) 100%);
   border-radius:24px;color:#fff;padding:22px 20px;margin:6px 0 14px;
   box-shadow:0 12px 28px rgba(229,72,77,.25);position:relative;overflow:hidden;
 }
@@ -135,6 +135,41 @@ header{
 .reply-row .btn{width:auto;flex:0 0 auto;padding:0 16px}
 .reply-quote{margin-top:8px;background:#fff;border-left:3px solid var(--peach);border-radius:0 10px 10px 0;padding:8px 11px;font-size:.85rem;line-height:1.5;white-space:pre-wrap}
 .reply-quote b{font-size:.7rem;display:block;margin-bottom:2px}
+
+/* ---------- 마일스톤 보상 ---------- */
+.ms-track{display:flex;justify-content:space-between;margin-bottom:12px}
+.ms{text-align:center;flex:1}
+.ms-ico{width:36px;height:36px;margin:0 auto;border-radius:50%;background:#FFF9F6;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.95rem}
+.ms.done .ms-ico{background:var(--primary);border-color:var(--primary);color:#fff}
+.ms.can .ms-ico{background:#FFF3E2;border-color:var(--gold);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.ms-d{font-size:.64rem;font-weight:700;color:var(--ink-soft);margin-top:3px}
+.ms-bar{height:8px;background:#F6E9E4;border-radius:99px;overflow:hidden;margin:4px 0 8px}
+.ms-bar>div{height:100%;background:linear-gradient(90deg,var(--peach),var(--primary));border-radius:99px;transition:width .5s}
+.ms-note{font-size:.8rem;color:var(--ink-soft);word-break:keep-all}
+.perk-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.perk-row .btn{width:auto;flex:1 1 calc(33% - 8px);min-width:96px}
+.theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.theme-opt{border-radius:14px;padding:12px 0;text-align:center;border:2px solid var(--line);font-size:.78rem;font-weight:700;background:#fff}
+.theme-opt .sw{width:26px;height:26px;border-radius:50%;margin:0 auto 6px}
+.theme-opt.sel{border-color:var(--ink)}
+.capsule-status{display:flex;gap:8px;margin:10px 0}
+.capsule-status .cs{flex:1;background:#FFF9F6;border-radius:12px;padding:10px;text-align:center;font-size:.8rem;font-weight:700}
+
+/* ---------- 인쇄 ---------- */
+#print-area{display:none}
+@media print{
+  #app,nav,#toast,#modal-root,#onboarding,#handoff{display:none!important}
+  #print-area{display:block!important;padding:20px;color:#222}
+  body{background:#fff}
+}
+.print-title{font-size:22px;font-weight:800;margin-bottom:4px}
+.print-sub{font-size:12px;color:#777;margin-bottom:16px}
+.print-h{font-size:16px;font-weight:800;margin:18px 0 8px;border-bottom:2px solid #E5484D;padding-bottom:4px}
+.print-q{padding:10px 0 22px;border-bottom:1px dashed #ccc;font-size:12px;break-inside:avoid}
+.coupon{border:2px dashed #E5484D;border-radius:12px;padding:16px;margin:12px 0;text-align:center;break-inside:avoid}
+.coupon b{font-size:15px}
+.coupon p{font-size:11px;color:#666;margin-top:4px}
 
 /* ---------- 문답 아카이브 ---------- */
 .qa-item{border-bottom:1px solid var(--line);padding:14px 2px}
@@ -288,6 +323,8 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
       </div>
     </div>
 
+    <div class="card" id="reward-card"></div>
+
     <div class="card">
       <div class="card-title">오늘 내 기분 <span id="mood-date" style="font-weight:600;color:#C9B4AD"></span></div>
       <div class="mood-row" id="mood-row"></div>
@@ -370,6 +407,9 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
     </div>
     <div class="card">
       <div class="card-title">설정</div>
+      <div class="settings-row" id="set-sync">💞 커플 연결 (두 기기 동기화) <span class="arrow">›</span></div>
+      <div class="settings-row" id="set-noti">🔔 브라우저 알림 켜기 <span class="arrow">›</span></div>
+      <div class="settings-row" id="set-theme">🎨 커플 테마 <span class="arrow">›</span></div>
       <div class="settings-row" id="set-profile">커플 정보 수정 <span class="arrow">›</span></div>
       <div class="settings-row" id="set-export">기록 내보내기 (백업) <span class="arrow">›</span></div>
       <div class="settings-row" id="set-import">기록 가져오기 <span class="arrow">›</span></div>
@@ -390,6 +430,7 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
 
 <div id="toast"></div>
 <div id="modal-root"></div>
+<div id="print-area"></div>
 
 <script>
 "use strict";
@@ -532,6 +573,59 @@ STAGES.forEach((s,si)=>s.idx.forEach(qi=>FLAT.push({q:QUESTIONS[qi], stage:si}))
 const DEEP_FROM = STAGES[0].idx.length;
 const REACTIONS = ["❤️","🥹","😂","😮","👍","😘"];
 
+/* 3일 보상: 보너스 질문 뽑기 */
+const SPECIAL_QUESTIONS = [
+  "서로에게 절대 비밀로 했던 사소한 거 하나, 지금 공개한다면?",
+  "나의 어떤 순간을 사진으로 평생 간직하고 싶어?",
+  "우리가 큰 파티(또는 결혼식)를 연다면 어떤 분위기였으면 좋겠어?",
+  "내가 아플 때 해주고 싶은 너만의 간호법은?",
+  "서로의 부모님께 배우고 싶은 사랑의 모습이 있어?",
+  "요즘 나 몰래 검색해본 것 중에 나랑 관련된 게 있어?",
+  "우리 사이를 한 문장의 영화 카피로 만든다면?",
+  "네가 나를 제일 자랑스러워했던 순간은 언제야?",
+  "우리가 90살이 되어 나누고 싶은 대화는 뭘까?",
+  "지금 내 귀에 대고 속삭이고 싶은 말 한마디는?",
+  "다음 생에 우리가 다시 만난다면 어떤 사이로 만나고 싶어?",
+  "나의 손을 잡을 때 무슨 생각을 해?",
+  "우리만의 국룰(절대 규칙)을 하나 만든다면?",
+  "내가 너에게 불러줬으면 하는 노래가 있어?",
+  "오늘 밤, 서로에게 해주고 싶은 칭찬 세 가지는?",
+];
+
+/* 7일 보상: 커플 테마 */
+const THEMES = [
+  {id:"coral",    name:"코랄",   primary:"#F86D6D", deep:"#E5484D", soft:"#FFE8E3", peach:"#FFB4A2"},
+  {id:"lavender", name:"라벤더", primary:"#8B7CF6", deep:"#6D5AE0", soft:"#EEEAFF", peach:"#C4B5FD"},
+  {id:"mint",     name:"민트",   primary:"#34B39A", deep:"#22947E", soft:"#E2F6F0", peach:"#8FD9C8"},
+  {id:"sunset",   name:"선셋",   primary:"#F59E0B", deep:"#D97706", soft:"#FFF1DC", peach:"#FCD34D"},
+];
+
+/* 50일 보상: 인쇄용 데이트 쿠폰북 */
+const COUPONS = [
+  {t:"어깨 안마 15분 이용권", s:"뭉친 곳을 말하면 정성껏 풀어드립니다"},
+  {t:"소원 하나 들어주기", s:"무리한 부탁만 아니면 즉시 발효"},
+  {t:"메뉴 결정권 위임 쿠폰", s:"오늘 뭐 먹지 고민 종료"},
+  {t:"아무 말 없이 안아주기 3분", s:"이유는 묻지 않습니다"},
+  {t:"영화 선택권 + 팝콘 셔틀", s:"장르 불문 군말 없이 관람"},
+  {t:"늦잠 프리패스", s:"깨우지 않고 브런치 준비해두기"},
+  {t:"짐 다 들어주기 데이트", s:"오늘의 가방은 전부 제가"},
+  {t:"화해 선공 쿠폰", s:"싸웠을 때 이 쿠폰을 내면 먼저 사과받을 수 있음"},
+];
+
+/* 마일스톤: 함께 완성한 문답 일수 기준 — 더 오래 더 깊게 사랑하자 */
+const MILESTONES = [
+  {d:3,   gift:"보너스 질문 뽑기",        ico:"✨", desc:"특별한 보너스 질문 15개를 언제든 뽑아서 대화할 수 있어요"},
+  {d:7,   gift:"커플 테마 컬러",          ico:"🎨", desc:"앱 전체 색을 우리 분위기에 맞게 바꿀 수 있어요"},
+  {d:14,  gift:"미션 다시 뽑기",          ico:"🎲", desc:"이번 주 미션이 안 맞으면 새 미션으로 바꿀 수 있어요"},
+  {d:28,  gift:"우리의 첫 달 리포트",     ico:"📖", desc:"한 달의 기록을 한 장의 리포트로 정리해드려요 (인쇄 가능)"},
+  {d:50,  gift:"타임캡슐 + 데이트 쿠폰북", ico:"⏳", desc:"100일에 열리는 편지를 서로 봉인하고, 인쇄용 데이트 쿠폰북을 받아요"},
+  {d:100, gift:"3종 선물세트",            ico:"🎁", desc:"연애문답지 · 이별방지키트 · 굿즈 — 실물 선물세트를 신청할 수 있어요"},
+];
+
+/* 커플 연결(두 기기 동기화): Supabase 무료 프로젝트를 만들고 아래 두 값을 채우면 켜져요.
+   테이블 스키마와 설정 방법은 README의 '두 기기 동기화' 절 참고. */
+const SYNC_CONFIG = { url:"", anonKey:"" };
+
 /* 주간 미션: 매주 하나씩, 함께 완료 체크 */
 const MISSIONS = [
   {t:"서로의 눈을 30초 동안 말없이 바라보기", s:"웃음 참기 실패해도 성공으로 인정!"},
@@ -598,6 +692,9 @@ function defaultState(){
     memories:[],  // {id,date,title,text,emoji}
     annivs:[],    // {id,name,date,yearly}
     missions:{},  // weekKey -> {p1:bool,p2:bool}
+    missionRe:{}, // weekKey -> 다시 뽑은 횟수
+    rewards:{claimed:{}, theme:null, capsule:{}}, // 마일스톤 보상
+    sync:null,    // {code, me:"p1"|"p2"} — 커플 연결 정보 (동기화 대상에서 제외)
   };
 }
 let S = load();
@@ -613,7 +710,7 @@ function load(){
     return st;
   }catch(e){ return defaultState(); }
 }
-function save(){ localStorage.setItem(KEY, JSON.stringify(S)); }
+function save(){ localStorage.setItem(KEY, JSON.stringify(S)); scheduleSyncPush(); }
 
 /* ==================================================================
    날짜 유틸
@@ -658,8 +755,12 @@ function qIndexFor(key){
 }
 function missionIndex(){
   const wk = weekKey();
-  const n = parseInt(wk.replace(/\D/g,""),10);
+  const n = parseInt(wk.replace(/\D/g,""),10) + ((S.missionRe && S.missionRe[wk]) || 0);
   return n % MISSIONS.length;
+}
+/* 함께 완성한 문답 일수 — 마일스톤 기준 지표 */
+function completedDays(){
+  return Object.values(S.answers).filter(a=>a.p1&&a.p2).length;
 }
 
 /* ==================================================================
@@ -752,6 +853,7 @@ $("#ob-start").addEventListener("click",()=>{
    사용자 전환 (한 기기 공유 모델)
    ================================================================== */
 $("#who-btn").addEventListener("click",()=>{
+  if(S.sync){ toast("커플 연결 모드에서는 내 계정으로 고정돼요"); return; }
   const next = other(S.current);
   $("#handoff-title").textContent = nameOf(next)+" 차례예요";
   $("#handoff-desc").textContent = "기기를 "+nameOf(next)+"에게 건네주세요. 아직 서로의 오늘 답은 비밀이에요.";
@@ -1251,6 +1353,407 @@ $("#set-reset").addEventListener("click",()=>{
 });
 
 /* ==================================================================
+   마일스톤 보상: 3·7·14·28·50·100일 — 더 오래 더 깊게 사랑하자
+   ================================================================== */
+function applyTheme(){
+  const t = THEMES.find(x=>x.id===(S.rewards&&S.rewards.theme)) || THEMES[0];
+  const r = document.documentElement.style;
+  r.setProperty("--primary", t.primary);
+  r.setProperty("--primary-deep", t.deep);
+  r.setProperty("--primary-soft", t.soft);
+  r.setProperty("--peach", t.peach);
+  r.setProperty("--p1", t.primary);
+}
+
+function renderRewardCard(){
+  const n = completedDays();
+  const next = MILESTONES.find(m=>!S.rewards.claimed[m.d]);
+  let html = `<div class="card-title">더 오래 더 깊게 사랑하자 <span style="font-weight:700;color:var(--primary)">문답 ${n}일 완성</span></div>`;
+  html += `<div class="ms-track">${MILESTONES.map(m=>{
+    const done = S.rewards.claimed[m.d], can = !done && n>=m.d;
+    return `<div class="ms ${done?"done":can?"can":""}"><div class="ms-ico">${done?"✔":m.ico}</div><div class="ms-d">${m.d}일</div></div>`;
+  }).join("")}</div>`;
+  if(next && n>=next.d){
+    html += `<button class="btn" data-claim="${next.d}">🎁 ${next.d}일 달성! ${esc(next.gift)} 받기</button>`;
+  }else if(next){
+    const prev = MILESTONES[MILESTONES.indexOf(next)-1];
+    const base = prev ? prev.d : 0;
+    const pct = Math.min(100, Math.round(((n-base)/(next.d-base))*100));
+    html += `<div class="ms-bar"><div style="width:${pct}%"></div></div>
+      <div class="ms-note">다음 선물 ${next.ico} <b>${esc(next.gift)}</b>까지 문답 <b>${next.d-n}일</b> 남았어요</div>`;
+  }else{
+    html += `<div class="ms-note">🎉 모든 선물을 받았어요! 우리의 기록은 계속됩니다</div>`;
+  }
+  const perks = [];
+  if(S.rewards.claimed[3])   perks.push(`<button class="btn sm ghost" id="perk-bonus">✨ 보너스 질문</button>`);
+  if(S.rewards.claimed[7])   perks.push(`<button class="btn sm ghost" id="perk-theme">🎨 테마</button>`);
+  if(S.rewards.claimed[14])  perks.push(`<button class="btn sm ghost" id="perk-reroll">🎲 미션 뽑기</button>`);
+  if(S.rewards.claimed[28])  perks.push(`<button class="btn sm ghost" id="perk-report">📖 리포트</button>`);
+  if(S.rewards.claimed[50])  perks.push(`<button class="btn sm ghost" id="perk-capsule">⏳ 타임캡슐</button>`);
+  if(S.rewards.claimed[50])  perks.push(`<button class="btn sm ghost" id="perk-coupon">🎟️ 쿠폰북</button>`);
+  if(S.rewards.claimed[100]) perks.push(`<button class="btn sm ghost" id="perk-set">🎁 100일 세트</button>`);
+  if(perks.length) html += `<div class="perk-row">${perks.join("")}</div>`;
+  $("#reward-card").innerHTML = html;
+
+  const claimBtn = $("#reward-card [data-claim]");
+  if(claimBtn) claimBtn.addEventListener("click",()=>claimMilestone(+claimBtn.dataset.claim));
+  const bind = (id,fn)=>{ const b=$("#"+id); if(b) b.addEventListener("click",fn); };
+  bind("perk-bonus", openBonusQuestion);
+  bind("perk-theme", openThemePicker);
+  bind("perk-reroll", rerollMission);
+  bind("perk-report", openReport);
+  bind("perk-capsule", openCapsule);
+  bind("perk-coupon", printCouponBook);
+  bind("perk-set", openGiftSet);
+}
+
+function claimMilestone(d){
+  const m = MILESTONES.find(x=>x.d===d);
+  if(!m || completedDays()<d || S.rewards.claimed[d]) return;
+  S.rewards.claimed[d] = true;
+  save(); renderAll();
+  openModal(`<div style="text-align:center">
+    <div style="font-size:3.2rem">${m.ico}</div>
+    <h3 style="margin:8px 0 4px">문답 ${d}일 달성!</h3>
+    <p style="color:var(--ink-soft);font-size:.9rem;word-break:keep-all;margin-bottom:16px">${esc(m.desc)}</p>
+    ${d===100?`<button class="btn" id="open-set-now" style="margin-bottom:8px">🎁 선물세트 확인하기</button>`:""}
+    <button class="btn ${d===100?"line":""}" data-close>${d===100?"나중에":"고마워요!"}</button>
+  </div>`);
+  const b = $("#open-set-now");
+  if(b) b.addEventListener("click",()=>{ closeModal(); openGiftSet(); });
+  notify("우리사이","🎁 문답 "+d+"일 달성! 선물이 도착했어요");
+}
+
+function openBonusQuestion(){
+  const pick = ()=>SPECIAL_QUESTIONS[Math.floor(Math.random()*SPECIAL_QUESTIONS.length)];
+  openModal(`<h3>✨ 보너스 질문</h3>
+    <div class="q-text" id="bonus-q" style="min-height:64px">${esc(pick())}</div>
+    <p style="font-size:.8rem;color:var(--ink-soft);margin-bottom:14px">지금 서로에게 소리 내어 물어보세요. 기록보다 대화가 목적이에요.</p>
+    <div class="row2"><button class="btn ghost" id="bonus-re">🎲 다시 뽑기</button><button class="btn" data-close>좋아요</button></div>`);
+  $("#bonus-re").addEventListener("click",()=>{ $("#bonus-q").textContent = pick(); });
+}
+
+function openThemePicker(){
+  openModal(`<h3>🎨 커플 테마</h3>
+    <div class="theme-grid">${THEMES.map(t=>
+      `<button class="theme-opt ${(S.rewards.theme||"coral")===t.id?"sel":""}" data-theme="${t.id}">
+        <div class="sw" style="background:${t.primary}"></div>${t.name}</button>`).join("")}</div>
+    <div style="height:14px"></div><button class="btn" data-close>닫기</button>`);
+  document.querySelectorAll("[data-theme]").forEach(b=>b.addEventListener("click",()=>{
+    S.rewards.theme = b.dataset.theme;
+    save(); applyTheme();
+    document.querySelectorAll("[data-theme]").forEach(x=>x.classList.toggle("sel",x===b));
+    toast("테마를 바꿨어요");
+  }));
+}
+
+function rerollMission(){
+  const wk = weekKey();
+  if(!confirm("이번 주 미션을 새로 뽑을까요? 완료 체크는 초기화돼요.")) return;
+  S.missionRe[wk] = ((S.missionRe[wk])||0)+1;
+  delete S.missions[wk];
+  save(); renderAll();
+  toast("🎲 새 미션이 도착했어요");
+}
+
+function openReport(){
+  const both = Object.entries(S.answers).filter(([k,a])=>a.p1&&a.p2);
+  let best = null;
+  for(const [k,a] of both){
+    const len = (a.p1||"").length + (a.p2||"").length;
+    if(!best || len>best.len) best = {k,a,len};
+  }
+  const bestHtml = best ? `
+    <div style="background:#FFF9F6;border-radius:12px;padding:12px;margin-top:10px">
+      <div style="font-size:.72rem;color:#C9B4AD;font-weight:700">${fmtShort(best.k)} · 가장 마음을 길게 나눈 날</div>
+      <div style="font-size:.88rem;font-weight:800;margin:3px 0">${esc(FLAT[best.a.qi!==undefined?best.a.qi:0].q)}</div>
+      <div style="font-size:.82rem;margin-top:4px"><b style="color:var(--p1)">${esc(nameOf("p1"))}</b> ${esc(best.a.p1)}</div>
+      <div style="font-size:.82rem;margin-top:4px"><b style="color:var(--p2)">${esc(nameOf("p2"))}</b> ${esc(best.a.p2)}</div>
+    </div>` : "";
+  const thanksHtml = S.thanks.slice(0,3).map(t=>`<div style="font-size:.82rem;margin-top:4px">💌 ${esc(t.text)}</div>`).join("");
+  openModal(`<h3>📖 우리의 리포트</h3>
+    <div class="stat-grid">
+      <div class="stat"><div class="v">${daysSince(S.couple.start)}</div><div class="k">함께한 날</div></div>
+      <div class="stat"><div class="v">${both.length}</div><div class="k">완성한 문답</div></div>
+      <div class="stat"><div class="v">${S.thanks.length}</div><div class="k">고마워 한 줄</div></div>
+      <div class="stat"><div class="v">${loveTemp()}°</div><div class="k">애정 온도</div></div>
+    </div>
+    ${bestHtml}
+    ${thanksHtml?`<div style="margin-top:10px"><b style="font-size:.8rem;color:var(--ink-soft)">최근의 고마움</b>${thanksHtml}</div>`:""}
+    <div style="height:14px"></div>
+    <div class="row2"><button class="btn ghost" id="report-print">🖨️ 인쇄/PDF</button><button class="btn" data-close>닫기</button></div>`);
+  $("#report-print").addEventListener("click",()=>{
+    const qa = both.slice(-31).map(([k,a])=>`<div class="print-q"><b>${fmtShort(k)} — ${esc(FLAT[a.qi!==undefined?a.qi:0].q)}</b><br>
+      ${esc(nameOf("p1"))}: ${esc(a.p1)}<br>${esc(nameOf("p2"))}: ${esc(a.p2)}</div>`).join("");
+    printHTML(`<div class="print-title">${esc(S.couple.title)} — 우리의 리포트</div>
+      <div class="print-sub">${esc(S.couple.n1)} ♥ ${esc(S.couple.n2)} · 함께한 지 ${daysSince(S.couple.start)}일 · 완성한 문답 ${both.length}개 · 애정 온도 ${loveTemp()}°C</div>
+      <div class="print-h">우리가 나눈 문답</div>${qa}`);
+  });
+}
+
+function openCapsule(){
+  const me = S.current, yo = other(me);
+  const cap = S.rewards.capsule;
+  const opened = S.rewards.claimed[100];
+  if(opened){
+    openModal(`<h3>⏳ 타임캡슐 개봉</h3>
+      ${["p1","p2"].map(p=>cap[p]?`<div class="reply-quote" style="margin-bottom:8px"><b style="color:${colorOf(p)}">${esc(nameOf(p))}의 편지</b>${esc(cap[p].text)}</div>`:`<p style="font-size:.85rem;color:var(--ink-soft)">${esc(nameOf(p))}의 편지가 없어요</p>`).join("")}
+      <div style="height:10px"></div><button class="btn" data-close>소중히 간직할게요</button>`);
+    return;
+  }
+  const mine = cap[me];
+  openModal(`<h3>⏳ 타임캡슐</h3>
+    <p style="font-size:.85rem;color:var(--ink-soft);word-break:keep-all;margin-bottom:10px">100일 문답을 완성하는 날 함께 열어볼 편지예요. 봉인하면 그날까지 아무도 볼 수 없어요.</p>
+    <div class="capsule-status">${["p1","p2"].map(p=>`<div class="cs">${cap[p]?"🔒 봉인 완료":"✏️ 아직"}<br><span style="color:${colorOf(p)}">${esc(nameOf(p))}</span></div>`).join("")}</div>
+    ${mine
+      ? `<p style="font-size:.85rem;font-weight:700;text-align:center;margin:10px 0">내 편지는 봉인됐어요. 100일에 만나요!</p>`
+      : `<textarea id="capsule-input" placeholder="100일 후의 우리에게, 그리고 너에게."></textarea>
+         <div style="height:10px"></div><button class="btn" id="capsule-seal">🔒 봉인하기</button>`}
+    <div style="height:8px"></div><button class="btn line" data-close>닫기</button>`);
+  const sealBtn = $("#capsule-seal");
+  if(sealBtn) sealBtn.addEventListener("click",()=>{
+    const v = $("#capsule-input").value.trim();
+    if(!v){ toast("편지를 적어주세요"); return; }
+    if(!confirm("봉인하면 100일까지 수정할 수 없어요. 봉인할까요?")) return;
+    S.rewards.capsule[me] = {text:v, at:Date.now()};
+    save(); closeModal(); renderAll();
+    toast("🔒 편지가 봉인됐어요. 100일에 만나요");
+  });
+}
+
+function printCouponBook(){
+  printHTML(`<div class="print-title">${esc(S.couple.title)} 데이트 쿠폰북</div>
+    <div class="print-sub">${esc(S.couple.n1)} ♥ ${esc(S.couple.n2)} · 문답 50일 달성 기념 · 오려서 한 장씩 사용하세요</div>
+    ${COUPONS.map(c=>`<div class="coupon"><b>${esc(c.t)}</b><p>${esc(c.s)}</p></div>`).join("")}`);
+}
+
+function openGiftSet(){
+  const code = "WOORI100-" + (S.sync ? S.sync.code :
+    Array.from(S.couple.n1+S.couple.n2+S.couple.start).reduce((a,ch)=>a+ch.charCodeAt(0),0).toString(36).toUpperCase());
+  openModal(`<h3>🎁 100일 선물세트</h3>
+    <p style="font-size:.85rem;color:var(--ink-soft);word-break:keep-all;margin-bottom:12px">문답 100일을 함께 완성한 커플에게 드리는 3종 세트예요.</p>
+    <div class="answer-box"><b style="font-size:.9rem">📗 연애문답지</b><div class="txt" style="font-size:.82rem">우리가 나눈 106개 질문 전체를 인쇄용 문답지로 — 손글씨로 한 번 더 나눠보세요</div>
+      <div style="height:8px"></div><button class="btn sm ghost" id="print-qbook">🖨️ 문답지 인쇄하기</button></div>
+    <div class="answer-box"><b style="font-size:.9rem">🧰 이별방지키트 + 🧸 굿즈</b><div class="txt" style="font-size:.82rem">실물 키트와 굿즈는 신청 페이지에서 보내드려요. 아래 인증 코드를 저장해 두세요.</div>
+      <div style="margin-top:8px;background:#FFF3E2;border-radius:10px;padding:10px;text-align:center;font-weight:800;letter-spacing:.05em">${code}</div>
+      <p style="font-size:.72rem;color:#C9B4AD;margin-top:6px">* 신청 페이지는 준비 중 — 오픈 시 이 코드로 100일 달성을 인증해요</p></div>
+    ${S.rewards.capsule.p1||S.rewards.capsule.p2?`<button class="btn ghost" id="open-capsule-now" style="margin-bottom:8px">⏳ 타임캡슐 열어보기</button>`:""}
+    <button class="btn line" data-close>닫기</button>`);
+  const pb = $("#print-qbook");
+  if(pb) pb.addEventListener("click",printQuestionBook);
+  const oc = $("#open-capsule-now");
+  if(oc) oc.addEventListener("click",()=>{ closeModal(); openCapsule(); });
+}
+
+function printQuestionBook(){
+  printHTML(`<div class="print-title">${esc(S.couple.title)} 연애문답지</div>
+    <div class="print-sub">${esc(S.couple.n1)} ♥ ${esc(S.couple.n2)} · 문답 100일 달성 기념 · 서로의 답을 손으로 적어보세요</div>
+    ${STAGES.map((s,si)=>`<div class="print-h">${si+1}단계 · ${esc(s.name)}</div>
+      ${s.idx.map(qi=>`<div class="print-q">${esc(QUESTIONS[qi])}</div>`).join("")}`).join("")}`);
+}
+
+function printHTML(html){
+  $("#print-area").innerHTML = html;
+  window.print();
+}
+
+/* ==================================================================
+   알림: 탭이 열려 있는 동안 상대의 활동을 브라우저 알림으로
+   ================================================================== */
+function notify(title, body){
+  try{
+    if("Notification" in window && Notification.permission==="granted" && document.hidden){
+      new Notification(title, {body});
+    }
+  }catch(e){}
+}
+$("#set-noti").addEventListener("click",()=>{
+  if(!("Notification" in window)){ toast("이 브라우저는 알림을 지원하지 않아요"); return; }
+  if(Notification.permission==="granted"){ toast("알림이 이미 켜져 있어요"); return; }
+  Notification.requestPermission().then(p=>{
+    toast(p==="granted" ? "🔔 알림이 켜졌어요" : "알림이 거부됐어요. 브라우저 설정에서 바꿀 수 있어요");
+  });
+});
+$("#set-theme").addEventListener("click",()=>{
+  if(!S.rewards.claimed[7]){ toast("문답 7일을 완성하면 열려요 🎨"); return; }
+  openThemePicker();
+});
+
+/* ==================================================================
+   커플 연결: Supabase REST 폴링 동기화 (두 기기 각자 사용)
+   ================================================================== */
+function syncConfigured(){ return !!(SYNC_CONFIG.url && SYNC_CONFIG.anonKey); }
+function syncReady(){ return syncConfigured() && S.sync && S.sync.code; }
+function exportable(){ const c = JSON.parse(JSON.stringify(S)); delete c.sync; delete c.current; return c; }
+
+async function syncApi(method, path, body){
+  const res = await fetch(SYNC_CONFIG.url + "/rest/v1/" + path, {
+    method,
+    headers:{
+      apikey:SYNC_CONFIG.anonKey,
+      Authorization:"Bearer "+SYNC_CONFIG.anonKey,
+      "Content-Type":"application/json",
+      Prefer:"return=representation",
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if(!res.ok) throw new Error("sync "+res.status);
+  return res.status===204 ? null : res.json();
+}
+
+/* 두 기기의 기록을 잃는 쪽 없이 합치기: 답/기분은 사람별 선점, 목록은 id 합집합 */
+function mergeState(local, remote){
+  const m = Object.assign(defaultState(), JSON.parse(JSON.stringify(local)));
+  if(!remote) return m;
+  if(remote.couple && !m.couple) m.couple = remote.couple;
+  for(const k in (remote.answers||{})){
+    const r = m.answers[k] = m.answers[k] || {};
+    const s = remote.answers[k];
+    if(r.qi===undefined && s.qi!==undefined) r.qi = s.qi;
+    for(const p of ["p1","p2"]){
+      if(!r[p] && s[p]) r[p] = s[p];
+      if(s.react && s.react[p]){ r.react = r.react||{}; if(!r.react[p]) r.react[p]=s.react[p]; }
+      if(s.reply && s.reply[p]){ r.reply = r.reply||{}; if(!r.reply[p]) r.reply[p]=s.reply[p]; }
+    }
+  }
+  for(const k in (remote.moods||{})){
+    const r = m.moods[k] = m.moods[k] || {};
+    for(const p of ["p1","p2"]) if(!r[p] && remote.moods[k][p]) r[p] = remote.moods[k][p];
+  }
+  for(const key of ["thanks","memories","annivs"]){
+    const ids = new Set(m[key].map(x=>x.id));
+    (remote[key]||[]).forEach(x=>{ if(!ids.has(x.id)) m[key].push(x); });
+  }
+  for(const w in (remote.missions||{})){
+    const r = m.missions[w] = m.missions[w] || {};
+    for(const p of ["p1","p2"]) if(remote.missions[w][p]) r[p] = true;
+  }
+  for(const w in (remote.missionRe||{})){
+    m.missionRe[w] = Math.max(m.missionRe[w]||0, remote.missionRe[w]);
+  }
+  const rr = remote.rewards || {};
+  m.rewards.claimed = Object.assign({}, rr.claimed, m.rewards.claimed);
+  if(!m.rewards.theme && rr.theme) m.rewards.theme = rr.theme;
+  for(const p of ["p1","p2"]) if(rr.capsule && rr.capsule[p] && !m.rewards.capsule[p]) m.rewards.capsule[p] = rr.capsule[p];
+  return m;
+}
+window.__mergeState = mergeState; // 테스트용
+
+let syncTimer = null, pushTimer = null;
+function scheduleSyncPush(){
+  if(!syncReady()) return;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(syncPush, 1500);
+}
+async function syncPush(){
+  if(!syncReady()) return;
+  try{
+    await syncApi("PATCH", "couples?code=eq."+encodeURIComponent(S.sync.code),
+      {data:exportable(), updated_at:new Date().toISOString()});
+  }catch(e){ /* 오프라인이면 다음 저장 때 재시도 */ }
+}
+async function syncPull(){
+  if(!syncReady()) return;
+  try{
+    const rows = await syncApi("GET", "couples?code=eq."+encodeURIComponent(S.sync.code)+"&select=data");
+    if(!rows || !rows.length) return;
+    const remote = rows[0].data;
+    const partner = other(S.sync.me);
+    const hadAnswer = !!((S.answers[todayKey()]||{})[partner]);
+    const merged = mergeState(S, remote);
+    merged.current = S.sync.me;
+    merged.sync = S.sync;
+    S = merged;
+    localStorage.setItem(KEY, JSON.stringify(S));
+    if(!hadAnswer && (S.answers[todayKey()]||{})[partner]){
+      notify("우리사이", nameOf(partner)+"님이 오늘의 답을 남겼어요 💌");
+      toast(nameOf(partner)+"님이 오늘의 답을 남겼어요!");
+    }
+    if(JSON.stringify(exportable()) !== JSON.stringify(remote)) syncPush();
+    renderAll();
+  }catch(e){ /* 일시적 네트워크 오류는 무시 */ }
+}
+function startSyncLoop(){
+  if(!syncReady()) return;
+  S.current = S.sync.me;
+  syncPull();
+  clearInterval(syncTimer);
+  syncTimer = setInterval(syncPull, 12000);
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden) syncPull(); });
+}
+function genCode(){
+  const chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  return Array.from({length:6},()=>chars[Math.floor(Math.random()*chars.length)]).join("");
+}
+
+$("#set-sync").addEventListener("click",()=>{
+  if(!syncConfigured()){
+    openModal(`<h3>💞 커플 연결 (준비 필요)</h3>
+      <p style="font-size:.85rem;color:var(--ink-soft);word-break:keep-all;line-height:1.6">각자의 폰에서 실시간으로 함께 쓰려면 무료 Supabase 프로젝트가 필요해요.
+      README의 <b>'두 기기 동기화'</b> 절에 있는 5분 설정을 마치고, 코드의 <b>SYNC_CONFIG</b>에 주소와 키를 넣으면 이 메뉴가 켜져요.<br><br>
+      지금은 한 기기를 번갈아 쓰는 모드로 모든 기능을 쓸 수 있어요.</p>
+      <div style="height:14px"></div><button class="btn" data-close>알겠어요</button>`);
+    return;
+  }
+  if(S.sync){
+    openModal(`<h3>💞 커플 연결됨</h3>
+      <p style="font-size:.85rem;color:var(--ink-soft)">나: <b>${esc(nameOf(S.sync.me))}</b></p>
+      <div style="margin:10px 0;background:#FFF3E2;border-radius:10px;padding:12px;text-align:center;font-weight:800;font-size:1.3rem;letter-spacing:.2em">${esc(S.sync.code)}</div>
+      <p style="font-size:.8rem;color:var(--ink-soft)">상대의 기기에서 이 코드로 연결하면 기록이 실시간으로 합쳐져요.</p>
+      <div style="height:14px"></div>
+      <div class="row2"><button class="btn line" id="sync-off">연결 해제</button><button class="btn" data-close>닫기</button></div>`);
+    $("#sync-off").addEventListener("click",()=>{
+      if(!confirm("연결을 해제할까요? 기기 간 동기화가 멈춰요.")) return;
+      S.sync = null; clearInterval(syncTimer);
+      save(); closeModal(); renderAll();
+    });
+    return;
+  }
+  openModal(`<h3>💞 커플 연결</h3>
+    <p style="font-size:.85rem;color:var(--ink-soft);word-break:keep-all;margin-bottom:12px">각자의 폰에서 함께 쓰려면 한 명이 코드를 만들고, 상대가 그 코드로 연결해요.</p>
+    <button class="btn" id="sync-create">새 코드 만들기 (${esc(nameOf(S.current))}로 연결)</button>
+    <div style="height:10px"></div>
+    <div class="reply-row" style="margin:0"><input id="sync-code-input" maxlength="6" placeholder="상대가 알려준 코드" style="text-transform:uppercase" /><button class="btn sm" id="sync-join">연결</button></div>
+    <div style="height:10px"></div><button class="btn line" data-close>취소</button>`);
+  $("#sync-create").addEventListener("click",async ()=>{
+    try{
+      const code = genCode();
+      await syncApi("POST","couples",[{code, data:exportable(), updated_at:new Date().toISOString()}]);
+      S.sync = {code, me:S.current};
+      save(); closeModal(); renderAll(); startSyncLoop();
+      if("Notification" in window && Notification.permission==="default") Notification.requestPermission();
+      toast("연결 코드: "+code+" — 상대에게 알려주세요");
+      $("#set-sync") && $("#set-sync").click();
+    }catch(e){ toast("연결 실패 — 네트워크나 설정을 확인해주세요"); }
+  });
+  $("#sync-join").addEventListener("click",async ()=>{
+    const code = $("#sync-code-input").value.trim().toUpperCase();
+    if(code.length!==6){ toast("6자리 코드를 입력해주세요"); return; }
+    try{
+      const rows = await syncApi("GET","couples?code=eq."+encodeURIComponent(code)+"&select=data");
+      if(!rows || !rows.length){ toast("코드를 찾을 수 없어요"); return; }
+      const remote = rows[0].data;
+      const rc = remote.couple || S.couple;
+      closeModal();
+      openModal(`<h3>연결할 계정을 골라주세요</h3>
+        <p style="font-size:.85rem;color:var(--ink-soft);margin-bottom:12px">이 기기에서 당신은 누구인가요?</p>
+        <div class="row2">
+          <button class="btn ghost" data-syncme="p1">${esc(rc.n1)}</button>
+          <button class="btn ghost" data-syncme="p2">${esc(rc.n2)}</button>
+        </div>`);
+      document.querySelectorAll("[data-syncme]").forEach(b=>b.addEventListener("click",()=>{
+        S = mergeState(S, remote);
+        S.sync = {code, me:b.dataset.syncme};
+        S.current = b.dataset.syncme;
+        save(); closeModal(); renderAll(); startSyncLoop();
+        if("Notification" in window && Notification.permission==="default") Notification.requestPermission();
+        toast("💞 연결됐어요! 이제 각자의 폰에서 함께 써요");
+      }));
+    }catch(e){ toast("연결 실패 — 네트워크나 설정을 확인해주세요"); }
+  });
+});
+
+/* ==================================================================
    모달
    ================================================================== */
 function openModal(html){
@@ -1268,8 +1771,10 @@ function closeModal(){ $("#modal-root").innerHTML = ""; }
    ================================================================== */
 function renderAll(){
   if(!S.couple){ showOnboarding(); return; }
+  applyTheme();
   renderHeader();
   renderHero();
+  renderRewardCard();
   renderMood();
   renderHomeQuestion();
   renderMission();
@@ -1282,6 +1787,7 @@ function renderAll(){
   renderMore();
 }
 renderAll();
+startSyncLoop();
 </script>
 </body>
 </html>

@@ -51,12 +51,34 @@ npx http-server -p 8080
 - **기념일**: D+day, 100일 단위·주년 자동 계산 + 커스텀 기념일 D-day
 - **주간 미션**: 매주 함께 완료하는 관계 미션 36종
 - **애정 온도**: 최근 2주의 기록량으로 산출, 연속 문답 스트릭
-- 한 기기를 번갈아 쓰는 모델(사용자 전환 + 답변 잠금). 모든 기록은 localStorage, JSON 백업/복원 지원
+- **마일스톤 선물** (목표: 더 오래 더 깊게 사랑하자): 함께 완성한 문답 일수 기준 3·7·14·28·50·100일 달성 시 선물 증정
+  - 3일 보너스 질문 뽑기 → 7일 커플 테마 컬러 → 14일 미션 다시 뽑기 → 28일 우리의 첫 달 리포트(인쇄) → 50일 타임캡슐 편지 + 데이트 쿠폰북(인쇄) → 100일 3종 선물세트(연애문답지 인쇄 + 이별방지키트·굿즈 실물 신청 코드)
+- 기본은 한 기기를 번갈아 쓰는 모델(사용자 전환 + 답변 잠금). 모든 기록은 localStorage, JSON 백업/복원 지원
 
 ```bash
 npx http-server -p 8080
 # http://localhost:8080/couple/index.html 을 모바일 뷰포트로 열기
 ```
+
+### 두 기기 동기화 (커플 연결, 선택)
+
+각자의 폰에서 실시간으로 함께 쓰려면 무료 Supabase 프로젝트 하나만 연결하면 됩니다.
+
+1. [supabase.com](https://supabase.com)에서 무료 프로젝트 생성
+2. SQL Editor에서 테이블 생성:
+   ```sql
+   create table couples (
+     code text primary key,
+     data jsonb not null,
+     updated_at timestamptz not null default now()
+   );
+   alter table couples enable row level security;
+   create policy "anon rw" on couples for all to anon using (true) with check (true);
+   ```
+3. `couple/index.html`의 `SYNC_CONFIG`에 프로젝트 URL과 anon key 입력
+4. 앱 → 더보기 → **커플 연결**: 한 명이 코드를 만들고, 상대가 그 코드로 연결
+
+동작 방식: 12초 폴링 + 저장 시 푸시, 사람별 선점·id 합집합 방식의 무손실 병합. 상대가 답을 남기면 토스트와 브라우저 알림(권한 허용 시)으로 알려줍니다. 연결 코드를 아는 사람은 데이터에 접근할 수 있는 MVP 구조이므로, 정식 서비스 전에는 Supabase Auth 기반 접근 제어로 교체가 필요합니다.
 
 ## 교체할 자리 표시 콘텐츠
 
