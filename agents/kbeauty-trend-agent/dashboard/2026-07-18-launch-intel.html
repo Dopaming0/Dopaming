@@ -1,4 +1,4 @@
-<title>K-뷰티 출시 인텔리전스 · 2026.07</title>
+<title>K-뷰티 출시 의사결정 브리프 · 2026.07</title>
 <style>
 :root{
   --surface:#FAF7F4; --card:#FFFFFF; --ink:#2B2430; --muted:#6E6373;
@@ -89,12 +89,53 @@ tr.hot td{background:var(--accent-soft)}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:760px){.two-col{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:no-preference){.tooltip{transition:opacity .12s ease}}
+.part{display:flex;align-items:center;gap:12px;margin:40px 0 20px}
+.part .no{font-size:13px;font-weight:800;color:var(--accent);letter-spacing:.1em;white-space:nowrap}
+.part .rule{flex:1;height:1px;background:var(--hairline)}
+.gonogo{background:var(--card);border:1px solid var(--hairline);border-left:4px solid var(--good);border-radius:12px;padding:20px 24px;margin-bottom:16px}
+.gonogo .decision{font-size:22px;font-weight:800;margin-bottom:8px}
+.gonogo .decision .go{color:var(--good)}
+.gonogo p{margin:0;font-size:14.5px;max-width:78ch}
+.sim-grid{display:grid;grid-template-columns:minmax(260px,340px) 1fr;gap:16px}
+@media(max-width:820px){.sim-grid{grid-template-columns:1fr}}
+.sim-in label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin:10px 0 3px}
+.sim-in label:first-child{margin-top:0}
+.sim-in input{width:100%;padding:8px 10px;border:1px solid var(--hairline);border-radius:8px;background:var(--surface);
+  color:var(--ink);font-size:14px;font-variant-numeric:tabular-nums;font-family:inherit}
+.sim-in input:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.sim-in .hint{font-size:11.5px;color:var(--muted);margin-top:2px}
+.sim-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;align-content:start}
+.stat{background:var(--surface);border:1px solid var(--hairline);border-radius:10px;padding:14px 16px}
+.stat .k{font-size:11.5px;font-weight:700;color:var(--muted);letter-spacing:.06em;margin-bottom:4px}
+.stat .v{font-size:21px;font-weight:800;font-variant-numeric:tabular-nums}
+.stat .s{font-size:12px;color:var(--muted);margin-top:2px}
+.stat.big{grid-column:1/-1;border-left:3px solid var(--accent)}
+.stat .v.bad{color:var(--accent)}
+.stat .v.good{color:var(--good)}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{display:grid;grid-template-columns:118px 1fr;gap:14px;padding:12px 0;border-bottom:1px solid var(--hairline)}
+.tl li:last-child{border-bottom:none}
+.tl .when{font-size:13px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
+.tl .what{font-size:14px}
+.tl .what > b{display:block}
+.tl .what span{font-size:13px;color:var(--muted)}
+.check{list-style:none;margin:0;padding:0;font-size:14px}
+.check li{padding:9px 0 9px 26px;position:relative;border-bottom:1px solid var(--hairline)}
+.check li:last-child{border-bottom:none}
+.check li::before{content:"";position:absolute;left:2px;top:14px;width:12px;height:12px;border:2px solid var(--accent);border-radius:4px}
+.check li b.adv{color:var(--good)}
+.actions{counter-reset:act;list-style:none;margin:0;padding:0}
+.actions li{counter-increment:act;display:grid;grid-template-columns:34px 1fr;gap:12px;padding:11px 0;border-bottom:1px solid var(--hairline);font-size:14px}
+.actions li:last-child{border-bottom:none}
+.actions li::before{content:counter(act);width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--card);
+  font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.actions .due{font-size:12px;color:var(--muted)}
 </style>
 
 <div class="wrap">
 <header>
-  <div class="eyebrow">K-BEAUTY LAUNCH INTELLIGENCE</div>
-  <h1>신규 화장품 출시 판단 데이터 — 2026년 7월</h1>
+  <div class="eyebrow">K-BEAUTY LAUNCH DECISION BRIEF</div>
+  <h1>신규 화장품 출시 의사결정 브리프 — 2026년 7월</h1>
   <div class="prov">출처: <b>네이버 데이터랩 쇼핑인사이트 · 네이버 쇼핑 · 네이버 뉴스</b> (PlayMCP 실데이터) · 조회 <b>2026-07-18 (KST)</b> · 지수는 각 조회 기간 내 최대값=100인 상대 클릭 지수</div>
 </header>
 
@@ -120,6 +161,93 @@ tr.hot td{background:var(--accent-soft)}
     <div class="sub">미국 중심 수요 급증 보도 다수 — 내수+수출 겸용 카테고리</div>
   </div>
 </div>
+
+<div class="part"><span class="no">PART A — 의사결정</span><span class="rule"></span></div>
+
+<section>
+  <div class="gonogo">
+    <div class="decision"><span class="go">GO 권고</span> — 무기자차 선스틱, '27년 2월 입점 목표</div>
+    <p>수요(무기자차 관심 최고치·선스틱 비중 상승), 경쟁(톤업 선크림의 1/18 밀도), 규제(무기자차 차단성분은 식약처 고시 성분 → 심사 아닌 <b>보고</b>로 처리 가능), 수출 순풍(美 K-선케어)이 모두 같은 방향을 가리킨다. 권장 소비자가 <b>12,900원</b>(볼륨존 상단, 조선미녀·일리윤 옆자리), 타깃은 3050 데일리 재도포 수요. 색조·PDRN 신제품은 이번 사이클에서 보류.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-label">A-1 · 손익 시뮬레이터</div>
+  <h2>귀사의 숫자를 넣어 바로 손익분기점을 확인하세요</h2>
+  <p class="sec-desc">파란 값은 시장 데이터 기반 기본값, 나머지는 <b>가정</b>입니다. ODM 견적·채널 협상 결과를 받는 대로 이 자리에서 바꿔 끼우면 됩니다. 모든 계산은 브라우저 안에서만 일어납니다.</p>
+  <div class="card sim-grid">
+    <div class="sim-in">
+      <label for="i-price">소비자 판매가 (원)</label>
+      <input id="i-price" type="number" value="12900" step="100">
+      <div class="hint">데이터 근거: 무기자차 선스틱 볼륨존 1.0~1.3만원/개</div>
+      <label for="i-cogs">제조원가 · ODM 납품가 (원/개)</label>
+      <input id="i-cogs" type="number" value="3500" step="100">
+      <div class="hint">가정 — 스틱 제형 ODM 통상 판매가의 25~30%. 견적으로 대체할 것</div>
+      <label for="i-fee">채널 수수료·판촉 (%)</label>
+      <input id="i-fee" type="number" value="32" step="1">
+      <div class="hint">가정 — H&B 채널 ~30–35%, 자사몰·스마트스토어 ~6–12%. 채널 믹스 가중평균</div>
+      <label for="i-mkt">마케팅비 (매출 대비 %)</label>
+      <input id="i-mkt" type="number" value="15" step="1">
+      <label for="i-log">물류·포장 (원/개)</label>
+      <input id="i-log" type="number" value="900" step="100">
+      <label for="i-fixed">초기 고정비 (원)</label>
+      <input id="i-fixed" type="number" value="30000000" step="1000000">
+      <div class="hint">가정 — 처방개발·SPF/PA 인체적용시험·기능성 보고·디자인·상세페이지 등</div>
+      <label for="i-moq">초도 생산 수량 (개)</label>
+      <input id="i-moq" type="number" value="7000" step="500">
+      <div class="hint">가정 — 스틱 ODM MOQ 통상 3,000~10,000개</div>
+      <label for="i-monthly">월 판매 목표 (개)</label>
+      <input id="i-monthly" type="number" value="3000" step="500">
+    </div>
+    <div class="sim-out" id="sim-out"></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-label">A-2 · 역산 로드맵</div>
+  <h2>'27년 3월 수요 급증에 맞추려면 — 오늘 기준 역산 일정</h2>
+  <p class="sec-desc">선케어 수요는 2년 연속 2→3월에 +44% 급증했다. 3월에 매대에 있으려면 2월 입점, 그러려면 지금 시작해야 한다.</p>
+  <div class="card">
+    <ul class="tl">
+      <li><span class="when">'26.07~08</span><div class="what"><b>컨셉 확정 · ODM RFQ</b><span>제품 브리프 확정(무기자차·SPF50+·톤업 배리에이션 여부), 한국콜마·코스맥스·코스비전 3사 견적/샘플 요청, 상표 출원, 책임판매업 등록 확인</span></div></li>
+      <li><span class="when">'26.09~10</span><div class="what"><b>처방 개발 · 시험 착수</b><span>샘플 랩핑 2~3회 → 처방 확정, SPF/PA 인체적용시험 착수(외부기관, 통상 1~2개월), 패키지 디자인</span></div></li>
+      <li><span class="when">'26.10~11</span><div class="what"><b>기능성화장품 보고</b><span>징크옥사이드·티타늄디옥사이드는 고시 성분 → 심사 없이 <b>보고</b>로 처리(수일~수주). 표시·광고 문구 법무 검토 병행</span></div></li>
+      <li><span class="when">'26.12~'27.01</span><div class="what"><b>본생산 · 콘텐츠</b><span>초도 생산(MOQ 기준), 상세페이지·리뷰 시딩 물량 확보, 자사몰/스마트스토어 오픈 준비</span></div></li>
+      <li><span class="when">'27.01~02</span><div class="what"><b>채널 입점</b><span>H&B 입점 상담(신상품 제안 주기 확인), 온라인 선출시로 리뷰 확보 → 오프라인 입점 협상 레버리지</span></div></li>
+      <li><span class="when">'27.03~</span><div class="what"><b>수요 시즌 진입</b><span>3~7월 성수기. 4월 재발주 판단(초도 소진율 기준), 톤업 배리에이션 여부 결정</span></div></li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-label">A-3 · 규제·인증 체크리스트</div>
+  <h2>자외선차단제는 기능성화장품 — 그러나 무기자차라 빠른 길이 있다</h2>
+  <div class="card">
+    <ul class="check">
+      <li><b>화장품책임판매업 등록</b> — 미보유 시 최우선(관할 지방식약청). 제조는 ODM이므로 제조업 등록 불요</li>
+      <li><b>기능성화장품 보고</b> — 자외선차단제는 기능성. <b class="adv">징크옥사이드·티타늄디옥사이드(무기자차)는 식약처 고시 성분·함량이라 '심사'가 아닌 '보고' 대상 — 기간·비용 대폭 절감. 무기자차 선택의 숨은 이점</b></li>
+      <li><b>SPF/PA 표시</b> — 인체적용시험 성적서 필요(SPF50+ / PA++++ 표기 근거)</li>
+      <li><b>표시·광고 심의</b> — '피부재생'·'자외선 완벽 차단' 등 의약품적·절대적 표현 금지. '톤업'은 메이크업 효과로 표현 가능</li>
+      <li><b>수출 대비</b> — 미국 진출 계획 시 FDA OTC(자외선차단제는 미국서 의약품) 요건은 별도 트랙 — ODM 선정 시 美 OTC 등록 시설 여부 확인</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-label">A-4 · 이번 주 액션</div>
+  <h2>대표가 이번 주에 시킬 일 5가지</h2>
+  <div class="card">
+    <ol class="actions">
+      <li><div>한국콜마·코스맥스·코스비전에 <b>무기자차 선스틱 RFQ 발송</b> (SPF50+, 20g, 목표 납품가 3,500원↓, MOQ·리드타임 포함)<div class="due">담당: 제품 · 기한: 이번 주</div></div></li>
+      <li><div><b>지그재그·무신사뷰티 뷰티 랭킹 2주 모니터링 시작</b> — 1020 확장 가능성 검증(현 데이터는 3050 기준)<div class="due">담당: 마케팅 · 기한: 즉시 시작</div></div></li>
+      <li><div>네이밍 후보 3안 도출 후 <b>상표 선행조사·출원</b><div class="due">담당: 대표/법무 · 기한: 2주 내</div></div></li>
+      <li><div>책임판매업 등록 상태·<b>인체적용시험 기관 견적</b>(SPF/PA) 확인<div class="due">담당: RA · 기한: 이번 주</div></div></li>
+      <li><div>위 시뮬레이터에 <b>실제 견적 숫자 대입</b> → BEP·초도 수량 확정, 자금 계획 반영<div class="due">담당: 대표/재무 · 기한: 견적 수령 즉시</div></div></li>
+    </ol>
+  </div>
+</section>
+
+<div class="part"><span class="no">PART B — 근거 데이터</span><span class="rule"></span></div>
 
 <section>
   <div class="sec-label">① 선케어 — 제형별 수요</div>
@@ -360,6 +488,33 @@ function barChart(id,cfg){
     });});
   host.appendChild(svg);
 }
+
+function fmt(n){return Math.round(n).toLocaleString('ko-KR');}
+function sim(){
+  const g=id=>Number(document.getElementById(id).value)||0;
+  const p=g('i-price'),cogs=g('i-cogs'),fee=g('i-fee')/100,mkt=g('i-mkt')/100,
+        log=g('i-log'),fixed=g('i-fixed'),moq=g('i-moq'),monthly=g('i-monthly');
+  const cm=p*(1-fee-mkt)-cogs-log;           // 개당 공헌이익
+  const cmr=p>0?cm/p*100:0;
+  const bep=cm>0?fixed/cm:Infinity;
+  const firstRun=cm*moq-fixed;               // 초도 완판 시 손익
+  const monthlyProfit=cm*monthly;
+  const payback=cm>0&&monthly>0?fixed/monthlyProfit:Infinity;
+  const out=document.getElementById('sim-out');
+  const bad=cm<=0;
+  out.innerHTML=
+    '<div class="stat big"><div class="k">개당 공헌이익 (판매가 − 수수료 − 마케팅 − 원가 − 물류)</div>'+
+    '<div class="v '+(bad?'bad':'good')+'">'+fmt(cm)+'원 <span style="font-size:14px;font-weight:700">('+cmr.toFixed(1)+'%)</span></div>'+
+    (bad?'<div class="s">공헌이익이 0 이하 — 이 구조로는 팔수록 손해입니다. 판매가·원가·수수료를 조정하세요.</div>':'')+'</div>'+
+    '<div class="stat"><div class="k">손익분기 판매량</div><div class="v">'+(isFinite(bep)?fmt(bep)+'개':'—')+'</div><div class="s">초기 고정비 회수 기준</div></div>'+
+    '<div class="stat"><div class="k">초도 '+fmt(moq)+'개 완판 시</div><div class="v '+(firstRun<0?'bad':'good')+'">'+(firstRun<0?'−':'+')+fmt(Math.abs(firstRun))+'원</div>'+
+    '<div class="s">'+(firstRun<0?'초도만으로 미회수 — 재발주 전제 필요':'초도에서 고정비 회수')+'</div></div>'+
+    '<div class="stat"><div class="k">월 '+fmt(monthly)+'개 판매 시 월 공헌이익</div><div class="v">'+fmt(monthlyProfit)+'원</div></div>'+
+    '<div class="stat"><div class="k">고정비 회수 기간</div><div class="v">'+(isFinite(payback)?payback.toFixed(1)+'개월':'—')+'</div><div class="s">월 판매 목표 유지 가정</div></div>';
+}
+['i-price','i-cogs','i-fee','i-mkt','i-log','i-fixed','i-moq','i-monthly']
+  .forEach(id=>document.getElementById(id).addEventListener('input',sim));
+sim();
 
 legend('lg-sun',DATA.sun);lineChart('ch-sun',DATA.sun);dataTable('tb-sun',DATA.sun);
 legend('lg-claim',DATA.claim);lineChart('ch-claim',DATA.claim);dataTable('tb-claim',DATA.claim);
