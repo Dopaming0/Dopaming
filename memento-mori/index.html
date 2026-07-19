@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>남은 계절 — 메멘토 모리</title>
+<meta name="description" content="당신에게 남은 계절을 세어본 적 있나요? 죽음을 기억하면 오늘이 선명해집니다.">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#101318;        /* 밤하늘 */
+    --night-soft:#181c24;   /* 살짝 밝은 밤 */
+    --paper:#e8e3d8;        /* 한지빛 글자 */
+    --paper-dim:#9d998e;    /* 흐린 글자 */
+    --candle:#e0a458;       /* 촛불 */
+    --candle-dim:#8a6b45;
+    --line:#2a2f39;
+    --lived:#e8e3d8;
+    --serif:'Gowun Batang', serif;
+    --sans:'Pretendard Variable', Pretendard, sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:#0a0c10;
+    font-family:var(--sans);
+    color:var(--paper);
+    letter-spacing:-0.02em;
+    line-height:1.6;
+  }
+  .wrap{
+    max-width:480px;margin:0 auto;min-height:100dvh;
+    background:var(--night);
+    background-image:
+      radial-gradient(1px 1px at 20% 12%, rgba(232,227,216,.5) 0, transparent 100%),
+      radial-gradient(1px 1px at 70% 6%, rgba(232,227,216,.35) 0, transparent 100%),
+      radial-gradient(1.5px 1.5px at 85% 20%, rgba(232,227,216,.3) 0, transparent 100%),
+      radial-gradient(1px 1px at 40% 28%, rgba(232,227,216,.25) 0, transparent 100%),
+      radial-gradient(1px 1px at 8% 40%, rgba(232,227,216,.2) 0, transparent 100%);
+    overflow-x:hidden;
+  }
+  section{padding:56px 24px}
+  .label{
+    font-size:12px;color:var(--candle);letter-spacing:.35em;
+    margin-bottom:14px;font-weight:600;
+  }
+  h1,h2{font-family:var(--serif);font-weight:700;line-height:1.5}
+  h2{font-size:22px;margin-bottom:10px}
+  .sub{color:var(--paper-dim);font-size:14px;margin-bottom:24px}
+
+  /* 히어로 */
+  .hero{padding:96px 24px 72px;text-align:center}
+  .hero .hanja{
+    font-family:var(--serif);font-size:13px;color:var(--candle-dim);
+    letter-spacing:.5em;margin-bottom:20px;
+  }
+  .hero h1{font-size:27px;margin-bottom:16px}
+  .hero p{color:var(--paper-dim);font-size:15px;margin-bottom:40px}
+  .btn{
+    display:inline-block;background:var(--candle);color:#1a130a;
+    font-weight:700;font-size:16px;border:none;border-radius:999px;
+    padding:16px 36px;cursor:pointer;font-family:var(--sans);
+    letter-spacing:-0.02em;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn-ghost{
+    background:transparent;color:var(--paper-dim);border:1px solid var(--line);
+    font-size:13px;padding:10px 20px;
+  }
+
+  /* 입력 */
+  .card{
+    background:var(--night-soft);border:1px solid var(--line);
+    border-radius:16px;padding:24px 20px;
+  }
+  .field{margin-bottom:20px}
+  .field label{display:block;font-size:13px;color:var(--paper-dim);margin-bottom:8px}
+  input[type=date]{
+    width:100%;background:var(--night);border:1px solid var(--line);
+    border-radius:10px;color:var(--paper);font-size:16px;padding:13px 14px;
+    font-family:var(--sans);color-scheme:dark;
+  }
+  input[type=range]{width:100%;accent-color:var(--candle)}
+  .range-val{font-family:var(--serif);color:var(--candle);font-size:15px}
+  .card .btn{width:100%;margin-top:4px}
+
+  /* 인생 달력 */
+  #calendar-canvas{width:100%;display:block;border-radius:8px}
+  .cal-legend{
+    display:flex;gap:16px;margin-top:12px;font-size:12px;color:var(--paper-dim)
+  }
+  .cal-legend i{
+    display:inline-block;width:9px;height:9px;border-radius:2px;
+    margin-right:6px;vertical-align:-1px;
+  }
+  .big-line{
+    font-family:var(--serif);font-size:19px;line-height:1.8;margin:20px 0 0;
+  }
+  .big-line b{color:var(--candle);font-size:26px;font-weight:700}
+
+  /* 횟수의 언어 */
+  .counts{display:flex;flex-direction:column;gap:12px}
+  .count-item{
+    display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:1px solid var(--line);padding:14px 2px;
+  }
+  .count-item span{font-size:14px;color:var(--paper-dim)}
+  .count-item b{font-family:var(--serif);font-size:20px;color:var(--paper)}
+  .count-item b em{font-style:normal;font-size:13px;color:var(--paper-dim);margin-left:2px}
+  .counts-note{font-size:12px;color:var(--paper-dim);margin-top:14px;line-height:1.7}
+
+  /* 오늘의 물음 */
+  .question-card{
+    background:var(--night-soft);border:1px solid var(--line);border-radius:16px;
+    padding:36px 26px;text-align:center;position:relative;
+  }
+  .question-card::before{
+    content:'“';font-family:var(--serif);font-size:44px;color:var(--candle-dim);
+    position:absolute;top:10px;left:18px;line-height:1;
+  }
+  .question-card p{font-family:var(--serif);font-size:19px;line-height:1.8}
+  .question-date{font-size:12px;color:var(--paper-dim);margin-top:18px;letter-spacing:.1em}
+
+  /* 후회 예방 */
+  .regret{border-bottom:1px solid var(--line);padding:18px 0}
+  .regret:last-of-type{border-bottom:none}
+  .regret-title{font-size:14px;color:var(--paper-dim);margin-bottom:8px}
+  .regret-title b{color:var(--paper);font-weight:600}
+  .regret label{
+    display:flex;gap:12px;align-items:flex-start;cursor:pointer;
+    font-size:15px;line-height:1.6;
+  }
+  .regret input{
+    width:19px;height:19px;margin-top:3px;accent-color:var(--candle);flex:none;
+  }
+  .regret input:checked + span{color:var(--candle)}
+  .regret-done{
+    text-align:center;font-family:var(--serif);color:var(--candle);
+    font-size:15px;padding-top:18px;display:none;
+  }
+
+  /* 기억의 제단 */
+  .altar-list{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+  .altar-item{
+    background:var(--night-soft);border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px;position:relative;
+  }
+  .altar-item::before{content:'🕯';position:absolute;top:14px;right:14px;font-size:14px;opacity:.8}
+  .altar-item b{font-family:var(--serif);font-size:16px;display:block;margin-bottom:4px}
+  .altar-item p{font-size:14px;color:var(--paper-dim)}
+  .altar-item button{
+    position:absolute;bottom:10px;right:12px;background:none;border:none;
+    color:#5a5f6a;font-size:11px;cursor:pointer;font-family:var(--sans);
+  }
+  .altar-form input,.altar-form textarea{
+    width:100%;background:var(--night);border:1px solid var(--line);border-radius:10px;
+    color:var(--paper);font-size:15px;padding:12px 14px;font-family:var(--sans);
+    margin-bottom:10px;resize:none;
+  }
+  .altar-empty{
+    text-align:center;color:var(--paper-dim);font-size:13px;padding:20px 0;
+    font-family:var(--serif);
+  }
+
+  /* 묘비명 */
+  .tombstone{
+    background:linear-gradient(180deg,#1d222b 0%,#151920 100%);
+    border:1px solid var(--line);border-radius:80px 80px 8px 8px;
+    padding:52px 28px 36px;text-align:center;
+  }
+  .tombstone .rip{
+    font-family:var(--serif);font-size:12px;color:var(--paper-dim);
+    letter-spacing:.4em;margin-bottom:20px;
+  }
+  .tombstone textarea{
+    width:100%;background:transparent;border:none;border-bottom:1px solid var(--line);
+    color:var(--paper);font-family:var(--serif);font-size:17px;text-align:center;
+    padding:8px 4px;resize:none;line-height:1.7;
+  }
+  .tombstone textarea:focus{outline:none;border-bottom-color:var(--candle)}
+  .tombstone .saved{font-size:12px;color:var(--candle);margin-top:12px;opacity:0;transition:opacity .4s}
+
+  /* 푸터 */
+  footer{padding:64px 24px 80px;text-align:center}
+  footer .quote{font-family:var(--serif);font-size:16px;line-height:2;color:var(--paper-dim)}
+  footer .quote b{color:var(--paper)}
+  footer .src{font-size:11px;color:#4a4f59;margin-top:14px;letter-spacing:.1em}
+
+  .hidden{display:none}
+  .fade-in{animation:fade .8s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 히어로 -->
+  <section class="hero">
+    <div class="hanja">MEMENTO&nbsp;MORI&nbsp;·&nbsp;死&nbsp;卽&nbsp;生</div>
+    <h1>당신에게 남은 계절을<br>세어본 적 있나요?</h1>
+    <p>죽음을 기억하면, 오늘이 선명해집니다.<br>1분이면 당신의 남은 시간을 볼 수 있어요.</p>
+    <button class="btn" onclick="document.getElementById('input').scrollIntoView()">남은 시간 세어보기</button>
+  </section>
+
+  <!-- 입력 -->
+  <section id="input">
+    <div class="label">하나 · 시작</div>
+    <h2>언제 태어나셨나요?</h2>
+    <p class="sub">모든 것은 이 기기 안에만 저장됩니다. 서버로 보내지 않아요.</p>
+    <div class="card">
+      <div class="field">
+        <label for="birth">생년월일</label>
+        <input type="date" id="birth" min="1920-01-01">
+      </div>
+      <div class="field">
+        <label for="lifespan">기대수명 — <span class="range-val" id="lifespan-val">83세</span></label>
+        <input type="range" id="lifespan" min="60" max="100" value="83">
+      </div>
+      <button class="btn" id="calc-btn">나의 달력 펼치기</button>
+    </div>
+  </section>
+
+  <!-- 결과 -->
+  <div id="result" class="hidden">
+
+    <!-- 인생 달력 -->
+    <section>
+      <div class="label">둘 · 인생 달력</div>
+      <h2>한 칸이 일주일입니다</h2>
+      <p class="sub">한 줄이 1년. 채워진 칸은 이미 지나간 주(週)예요.</p>
+      <canvas id="calendar-canvas"></canvas>
+      <div class="cal-legend">
+        <span><i style="background:var(--lived)"></i>살아온 주</span>
+        <span><i style="background:var(--candle)"></i>이번 주</span>
+        <span><i style="background:#2a2f39"></i>남은 주</span>
+      </div>
+      <p class="big-line" id="weeks-line"></p>
+    </section>
+
+    <!-- 횟수의 언어 -->
+    <section>
+      <div class="label">셋 · 횟수의 언어</div>
+      <h2>시간은 길이가 아니라<br>횟수로 셀 때 절실해집니다</h2>
+      <p class="sub">기대수명까지 산다고 할 때, 대략 이만큼 남았어요.</p>
+      <div class="counts" id="counts"></div>
+      <p class="counts-note">
+        시한부 선고를 받은 사람들이 오히려 더 자주 행복을 느낀다는 연구가 있습니다.
+        끝이 보이면, 사람은 사소한 것을 내려놓고 소중한 것에 시간을 쓰기 시작하니까요.<br>
+        <span style="color:#5a5f6a">* 부모님 횟수는 부모님이 나보다 28세 위, 88세까지 함께한다고 가정한 어림값입니다.</span>
+      </p>
+    </section>
+
+    <!-- 오늘의 물음 -->
+    <section>
+      <div class="label">넷 · 오늘의 물음</div>
+      <h2>카르페 디엠</h2>
+      <p class="sub">하루에 하나, 삶을 정면으로 바라보는 질문이 도착합니다.</p>
+      <div class="question-card">
+        <p id="question-text"></p>
+        <div class="question-date" id="question-date"></div>
+      </div>
+    </section>
+
+    <!-- 후회 예방 -->
+    <section>
+      <div class="label">다섯 · 후회 예방</div>
+      <h2>죽음을 앞둔 사람들의 후회는<br>놀랍도록 닮아 있습니다</h2>
+      <p class="sub">호스피스 간호사 브로니 웨어가 기록한 다섯 가지 후회.<br>오늘, 미리 하나씩 뒤집어 보세요.</p>
+      <div class="card" id="regrets"></div>
+      <p class="regret-done" id="regret-done">오늘 몫의 후회를 하나 지웠습니다 🕯</p>
+    </section>
+
+    <!-- 기억의 제단 -->
+    <section>
+      <div class="label">여섯 · 기억의 제단</div>
+      <h2>기억되는 한,<br>아무도 완전히 떠나지 않습니다</h2>
+      <p class="sub">영화 〈코코〉의 제단처럼 — 기억하고 싶은 사람을 이곳에 모셔두세요.</p>
+      <div class="altar-list" id="altar-list"></div>
+      <div class="altar-form card">
+        <input type="text" id="altar-name" placeholder="이름 (예: 할머니)" maxlength="20">
+        <textarea id="altar-memory" rows="2" placeholder="그 사람에 대한 한 줄 기억" maxlength="80"></textarea>
+        <button class="btn btn-ghost" id="altar-add" style="width:100%">제단에 모시기</button>
+      </div>
+    </section>
+
+    <!-- 묘비명 -->
+    <section>
+      <div class="label">일곱 · 마지막 문장</div>
+      <h2>당신의 묘비에는<br>어떤 문장이 남길 바라나요?</h2>
+      <p class="sub">거꾸로 쓰면, 앞으로 어떻게 살지가 보입니다.</p>
+      <div class="tombstone">
+        <div class="rip">HERE&nbsp;LIES</div>
+        <textarea id="epitaph" rows="2" placeholder="한 문장으로 남겨보세요" maxlength="60"></textarea>
+        <div class="saved" id="epitaph-saved">새겨두었습니다</div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <p class="quote">
+      "카르페 디엠. 소년들이여, 오늘을 붙잡게.<br>
+      <b>너의 삶을 비범하게 만들게.</b>"
+    </p>
+    <p class="src">— 존 키팅, 영화 〈죽은 시인의 사회〉</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var LS = 'mementomori.v1.';
+  function save(k,v){ try{ localStorage.setItem(LS+k, JSON.stringify(v)); }catch(e){} }
+  function load(k,d){ try{ var v = localStorage.getItem(LS+k); return v===null ? d : JSON.parse(v); }catch(e){ return d; } }
+
+  var $ = function(id){ return document.getElementById(id); };
+  var birthEl = $('birth'), lifespanEl = $('lifespan');
+
+  var today = new Date(); today.setHours(0,0,0,0);
+  birthEl.max = today.toISOString().slice(0,10);
+
+  lifespanEl.addEventListener('input', function(){
+    $('lifespan-val').textContent = lifespanEl.value + '세';
+  });
+
+  /* ---------- 계산 & 렌더 ---------- */
+  var WEEK = 7*24*3600*1000;
+
+  function render(birth, lifespan){
+    var totalWeeks = Math.round(lifespan * 52.18);
+    var livedWeeks = Math.min(totalWeeks, Math.floor((today - birth) / WEEK));
+    var leftWeeks  = Math.max(0, totalWeeks - livedWeeks);
+    var ageYears   = (today - birth) / (365.25*24*3600*1000);
+    var leftYears  = Math.max(0, lifespan - ageYears);
+
+    /* 캔버스는 display:none 상태에서 폭이 0이므로 먼저 표시한 뒤 그린다 */
+    $('result').classList.remove('hidden');
+    lastCal = [lifespan, livedWeeks];
+    drawCalendar(lifespan, livedWeeks);
+
+    $('weeks-line').innerHTML =
+      '지금까지 <b>' + livedWeeks.toLocaleString() + '</b>주를 살았고,<br>' +
+      '앞으로 <b>' + leftWeeks.toLocaleString() + '</b>주가 남아 있습니다.';
+
+    var counts = [
+      ['다시 만날 봄',            Math.floor(leftYears), '번'],
+      ['올려다볼 보름달',          Math.round(leftYears*12.37), '번'],
+      ['맞이할 주말',             Math.round(leftYears*52.18), '번'],
+      ['부모님을 1년에 2번 뵌다면', Math.max(0, Math.floor(Math.min(leftYears, Math.max(0, 88-(ageYears+28)))*2)), '번'],
+      ['눈 내리는 첫날',           Math.floor(leftYears), '번']
+    ];
+    $('counts').innerHTML = counts.map(function(c){
+      return '<div class="count-item"><span>'+c[0]+'</span><b>약 '+c[1].toLocaleString()+'<em>'+c[2]+'</em></b></div>';
+    }).join('');
+
+    $('result').classList.add('fade-in');
+  }
+
+  var lastCal = null;
+  window.addEventListener('resize', function(){
+    if(lastCal) drawCalendar(lastCal[0], lastCal[1]);
+  });
+
+  function drawCalendar(lifespan, livedWeeks){
+    var canvas = $('calendar-canvas');
+    var cols = 52, rows = lifespan;
+    var dpr = window.devicePixelRatio || 1;
+    var w = canvas.clientWidth || canvas.parentElement.clientWidth - 48;
+    var cell = w / cols;
+    var h = cell * rows;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    canvas.style.height = h + 'px';
+    var ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    var gap = Math.max(0.6, cell*0.22), size = cell - gap;
+    for(var i=0; i<cols*rows; i++){
+      var x = (i%cols)*cell, y = Math.floor(i/cols)*cell;
+      if(i < livedWeeks) ctx.fillStyle = '#e8e3d8';
+      else if(i === livedWeeks) ctx.fillStyle = '#e0a458';
+      else ctx.fillStyle = '#2a2f39';
+      ctx.fillRect(x, y, size, size);
+    }
+  }
+
+  $('calc-btn').addEventListener('click', function(){
+    if(!birthEl.value){ birthEl.focus(); return; }
+    var birth = new Date(birthEl.value + 'T00:00:00');
+    var lifespan = +lifespanEl.value;
+    save('birth', birthEl.value); save('lifespan', lifespan);
+    render(birth, lifespan);
+    setTimeout(function(){ $('result').scrollIntoView({behavior:'smooth'}); }, 50);
+  });
+
+  /* ---------- 오늘의 물음 ---------- */
+  var QUESTIONS = [
+    '오늘이 마지막 날이라면, 지금 하려던 일을 그대로 하시겠어요?',
+    '지난 일주일, 가장 살아있다고 느낀 순간은 언제였나요?',
+    '미루고 있는 안부 인사가 있다면, 누구에게인가요?',
+    '10년 뒤의 내가 지금의 나에게 고마워할 일을 오늘 하나 한다면?',
+    '요즘 나를 가장 많이 흔드는 걱정은, 1년 뒤에도 중요할까요?',
+    '내 장례식에서 어떤 사람으로 기억되고 싶나요?',
+    '지금 곁에 있는 사람에게 아직 하지 못한 말이 있나요?',
+    '오늘 하루 중 온전히 나를 위해 쓴 시간은 몇 분이었나요?',
+    '만약 시간이 1년 남았다면, 가장 먼저 그만둘 일은 무엇인가요?',
+    '만약 시간이 1년 남았다면, 가장 먼저 시작할 일은 무엇인가요?',
+    '나의 하루 중, 죽기 전에 그리워할 장면은 어떤 것일까요?',
+    '남의 기대 때문에 하고 있는 일이 하나 있다면 무엇인가요?',
+    '오늘 감사한 것 세 가지를 떠올릴 수 있나요?',
+    '마지막으로 실컷 웃은 게 언제였나요? 누구와 함께였나요?',
+    '내일 아침이 오지 않는다면, 오늘 저녁을 누구와 보내고 싶나요?',
+    '지금의 나는, 열다섯 살의 내가 되고 싶던 어른인가요?',
+    '용서하지 못한 사람이 있나요? 그 짐은 누가 지고 있나요?',
+    '몸이 보내는 신호 중 못 들은 척하고 있는 것이 있나요?',
+    '올해가 끝나기 전에 꼭 만들어야 할 추억이 있다면?',
+    '내가 없어도 세상은 돌아갑니다. 그래서 오늘 더 자유롭다면, 무엇을 하겠어요?',
+    '가장 최근에 처음 해본 일은 무엇이었나요?',
+    '지금 내 시간을 가장 많이 가져가는 것은, 내 마음도 가져가나요?',
+    '떠난 사람 중 오늘 문득 떠오르는 얼굴이 있나요? 그에게 배운 것은요?',
+    '오늘 하루를 시 한 구절로 남긴다면 어떤 문장인가요?',
+    '"언젠가 해야지"의 언젠가를, 날짜로 바꾼다면 언제인가요?',
+    '나를 정말 아는 사람은 몇 명인가요? 오늘 그중 한 명에게 연락해 볼까요?',
+    '지금 이 계절의 냄새를 기억해 두세요. 몇 번이나 더 맡을 수 있을까요?',
+    '실패해도 괜찮다면 도전하고 싶은 일은 무엇인가요?',
+    '오늘 밤 눈을 감기 전, 스스로에게 해주고 싶은 말은?',
+    '삶이 유한해서 오히려 아름다운 것을 하나 꼽는다면?'
+  ];
+  function dayOfYear(d){ return Math.floor((d - new Date(d.getFullYear(),0,0)) / 86400000); }
+  $('question-text').textContent = QUESTIONS[dayOfYear(today) % QUESTIONS.length];
+  $('question-date').textContent =
+    today.getFullYear()+'년 '+(today.getMonth()+1)+'월 '+today.getDate()+'일의 물음';
+
+  /* ---------- 후회 예방 ---------- */
+  var REGRETS = [
+    ['남의 기대가 아니라 <b>나에게 솔직한 삶</b>을 살 걸', '오늘, 내가 정말 원하는 것 하나를 소리 내어 말해보기'],
+    ['<b>일을 조금만 덜</b> 할 걸', '오늘, 정해둔 시간에 일을 접고 저녁을 돌려받기'],
+    ['<b>내 감정을 표현</b>할 용기를 낼 걸', '오늘, 고맙거나 서운한 마음 하나를 상대에게 전하기'],
+    ['<b>친구들과 계속 연락</b>하며 지낼 걸', '오늘, 멀어진 친구 한 명에게 먼저 안부 보내기'],
+    ['나를 <b>더 행복하게 해줄 걸</b>', '오늘, 이유 없이 나를 기쁘게 하는 일 하나 하기']
+  ];
+  var todayKey = today.toISOString().slice(0,10);
+  var checkedState = load('regrets', {});
+  if(checkedState.date !== todayKey) checkedState = {date: todayKey, done: []};
+
+  var regretsEl = $('regrets');
+  regretsEl.innerHTML = REGRETS.map(function(r, i){
+    var checked = checkedState.done.indexOf(i) > -1 ? ' checked' : '';
+    return '<div class="regret">'+
+      '<div class="regret-title">후회 '+(i+1)+' · '+r[0]+'</div>'+
+      '<label><input type="checkbox" data-i="'+i+'"'+checked+'><span>'+r[1]+'</span></label>'+
+    '</div>';
+  }).join('');
+  regretsEl.addEventListener('change', function(e){
+    var i = +e.target.dataset.i, idx = checkedState.done.indexOf(i);
+    if(e.target.checked && idx===-1) checkedState.done.push(i);
+    if(!e.target.checked && idx>-1) checkedState.done.splice(idx,1);
+    save('regrets', checkedState);
+    $('regret-done').style.display = checkedState.done.length ? 'block' : 'none';
+  });
+  if(checkedState.done.length) $('regret-done').style.display = 'block';
+
+  /* ---------- 기억의 제단 ---------- */
+  function renderAltar(){
+    var people = load('altar', []);
+    $('altar-list').innerHTML = people.length
+      ? people.map(function(p, i){
+          return '<div class="altar-item"><b>'+esc(p.name)+'</b><p>'+esc(p.memory)+'</p>'+
+                 '<button data-i="'+i+'">내려놓기</button></div>';
+        }).join('')
+      : '<div class="altar-empty">아직 모신 분이 없습니다.<br>기억은 이곳에 두는 순간부터 두 번째 삶을 삽니다.</div>';
+  }
+  function esc(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+  $('altar-add').addEventListener('click', function(){
+    var name = $('altar-name').value.trim(), memory = $('altar-memory').value.trim();
+    if(!name){ $('altar-name').focus(); return; }
+    var people = load('altar', []);
+    people.push({name:name, memory: memory || '늘 마음에 있습니다.'});
+    save('altar', people);
+    $('altar-name').value = ''; $('altar-memory').value = '';
+    renderAltar();
+  });
+  $('altar-list').addEventListener('click', function(e){
+    if(e.target.tagName !== 'BUTTON') return;
+    var people = load('altar', []);
+    people.splice(+e.target.dataset.i, 1);
+    save('altar', people);
+    renderAltar();
+  });
+  renderAltar();
+
+  /* ---------- 묘비명 ---------- */
+  var epitaphEl = $('epitaph'), epTimer;
+  epitaphEl.value = load('epitaph', '');
+  epitaphEl.addEventListener('input', function(){
+    clearTimeout(epTimer);
+    epTimer = setTimeout(function(){
+      save('epitaph', epitaphEl.value.trim());
+      var s = $('epitaph-saved');
+      s.style.opacity = 1;
+      setTimeout(function(){ s.style.opacity = 0; }, 1500);
+    }, 600);
+  });
+
+  /* ---------- 재방문 복원 ---------- */
+  var savedBirth = load('birth', null);
+  if(savedBirth){
+    birthEl.value = savedBirth;
+    lifespanEl.value = load('lifespan', 83);
+    $('lifespan-val').textContent = lifespanEl.value + '세';
+    render(new Date(savedBirth + 'T00:00:00'), +lifespanEl.value);
+  }
+})();
+</script>
+</body>
+</html>
