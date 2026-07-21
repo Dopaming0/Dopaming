@@ -1,4 +1,5 @@
 config.yaml
+service_account.json
 data/
 *.db
 *.sqlite3

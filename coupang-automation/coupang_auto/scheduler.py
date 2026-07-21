@@ -3,13 +3,14 @@ from __future__ import annotations
 
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .config import Config
 from .coupang_client import CoupangClient
 from .db import Database
 from . import pipeline
 from .telegram_bot import TelegramBot
+from .watcher import run_watch
 
 log = logging.getLogger(__name__)
 
@@ -61,7 +62,12 @@ def run_daemon(config: Config):
     else:
         log.info("telegram 미설정 — 승인은 CLI(approve/reject 명령)로 처리하세요.")
 
-    log.info("daemon started (batches: %s, tz: %s)", config.batches, config.timezone)
+    watch_enabled = bool(config.google_sheet.get("spreadsheet_id"))
+    watch_interval = timedelta(hours=float(config.watch.get("interval_hours", 6)))
+    next_watch = datetime.now(config.tz)  # 시작 직후 1회 실행
+
+    log.info("daemon started (batches: %s, tz: %s, watch: %s)",
+             config.batches, config.timezone, watch_enabled and f"every {watch_interval}")
     while True:
         now = datetime.now(config.tz)
         label = _due_label(now, config.batches)
@@ -74,4 +80,12 @@ def run_daemon(config: Config):
                 log.exception("batch failed")
                 if bot:
                     bot.send(f"🚨 배치 실행 실패 ({label}) — 로그를 확인하세요.")
+        if watch_enabled and now >= next_watch:
+            next_watch = now + watch_interval
+            try:
+                run_watch(config, db, bot)
+            except Exception:
+                log.exception("watch failed")
+                if bot:
+                    bot.send("🚨 도매처 가격·품절 확인 실패 — 로그를 확인하세요.")
         time.sleep(CHECK_INTERVAL_SEC)

@@ -70,6 +70,15 @@ CREATE TABLE IF NOT EXISTS events (
   kind   TEXT NOT NULL,
   detail TEXT
 );
+
+-- 도매처 상품페이지 감시 상태 (가격·품절 변경 감지용 직전 스냅샷)
+CREATE TABLE IF NOT EXISTS watch_state (
+  url        TEXT PRIMARY KEY,
+  price      INTEGER,
+  soldout    INTEGER,
+  error      TEXT,
+  checked_at TEXT
+);
 """
 
 
@@ -246,6 +255,22 @@ class Database:
             if all(r["po_status"] == "approved" for r in rows):
                 ready.append(box_id)
         return ready
+
+    # ---- watch state ----
+    def get_watch_state(self, url: str) -> dict | None:
+        row = self.conn.execute("SELECT * FROM watch_state WHERE url = ?", (url,)).fetchone()
+        return dict(row) if row else None
+
+    def set_watch_state(self, url: str, price: int | None, soldout: bool | None, error: str | None):
+        self.conn.execute(
+            """INSERT INTO watch_state (url, price, soldout, error, checked_at)
+               VALUES (?, ?, ?, ?, ?)
+               ON CONFLICT(url) DO UPDATE SET
+                 price=excluded.price, soldout=excluded.soldout,
+                 error=excluded.error, checked_at=excluded.checked_at""",
+            (url, price, None if soldout is None else int(soldout), error, now_iso()),
+        )
+        self.conn.commit()
 
     # ---- batch runs ----
     def start_batch(self, batch_id: str, label: str) -> bool:

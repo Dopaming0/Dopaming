@@ -31,6 +31,7 @@ class SupplierConf:
     key: str
     name: str
     columns: list[dict] = field(default_factory=list)
+    watch: dict = field(default_factory=dict)  # 가격·품절 감시 설정 (fetch/price_selector/…)
 
 
 @dataclass
@@ -43,6 +44,8 @@ class Config:
     database: str = "data/dopaming.db"
     order_files_dir: str = "data/orders"
     base_dir: Path = field(default_factory=Path.cwd)
+    google_sheet: dict = field(default_factory=dict)   # spreadsheet_id / worksheet / service_account_json
+    watch: dict = field(default_factory=dict)          # interval_hours 등
 
     @property
     def tz(self) -> ZoneInfo:
@@ -77,7 +80,10 @@ def load_config(path: str | os.PathLike = "config.yaml") -> Config:
     suppliers: dict[str, SupplierConf] = {}
     for key, sconf in (raw.get("suppliers") or {}).items():
         columns = ((sconf.get("order_sheet") or {}).get("columns")) or []
-        suppliers[key] = SupplierConf(key=key, name=sconf.get("name", key), columns=columns)
+        suppliers[key] = SupplierConf(
+            key=key, name=sconf.get("name", key), columns=columns,
+            watch=sconf.get("watch") or {},
+        )
     if not suppliers:
         raise ValueError("suppliers 설정이 비어 있습니다. 공급처를 1개 이상 정의하세요.")
 
@@ -92,4 +98,6 @@ def load_config(path: str | os.PathLike = "config.yaml") -> Config:
         database=raw.get("database", "data/dopaming.db"),
         order_files_dir=raw.get("order_files_dir", "data/orders"),
         base_dir=path.resolve().parent,
+        google_sheet=raw.get("google_sheet") or {},
+        watch=raw.get("watch") or {},
     )

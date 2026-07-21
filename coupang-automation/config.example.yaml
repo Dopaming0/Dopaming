@@ -27,15 +27,33 @@ api_key_issued_date: "2026-07-18"
 database: data/dopaming.db
 order_files_dir: data/orders
 
+# ── 구글시트 연동: 도매처 가격·품절 자동 확인 ──────────────────────────
+# 1) Google Cloud Console 에서 서비스 계정 생성 → JSON 키 다운로드 → 아래 경로에 저장
+# 2) 구글시트를 서비스 계정 이메일(...@...iam.gserviceaccount.com)에 '편집자'로 공유
+# 3) 시트 헤더 행에 '공급처URL' 열을 추가하고 상품별 도매처 상품페이지 주소 입력
+#    → '현재공급가'/'품절여부'/'확인시각' 열은 자동 생성·기록됩니다
+google_sheet:
+  spreadsheet_id: "1SqlyZrBSV2-iXcDX5wnknqOBZMZCqBzxG7Fhj3HozCE"
+  worksheet: "시트1"              # 감시할 탭 이름
+  service_account_json: "service_account.json"
+
+watch:
+  interval_hours: 6               # 데몬에서 몇 시간마다 확인할지
+
 # 공급처 정의. key(영문)는 SKU 매핑 CSV의 supplier_key 와 일치해야 합니다.
 # order_sheet.columns 로 공급처별 발주 엑셀 양식(열 순서·헤더)을 맞춥니다.
 # 사용 가능한 field:
 #   receiver_name, receiver_phone, receiver_zip, receiver_addr,
 #   supplier_item_name, coupang_item_name, qty, delivery_message,
 #   order_id, shipment_box_id
+# 공급처별 감시 설정(watch)
+#   fetch: playwright        → 로그인해야 가격이 보이는 몰. coupang-auto watch-login <키> <로그인URL> 로 1회 로그인
+#   price_selector / soldout_selector / soldout_text → 자동 파싱이 안 맞을 때 CSS 셀렉터로 지정
 suppliers:
   woleokdojeon:
     name: "월억도전"
+    watch:
+      fetch: playwright          # B2B 몰은 대부분 로그인 후 가격 노출
     order_sheet:
       columns:
         - { header: "수취인명",   field: receiver_name }
@@ -70,3 +88,12 @@ suppliers:
         - { header: "수량",       field: qty }
         - { header: "배송메모",   field: delivery_message }
         - { header: "주문번호",   field: order_id }
+  # 감시 전용 공급처 (발주 양식 없이 가격·품절 확인만)
+  sikpumbaekeok:
+    name: "식품백억"
+    watch:
+      fetch: playwright
+  mangocompany:
+    name: "망고컴퍼니"
+    watch:
+      fetch: playwright

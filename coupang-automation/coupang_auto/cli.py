@@ -33,7 +33,13 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("reject", help="발주서 반려 (주문은 다음 배치에서 재발주)")
     p.add_argument("po_id", type=int)
 
-    sub.add_parser("run-daemon", help="상시 데몬 실행 (배치 스케줄 + 텔레그램 봇)")
+    sub.add_parser("run-daemon", help="상시 데몬 실행 (배치 스케줄 + 텔레그램 봇 + 가격·품절 감시)")
+
+    sub.add_parser("watch-run", help="구글시트 상품의 도매처 가격·품절 즉시 확인")
+
+    p = sub.add_parser("watch-login", help="로그인 필요한 도매처의 세션 저장 (브라우저가 열림)")
+    p.add_argument("supplier_key", help="config.yaml 의 공급처 키 (예: woleokdojeon)")
+    p.add_argument("login_url", help="도매처 로그인 페이지 URL")
 
     args = parser.parse_args(argv)
     config = load_config(args.config)
@@ -77,6 +83,27 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "run-daemon":
         run_daemon(config)
+        return 0
+
+    if args.command == "watch-run":
+        from .watcher import run_watch
+        print(run_watch(config, db))
+        return 0
+
+    if args.command == "watch-login":
+        from playwright.sync_api import sync_playwright
+        storage_dir = config._resolve("data/storage")
+        storage_dir.mkdir(parents=True, exist_ok=True)
+        state_path = storage_dir / f"{args.supplier_key}.json"
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(headless=False)
+            context = browser.new_context()
+            page = context.new_page()
+            page.goto(args.login_url)
+            input("브라우저에서 로그인을 마친 뒤, 이 터미널에서 Enter 를 누르세요... ")
+            context.storage_state(path=str(state_path))
+            browser.close()
+        print(f"로그인 세션 저장 완료: {state_path}")
         return 0
 
     return 1
