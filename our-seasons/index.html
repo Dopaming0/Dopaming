@@ -5,8 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>우리의 계절 — 함께라서 소중한 시간</title>
 <meta name="description" content="하루 한 질문, 기분 나누기, 추억과 기념일, 그리고 함께할 계절 세어보기까지. 시간이 유한해서 오늘이 더 소중해지는 커플 앱." />
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#F86D6D" />
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="우리의 계절" />
 <link rel="preconnect" href="https://cdn.jsdelivr.net" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap" rel="stylesheet" />
 <style>
 :root{
   --bg:#FFF6F1;
@@ -24,6 +35,7 @@
   --p2:#5FA8D3;
   --radius:20px;
   --shadow:0 8px 24px rgba(229,72,77,.08);
+  --hand:'Gaegu','Pretendard Variable',cursive;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{font-size:16px}
@@ -76,7 +88,7 @@ header{
   position:sticky;top:0;z-index:20;background:rgba(255,246,241,.92);backdrop-filter:blur(10px);
   padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between;
 }
-.brand{font-weight:800;font-size:1.05rem;color:var(--primary-deep)}
+.brand{font-family:var(--hand);font-weight:700;font-size:1.35rem;color:var(--primary-deep);line-height:1}
 .brand small{font-weight:600;font-size:.72rem;color:var(--ink-soft);margin-left:6px}
 .who{display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:5px 12px 5px 8px;font-size:.82rem;font-weight:700}
 .who .dot{width:10px;height:10px;border-radius:50%}
@@ -89,8 +101,9 @@ header{
 }
 .hero::after{content:"";position:absolute;right:-30px;top:-30px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.12)}
 .hero .names{font-size:1.05rem;font-weight:700;opacity:.95}
-.hero .dday{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;margin:2px 0 4px}
+.hero .dday{font-family:var(--hand);font-size:2.6rem;font-weight:700;letter-spacing:0;margin:2px 0 4px}
 .hero .sub{font-size:.82rem;opacity:.9}
+.hero .tagline{font-family:var(--hand);font-size:1.02rem;opacity:.95;margin-top:8px}
 .hero .temp-row{display:flex;align-items:center;gap:10px;margin-top:14px}
 .hero .temp-bar{flex:1;height:8px;background:rgba(255,255,255,.28);border-radius:99px;overflow:hidden}
 .hero .temp-fill{height:100%;background:#fff;border-radius:99px;transition:width .6s ease}
@@ -312,6 +325,7 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
 <!-- ================= 온보딩 ================= -->
 <div id="onboarding" style="display:none">
   <div class="inner">
+    <p style="font-family:var(--hand);font-size:1.15rem;color:var(--primary);margin-bottom:6px">인연이 필연이 되는 순간까지 🫶</p>
     <h1>우리, 매일 조금씩<br>더 가까워질까요?</h1>
     <p class="lead">하루 한 개의 질문에 서로 몰래 답하고, 둘 다 답하면 마음이 공개돼요. 기분도, 고마움도, 추억도, 우리에게 남은 계절까지 여기에 차곡차곡.</p>
 
@@ -356,12 +370,15 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
       <div class="names" id="hero-names"></div>
       <div class="dday" id="hero-dday"></div>
       <div class="sub" id="hero-date"></div>
+      <div class="tagline">인연이 필연이 되는 순간까지 🫶</div>
       <div class="temp-row">
         <span>🌡️</span>
         <div class="temp-bar"><div class="temp-fill" id="temp-fill"></div></div>
         <span class="temp-num" id="temp-num"></span>
       </div>
     </div>
+
+    <div class="card" id="home-install-card" style="display:none"></div>
 
     <div class="card" id="reward-card"></div>
 
@@ -463,7 +480,8 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
       <div class="settings-row danger" id="set-reset">전체 초기화</div>
       <input type="file" id="import-file" accept="application/json" style="display:none" />
     </div>
-    <p style="text-align:center;font-size:.72rem;color:#C9B4AD;margin:8px 0 20px">우리의 계절 v1.0 · 모든 기록은 이 기기에만 저장됩니다</p>
+    <p style="text-align:center;font-size:.72rem;color:#C9B4AD;margin:8px 0 4px">우리의 계절 v1.1 · 모든 기록은 두 사람의 기기에만</p>
+    <p style="text-align:center;font-family:var(--hand);font-size:1rem;color:var(--peach);margin:0 0 20px">인연이 필연이 되는 순간까지 🫶</p>
   </section>
 
   <nav>
@@ -1482,7 +1500,7 @@ function applyTheme(){
 function renderRewardCard(){
   const n = completedDays();
   const next = MILESTONES.find(m=>!S.rewards.claimed[m.d]);
-  let html = `<div class="card-title">더 오래 더 깊게 사랑하자 <span style="font-weight:700;color:var(--primary)">문답 ${n}일 완성</span></div>`;
+  let html = `<div class="card-title">더 오래, 더 깊게 — 필연이 될 때까지 <span style="font-weight:700;color:var(--primary)">문답 ${n}일</span></div>`;
   html += `<div class="ms-track">${MILESTONES.map(m=>{
     const done = S.rewards.claimed[m.d], can = !done && n>=m.d;
     return `<div class="ms ${done?"done":can?"can":""}"><div class="ms-ico">${done?"✔":m.ico}</div><div class="ms-d">${m.d}일</div></div>`;
@@ -2136,6 +2154,37 @@ function openModal(html){
 function closeModal(){ $("#modal-root").innerHTML = ""; }
 
 /* ==================================================================
+   진짜 앱처럼: 서비스 워커(오프라인) + 홈 화면 설치 안내
+   ================================================================== */
+if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
+let deferredInstall = null;
+window.addEventListener("beforeinstallprompt",(e)=>{ e.preventDefault(); deferredInstall = e; renderInstallCard(); });
+function isStandalone(){ return matchMedia("(display-mode: standalone)").matches || navigator.standalone === true; }
+function renderInstallCard(){
+  const el = $("#home-install-card");
+  if(!el) return;
+  if(isStandalone() || localStorage.getItem("ourseasons.installTip")==="off"){ el.style.display="none"; return; }
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  el.style.display = "block";
+  el.innerHTML = `<div class="card-title">📲 진짜 앱처럼 쓰기 <button class="more" id="install-hide">다시 안 보기</button></div>
+    ${deferredInstall
+      ? `<p style="font-size:.88rem;color:var(--ink-soft);margin-bottom:10px;word-break:keep-all">홈 화면에 설치하면 전체 화면으로 열리고, 오프라인에서도 켜져요.</p><button class="btn sm" id="install-now">🫶 홈 화면에 설치하기</button>`
+      : ios
+        ? `<p style="font-size:.88rem;color:var(--ink-soft);word-break:keep-all">사파리 하단 <b>공유 버튼(⬆️)</b> → <b>'홈 화면에 추가'</b>를 누르면 하트 아이콘이 생기고, 전체 화면 앱이 돼요.</p>`
+        : `<p style="font-size:.88rem;color:var(--ink-soft);word-break:keep-all">브라우저 메뉴(⋮)에서 <b>'홈 화면에 추가'</b> 또는 <b>'앱 설치'</b>를 누르면 진짜 앱처럼 쓸 수 있어요.</p>`}`;
+  const hide = $("#install-hide");
+  if(hide) hide.addEventListener("click",()=>{ localStorage.setItem("ourseasons.installTip","off"); el.style.display="none"; });
+  const now = $("#install-now");
+  if(now) now.addEventListener("click",async ()=>{
+    if(!deferredInstall) return;
+    deferredInstall.prompt();
+    const r = await deferredInstall.userChoice;
+    if(r && r.outcome==="accepted"){ el.style.display="none"; toast("🫶 설치됐어요! 홈 화면에서 만나요"); }
+    deferredInstall = null;
+  });
+}
+
+/* ==================================================================
    부팅
    ================================================================== */
 function renderAll(){
@@ -2156,6 +2205,7 @@ function renderAll(){
   renderThanks();
   renderAnnivScreen();
   renderMore();
+  renderInstallCard();
 }
 renderAll();
 startSyncLoop();
