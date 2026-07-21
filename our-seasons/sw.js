@@ -1,7 +1,7 @@
 /* 우리의 계절 — 서비스 워커
    전략: 같은 출처는 네트워크 우선(항상 최신) + 실패 시 캐시(오프라인),
    Supabase 등 외부 요청은 건드리지 않음 */
-const CACHE = "ourseasons-v1";
+const CACHE = "ourseasons-v2";
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"])));

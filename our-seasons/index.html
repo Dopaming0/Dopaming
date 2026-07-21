@@ -235,6 +235,50 @@ header{
 .settings-row .arrow{color:#D8C2BB}
 .settings-row.danger{color:var(--primary-deep)}
 
+/* ---------- 콩닥이 (커플 캐릭터) ---------- */
+.pet-wrap{display:flex;align-items:center;gap:14px}
+.pet-char{
+  flex:none;width:78px;height:78px;border-radius:50%;
+  background:linear-gradient(135deg,#FFF1E8,#FFE0D6);
+  display:flex;align-items:center;justify-content:center;font-size:2.6rem;
+  box-shadow:inset 0 -4px 10px rgba(229,72,77,.08);
+}
+.pet-char.fed{animation:petBounce 1.6s ease infinite}
+@keyframes petBounce{0%,100%{transform:translateY(0)}30%{transform:translateY(-7px) rotate(-4deg)}55%{transform:translateY(0)}70%{transform:translateY(-3px) rotate(3deg)}}
+.pet-info{flex:1;min-width:0}
+.pet-name{font-family:var(--hand);font-size:1.25rem;font-weight:700;color:var(--ink)}
+.pet-lv{font-size:.7rem;font-weight:800;color:#B0731B;background:#FFF3E2;padding:2px 8px;border-radius:999px;margin-left:4px;vertical-align:2px;font-family:"Pretendard Variable",Pretendard,sans-serif}
+.pet-next{font-size:.74rem;color:var(--ink-soft);margin-top:2px}
+.pet-bubble{
+  position:relative;background:#FFF9F6;border:1.5px dashed var(--peach);border-radius:14px;
+  padding:10px 13px;margin-top:12px;font-family:var(--hand);font-size:1.02rem;color:var(--ink);
+}
+.pet-bubble::before{content:"";position:absolute;top:-7px;left:36px;width:12px;height:12px;background:#FFF9F6;border-left:1.5px dashed var(--peach);border-top:1.5px dashed var(--peach);transform:rotate(45deg)}
+.pet-feed{display:flex;gap:6px;margin-top:10px}
+.pet-feed .pf{flex:1;text-align:center;background:#FFF9F6;border-radius:10px;padding:7px 2px;font-size:.7rem;font-weight:700;color:#C9B4AD}
+.pet-feed .pf.on{background:var(--primary-soft);color:var(--primary-deep)}
+
+/* ---------- 커플 퀴즈 ---------- */
+.quiz-opts{display:flex;flex-direction:column;gap:8px}
+.quiz-opt{
+  text-align:left;background:#FFF9F6;border:1.5px solid var(--line);border-radius:12px;
+  padding:11px 13px;font-size:.9rem;font-weight:600;transition:all .12s;
+}
+.quiz-opt:active{transform:scale(.98)}
+.quiz-opt.mine{border-color:var(--peach);background:var(--primary-soft)}
+.quiz-opt .tag{font-size:.68rem;font-weight:800;color:var(--primary-deep);margin-left:6px}
+.quiz-result{display:flex;gap:8px;margin-top:4px}
+.quiz-result .qr{flex:1;background:#FFF9F6;border-radius:12px;padding:11px;text-align:center}
+.quiz-result .qr .who{font-size:.7rem;font-weight:800;margin-bottom:3px}
+.quiz-result .qr .ans{font-size:.82rem;font-weight:700;word-break:keep-all}
+.quiz-result .qr .hit{font-size:.72rem;font-weight:800;margin-top:5px}
+.sync-line{text-align:center;font-size:.82rem;font-weight:800;color:#B0731B;background:#FFF3E2;border-radius:12px;padding:9px;margin-top:10px}
+
+/* ---------- 추억 사진 ---------- */
+.memory .thumb{width:100%;max-height:220px;object-fit:cover;border-radius:12px;margin-top:8px;display:block;cursor:pointer}
+.photo-view img{width:100%;border-radius:14px;display:block}
+.mem-photo-preview{width:100%;max-height:160px;object-fit:cover;border-radius:12px;margin-top:8px;display:none}
+
 /* ---------- 계절 탭 (우리에게 남은 시간) ---------- */
 .time-hero{
   background:linear-gradient(135deg,#FFD3E0 0%,#FFB4A2 45%,#C4B5FD 100%);
@@ -380,6 +424,8 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
 
     <div class="card" id="home-install-card" style="display:none"></div>
 
+    <div class="card" id="pet-card"></div>
+
     <div class="card" id="reward-card"></div>
 
     <div class="card">
@@ -416,6 +462,7 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
   <!-- ================= 질문 ================= -->
   <section class="screen" id="screen-qa">
     <div class="card" id="qa-today-card"></div>
+    <div class="card" id="quiz-card"></div>
     <div class="card">
       <div class="card-title">우리의 문답 기록</div>
       <div id="qa-archive"></div>
@@ -466,6 +513,8 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
         <div class="stat"><div class="v" id="st-thanks"></div><div class="k">고마워 한 줄</div></div>
         <div class="stat"><div class="v" id="st-memories"></div><div class="k">기록한 추억</div></div>
         <div class="stat"><div class="v" id="st-temp"></div><div class="k">애정 온도</div></div>
+        <div class="stat"><div class="v" id="st-sync"></div><div class="k">퀴즈 싱크로율</div></div>
+        <div class="stat"><div class="v" id="st-bucket"></div><div class="k">이룬 버킷</div></div>
       </div>
       <p style="font-size:.76rem;color:var(--ink-soft);margin-top:12px;word-break:keep-all">애정 온도는 문답·기분·고마워·추억·미션을 꾸준히 나눌수록 올라가요. 최근 2주의 기록이 반영돼요.</p>
     </div>
@@ -480,7 +529,7 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
       <div class="settings-row danger" id="set-reset">전체 초기화</div>
       <input type="file" id="import-file" accept="application/json" style="display:none" />
     </div>
-    <p style="text-align:center;font-size:.72rem;color:#C9B4AD;margin:8px 0 4px">우리의 계절 v1.1 · 모든 기록은 두 사람의 기기에만</p>
+    <p style="text-align:center;font-size:.72rem;color:#C9B4AD;margin:8px 0 4px">우리의 계절 v1.2 · 모든 기록은 두 사람의 기기에만</p>
     <p style="text-align:center;font-family:var(--hand);font-size:1rem;color:var(--peach);margin:0 0 20px">인연이 필연이 되는 순간까지 🫶</p>
   </section>
 
@@ -735,6 +784,66 @@ const MISSIONS = [
   {t:"서로의 하루를 3분씩 브이로그로 찍어 보여주기", s:"별거 없어도 별게 돼요"},
 ];
 
+/* ==================================================================
+   커플 퀴즈 (서로 맞히기): 내 답 + 상대 답 예측 → 둘 다 완료 시 공개
+   ================================================================== */
+const QUIZZES = [
+  {q:"데이트 당일 갑자기 비가 쏟아진다면, 나는?", o:["실내 데이트로 바로 변경","우산 쓰고 그대로 강행","집 데이트로 전환","다음으로 미루자고 한다"]},
+  {q:"내가 스트레스 받았을 때 가장 원하는 것은?", o:["혼자만의 시간","맛있는 음식","꼭 안아주기","신나게 수다 떨기"]},
+  {q:"여행 스타일, 나는 어느 쪽?", o:["분 단위 계획형","큰 틀만 정하는 반계획형","발 닿는 대로 즉흥형","숙소에서 쉬는 힐링형"]},
+  {q:"기념일 선물로 가장 받고 싶은 것은?", o:["손편지와 정성 이벤트","갖고 싶던 물건","맛있는 저녁과 분위기","함께 떠나는 여행"]},
+  {q:"싸우고 나서 나의 화해 스타일은?", o:["바로 대화로 풀어야 함","혼자 정리할 시간이 필요","맛있는 거 먹으면 풀림","스킨십으로 화해"]},
+  {q:"내가 더 좋아하는 데이트는?", o:["집에서 뒹굴뒹굴","맛집 탐방","액티비티 (방탈출·볼링)","감성 산책·드라이브"]},
+  {q:"갑자기 하루 휴가가 생긴다면 나는?", o:["늦잠 + 집콕","당일치기 여행","밀린 취미생활","애인 퇴근길 서프라이즈"]},
+  {q:"애정표현 중 내가 제일 좋아하는 것은?", o:["다정한 말","함께 보내는 시간","스킨십","선물·이벤트"]},
+  {q:"나의 아침 첫 행동은?", o:["휴대폰부터 확인","5분만 더... 알람 미루기","바로 벌떡 일어남","물 마시고 스트레칭"]},
+  {q:"치킨을 시킨다면 나는?", o:["무조건 후라이드","무조건 양념","반반 무많이","그때그때 신메뉴"]},
+  {q:"내가 생각하는 최고의 밤 데이트 마무리는?", o:["야식 먹방","밤 산책","영화 한 편","통화하며 잠들기"]},
+  {q:"연락 스타일, 나는?", o:["실시간 공유형 (TMI 다 보냄)","틈틈이 안부형","용건 위주 간결형","전화가 더 좋은 통화형"]},
+  {q:"내 통장을 제일 위협하는 것은?", o:["맛집·배달","옷·꾸미기","취미·덕질","여행·경험"]},
+  {q:"무서운 영화를 보자고 하면 나는?", o:["완전 환영, 내가 더 좋아함","꼭 붙어있는 조건으로 OK","손으로 눈 가리고 봄","절대 사절"]},
+  {q:"내가 요리를 한다면 자신 있는 것은?", o:["라면 하나는 기가 막히게","간단한 집밥","나름 요리 좀 함","배달 앱 주문 실력"]},
+  {q:"노래방에 가면 나는?", o:["발라드 감성","신나는 댄스·아이돌","힙합·랩","마이크 사양, 탬버린 담당"]},
+  {q:"길에서 강아지를 보면 나는?", o:["무조건 다가가서 인사","멀리서 심장만 부여잡음","사진부터 찍음","고양이파라 시큰둥"]},
+  {q:"내가 삐졌을 때 가장 효과적인 처방은?", o:["맛있는 음식","진심 어린 사과 한마디","꼭 안아주기","그냥 시간이 약"]},
+  {q:"우리 관계에서 내가 맡은 역할은?", o:["계획 담당","분위기 메이커","결정 담당","챙김이 (케어 담당)"]},
+  {q:"첫눈이 오면 나는?", o:["바로 애인에게 연락","사진 찍어 SNS에 올림","감성에 젖어 음악 듣기","춥다고 집으로 직행"]},
+  {q:"커플템을 맞춘다면 나는?", o:["커플링","커플 옷·신발","배경화면·키링 같은 소소템","사실 좀 부끄러움"]},
+  {q:"내가 더 끌리는 휴가는?", o:["바다 앞에서 물멍","산속 캠핑·불멍","도시 호캉스","해외 배낭여행"]},
+  {q:"밥 먹을 때 나는?", o:["맛있는 건 마지막에","맛있는 것부터 먹음","골고루 번갈아","일단 사진부터"]},
+  {q:"애인이 아플 때 나는?", o:["바로 달려간다","죽·약을 배달시킨다","전화로 계속 챙긴다","나을 때까지 푹 쉬게 둔다"]},
+  {q:"내 폰 사진첩에 제일 많은 것은?", o:["애인·우리 사진","음식 사진","셀카","캡처·짤"]},
+  {q:"미래에 함께 산다면 제일 기대되는 것은?", o:["같이 눈 뜨는 아침","저녁 같이 해 먹기","소파에서 같이 뒹굴기","반려동물 키우기"]},
+  {q:"내가 더 못 참는 것은?", o:["배고픔","졸림","심심함","더위·추위"]},
+  {q:"갑자기 10만원이 생긴다면 나는?", o:["애인이랑 맛있는 거 먹으러","사고 싶던 것 지르기","저축","반반 나누자고 한다"]},
+  {q:"사진 찍을 때 나는?", o:["포즈 연구하는 인생샷파","자연스러운 스냅파","찍는 게 더 좋음","사진 자체를 잘 안 찍음"]},
+  {q:"잠들기 전 나의 마지막 행동은?", o:["애인과 통화·메시지","릴스 무한 스크롤","내일 일정 생각","눕자마자 기절"]},
+  {q:"내가 생각하는 '완벽한 주말'은?", o:["아무 약속 없는 완전 휴식","애인과 꽉 찬 데이트","친구들과 신나게","밀린 집안일 해치우기"]},
+  {q:"우리가 함께 도전한다면 뭐가 제일 좋아?", o:["커플 운동 (러닝·헬스)","원데이 클래스","같이 게임","커플 여행 적금"]},
+];
+
+/* ==================================================================
+   콩닥이: 문답·퀴즈·미션을 먹고 자라는 커플 캐릭터
+   ================================================================== */
+const PET_STAGES = [
+  {min:0,   e:"🥚", name:"알"},
+  {min:3,   e:"🐣", name:"갓 깬 콩닥이"},
+  {min:7,   e:"🩷", name:"아기 하트"},
+  {min:14,  e:"💗", name:"두근 하트"},
+  {min:28,  e:"💓", name:"콩닥 하트"},
+  {min:50,  e:"💖", name:"반짝 하트"},
+  {min:100, e:"💘", name:"큐피드 하트"},
+];
+const PET_LINES = [
+  "오늘도 서로에게 다정했나요? 🌸",
+  "문답 하나가 저의 밥이에요, 냠냠!",
+  "퀴즈로 서로의 마음을 맞혀봐요!",
+  "두 분이 웃으면 저도 자라나요 🫶",
+  "인연이 필연이 될 때까지, 제가 지켜볼게요!",
+  "오늘 안아주기 하셨어요? 10초 이상!",
+  "미션도 잊지 마세요, 쑥쑥 크고 싶어요!",
+];
+
 const MOODS = [
   {e:"😊", t:"좋아"},
   {e:"🥰", t:"설레"},
@@ -826,6 +935,8 @@ function defaultState(){
     carpe:{},     // dateKey -> {done:[후회제로 체크 인덱스]}
     bucket:[],    // {id,text,done} — 우리 버킷리스트
     lastline:"",  // 우리 이야기의 마지막 문장
+    quiz:{},      // dateKey -> {qi, p1:{self,guess}, p2:{self,guess}} — 커플 퀴즈
+    pet:null,     // {name} — 콩닥이 이름
     sync:null,    // {code, me:"p1"|"p2"} — 커플 연결 정보 (동기화 대상에서 제외)
   };
 }
@@ -910,6 +1021,22 @@ function toast(msg){
   clearTimeout(t._tm);
   t._tm = setTimeout(()=>t.classList.remove("show"), 1800);
 }
+/* 사진 압축: 긴 변 640px, JPEG 62% — 동기화 용량을 아끼기 위한 강한 압축 */
+function compressImage(file, cb){
+  const img = new Image();
+  img.onload = ()=>{
+    const max = 640;
+    const r = Math.min(1, max/Math.max(img.width, img.height));
+    const c = document.createElement("canvas");
+    c.width = Math.max(1, Math.round(img.width*r));
+    c.height = Math.max(1, Math.round(img.height*r));
+    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    URL.revokeObjectURL(img.src);
+    cb(c.toDataURL("image/jpeg", .62));
+  };
+  img.onerror = ()=>{ URL.revokeObjectURL(img.src); toast("사진을 읽지 못했어요"); };
+  img.src = URL.createObjectURL(file);
+}
 
 /* ==================================================================
    애정 온도: 최근 14일의 기록량 반영 (기본 36.5 ~ 최대 100)
@@ -991,7 +1118,7 @@ $("#who-btn").addEventListener("click",()=>{
   $("#handoff-desc").textContent = "기기를 "+nameOf(next)+"에게 건네주세요. 아직 서로의 오늘 답은 비밀이에요.";
   $("#handoff").classList.add("show");
   $("#handoff-ok").onclick = ()=>{
-    S.current = next; save();
+    S.current = next; quizPick = null; save();
     $("#handoff").classList.remove("show");
     toast(nameOf(next)+"(으)로 전환됐어요");
     renderAll();
@@ -1299,12 +1426,21 @@ function renderMemories(){
         <div class="ttl">${esc(m.title)}</div>
         <div class="dt">${fmtShort(m.date)}</div>
         ${m.text?`<div class="tx">${esc(m.text)}</div>`:""}
+        ${m.img&&m.img.indexOf("data:image")===0?`<img class="thumb" src="${m.img}" data-view-img="${m.id}" alt="추억 사진" />`:""}
       </div>
     </div>`).join("");
   document.querySelectorAll("[data-del-mem]").forEach(b=>b.addEventListener("click",()=>{
     if(!confirm("이 추억을 지울까요?")) return;
     S.memories = S.memories.filter(x=>x.id!==b.dataset.delMem);
     save(); renderAll();
+  }));
+  document.querySelectorAll("[data-view-img]").forEach(t=>t.addEventListener("click",()=>{
+    const m = S.memories.find(x=>x.id===t.dataset.viewImg);
+    if(!m || !m.img) return;
+    openModal(`<div class="photo-view"><img src="${m.img}" alt="${esc(m.title)}" /></div>
+      <p style="font-family:var(--hand);font-size:1.1rem;text-align:center;margin:10px 0 2px">${esc(m.title)}</p>
+      <p style="font-size:.74rem;color:#C9B4AD;text-align:center;margin-bottom:12px">${fmtShort(m.date)}</p>
+      <button class="btn line" data-close>닫기</button>`);
   }));
 }
 
@@ -1337,6 +1473,9 @@ $("#memory-add").addEventListener("click",()=>{
     <input id="mem-title" maxlength="24" placeholder="예: 한강 자전거 데이트" />
     <label class="form-label">날짜</label>
     <input id="mem-date" type="date" value="${todayKey()}" />
+    <label class="form-label">사진 (선택)</label>
+    <input type="file" id="mem-photo" accept="image/*" />
+    <img id="mem-photo-prev" class="mem-photo-preview" alt="미리보기" />
     <label class="form-label">이야기 (선택)</label>
     <textarea id="mem-text" placeholder="그날의 기분, 장면, 대화..."></textarea>
     <div style="height:14px"></div>
@@ -1346,16 +1485,29 @@ $("#memory-add").addEventListener("click",()=>{
     </div>
   `);
   let emo = MEMORY_EMOJIS[0];
+  let memImg = null;
   document.querySelectorAll("[data-emo]").forEach(b=>b.addEventListener("click",()=>{
     document.querySelectorAll("[data-emo]").forEach(x=>x.classList.toggle("sel",x===b));
     emo = b.dataset.emo;
   }));
+  $("#mem-photo").addEventListener("change",e=>{
+    const f = e.target.files[0];
+    if(!f) return;
+    compressImage(f, url=>{
+      memImg = url;
+      const pv = $("#mem-photo-prev");
+      if(pv){ pv.src = url; pv.style.display = "block"; }
+      toast("사진을 예쁘게 줄여뒀어요");
+    });
+  });
   $("#mem-save").addEventListener("click",()=>{
     const title = $("#mem-title").value.trim();
     const date = $("#mem-date").value;
     if(!title){ toast("제목을 적어주세요"); return; }
     if(!date){ toast("날짜를 골라주세요"); return; }
-    S.memories.push({id:uid(), date, title, text:$("#mem-text").value.trim(), emoji:emo});
+    const item = {id:uid(), date, title, text:$("#mem-text").value.trim(), emoji:emo};
+    if(memImg) item.img = memImg;
+    S.memories.push(item);
     save(); closeModal(); renderAll();
     toast("📸 추억이 저장됐어요");
   });
@@ -1421,6 +1573,9 @@ function renderMore(){
   $("#st-thanks").textContent = S.thanks.length;
   $("#st-memories").textContent = S.memories.length;
   $("#st-temp").textContent = loveTemp()+"°";
+  const qs = quizStats();
+  $("#st-sync").textContent = qs.rate!==null ? qs.rate+"%" : "—";
+  $("#st-bucket").textContent = S.bucket.filter(b=>b.done).length;
 }
 $("#set-profile").addEventListener("click",()=>{
   openModal(`
@@ -1781,6 +1936,14 @@ function mergeState(local, remote){
     });
   }
   if(!m.lastline && remote.lastline) m.lastline = remote.lastline;
+  // 커플 퀴즈: 사람별 선점 (답은 먼저 쓴 쪽 유지)
+  for(const k in (remote.quiz||{})){
+    const r = m.quiz[k] = m.quiz[k] || {};
+    const s = remote.quiz[k];
+    if(r.qi===undefined && s.qi!==undefined) r.qi = s.qi;
+    for(const p of ["p1","p2"]) if(!r[p] && s[p]) r[p] = s[p];
+  }
+  if(!m.pet && remote.pet) m.pet = remote.pet;
   return m;
 }
 window.__mergeState = mergeState; // 테스트용
@@ -1791,18 +1954,26 @@ function scheduleSyncPush(){
   clearTimeout(pushTimer);
   pushTimer = setTimeout(syncPush, 1500);
 }
+let lastStamp = null; // 마지막으로 확인한 서버 updated_at — 같으면 데이터 내려받기 생략
 async function syncPush(){
   if(!syncReady()) return;
   try{
-    await syncApi("PATCH", "couples?code=eq."+encodeURIComponent(S.sync.code),
+    const res = await syncApi("PATCH", "couples?code=eq."+encodeURIComponent(S.sync.code),
       {data:exportable(), updated_at:new Date().toISOString()});
+    if(res && res[0] && res[0].updated_at) lastStamp = res[0].updated_at;
   }catch(e){ /* 오프라인이면 다음 저장 때 재시도 */ }
 }
 async function syncPull(){
   if(!syncReady()) return;
   try{
-    const rows = await syncApi("GET", "couples?code=eq."+encodeURIComponent(S.sync.code)+"&select=data");
+    // 1단계: 변경 여부만 가볍게 확인 (사진이 늘어도 통신량 최소화)
+    const chk = await syncApi("GET", "couples?code=eq."+encodeURIComponent(S.sync.code)+"&select=updated_at");
+    if(!chk || !chk.length) return;
+    if(lastStamp && chk[0].updated_at === lastStamp) return;
+    // 2단계: 변경이 있을 때만 전체 데이터 수신
+    const rows = await syncApi("GET", "couples?code=eq."+encodeURIComponent(S.sync.code)+"&select=data,updated_at");
     if(!rows || !rows.length) return;
+    lastStamp = rows[0].updated_at;
     const remote = rows[0].data;
     const partner = other(S.sync.me);
     const hadAnswer = !!((S.answers[todayKey()]||{})[partner]);
@@ -2141,6 +2312,138 @@ function renderHomeTime(){
 }
 
 /* ==================================================================
+   콩닥이: 문답·퀴즈·미션을 먹고 자라는 커플 캐릭터 (썸원 벤치마크)
+   ================================================================== */
+function quizDoneDays(){
+  return Object.values(S.quiz).filter(r=>r.p1&&r.p2&&r.p1.guess!=null&&r.p2.guess!=null).length;
+}
+function petPoints(){
+  const missions = Object.values(S.missions).filter(m=>m.p1&&m.p2).length;
+  return completedDays() + quizDoneDays() + missions;
+}
+function renderPet(){
+  const el = $("#pet-card");
+  if(!el) return;
+  const pts = petPoints();
+  let si = 0;
+  PET_STAGES.forEach((s,i)=>{ if(pts>=s.min) si=i; });
+  const stage = PET_STAGES[si], next = PET_STAGES[si+1];
+  const name = (S.pet && S.pet.name) || "콩닥이";
+  const k = todayKey();
+  const a = S.answers[k]||{}, qz = S.quiz[k]||{}, md = S.moods[k]||{};
+  const feed = [
+    ["문답", !!a[S.current]],
+    ["기분", !!md[S.current]],
+    ["퀴즈", !!qz[S.current]],
+  ];
+  const fedCount = feed.filter(f=>f[1]).length;
+  const line = fedCount===3
+    ? "오늘 먹이 다 먹었어요! 배불러요 🫶"
+    : PET_LINES[dayOfYear2(parseKey(k)) % PET_LINES.length];
+  let pct = 100, nextTxt = "최고 단계! 우리 사랑처럼 다 컸어요 💘";
+  if(next){
+    pct = Math.min(100, Math.round(((pts-stage.min)/(next.min-stage.min))*100));
+    nextTxt = `다음 진화까지 밥 ${next.min-pts}그릇 (문답·퀴즈·미션이 밥이에요)`;
+  }
+  el.innerHTML = `
+    <div class="card-title">우리의 ${esc(name)} <button class="more" id="pet-rename">이름 짓기</button></div>
+    <div class="pet-wrap">
+      <div class="pet-char ${fedCount>0?"fed":""}">${stage.e}</div>
+      <div class="pet-info">
+        <div class="pet-name">${esc(name)} <span class="pet-lv">Lv.${si+1} ${esc(stage.name)}</span></div>
+        <div class="ms-bar" style="margin:6px 0 4px"><div style="width:${pct}%"></div></div>
+        <div class="pet-next">${nextTxt}</div>
+      </div>
+    </div>
+    <div class="pet-bubble">${esc(line)}</div>
+    <div class="pet-feed">${feed.map(f=>`<div class="pf ${f[1]?"on":""}">${f[1]?"🍚":"🕊️"} ${f[0]}${f[1]?" 냠!":""}</div>`).join("")}</div>`;
+  $("#pet-rename").addEventListener("click",()=>{
+    openModal(`<h3>🐣 이름 짓기</h3>
+      <input id="pet-name-input" maxlength="8" value="${esc(name)}" placeholder="예: 콩닥이" />
+      <div style="height:14px"></div>
+      <div class="row2"><button class="btn line" data-close>취소</button><button class="btn" id="pet-name-save">저장</button></div>`);
+    $("#pet-name-save").addEventListener("click",()=>{
+      const v = $("#pet-name-input").value.trim();
+      if(!v){ toast("이름을 적어주세요"); return; }
+      S.pet = {name:v};
+      save(); closeModal(); renderAll();
+      toast(v+"(이)라고 부를게요 🫶");
+    });
+  });
+}
+
+/* ==================================================================
+   커플 퀴즈: 서로 맞히기 (Paired 벤치마크)
+   ① 나는? → ② 상대는 뭐라고 답할까? → 둘 다 풀면 공개 + 싱크로율
+   ================================================================== */
+function quizIndexFor(key){
+  const base = S.couple ? (S.couple.joined || S.couple.start) : "2026-01-01";
+  return Math.max(0, diffDays(base, key)) % QUIZZES.length;
+}
+function quizStats(){
+  let total=0, hit=0;
+  for(const k in S.quiz){
+    const r = S.quiz[k];
+    if(r.p1 && r.p2 && r.p1.guess!=null && r.p2.guess!=null){
+      total += 2;
+      if(r.p1.guess === r.p2.self) hit++;
+      if(r.p2.guess === r.p1.self) hit++;
+    }
+  }
+  return { total, hit, rate: total ? Math.round(hit/total*100) : null };
+}
+let quizPick = null;
+function renderQuiz(){
+  const el = $("#quiz-card");
+  if(!el) return;
+  const k = todayKey();
+  const rec = S.quiz[k] || {};
+  const qi = rec.qi !== undefined ? rec.qi : quizIndexFor(k);
+  const qz = QUIZZES[qi] || QUIZZES[0];
+  const me = S.current, yo = other(me);
+  const mine = rec[me], theirs = rec[yo];
+  const st = quizStats();
+  let html = `<div class="q-label"><span class="badge" style="background:var(--gold);color:#5B3A00">커플 퀴즈</span><span class="num">서로 맞히기${st.rate!==null?` · 누적 싱크로율 ${st.rate}%`:""}</span></div>
+    <div class="q-text" style="font-size:1.02rem">${esc(qz.q)}</div>`;
+  if(!mine){
+    const step2 = quizPick !== null;
+    html += `<p style="font-size:.82rem;font-weight:800;color:${step2?"#2A7AB0":"var(--primary-deep)"};margin-bottom:8px">${step2?"② "+esc(nameOf(yo))+"는 뭐라고 답할까요?":"① 나는? (상대에겐 비밀이에요)"}</p>
+      <div class="quiz-opts">${qz.o.map((o,i)=>
+        `<button class="quiz-opt ${step2&&quizPick===i?"mine":""}" data-quiz-opt="${i}">${esc(o)}${step2&&quizPick===i?`<span class="tag">← 내 답</span>`:""}</button>`).join("")}</div>`;
+  } else if(!theirs || theirs.guess==null){
+    html += `<div class="answer-box locked"><span class="lock">⏳</span>
+      <div><b style="font-size:.85rem">${esc(nameOf(yo))}의 퀴즈를 기다리는 중</b>
+      <div class="txt">둘 다 풀면 결과와 싱크로율이 공개돼요</div></div></div>`;
+  } else {
+    const iHit = mine.guess === theirs.self, uHit = theirs.guess === mine.self;
+    html += `<div class="quiz-result">
+      <div class="qr"><div class="who" style="color:${colorOf(me)}">${esc(nameOf(me))}의 답</div><div class="ans">${esc(qz.o[mine.self])}</div><div class="hit">${uHit?"⭕ "+esc(nameOf(yo))+"가 맞혔어요!":"❌ 예측: "+esc(qz.o[theirs.guess])}</div></div>
+      <div class="qr"><div class="who" style="color:${colorOf(yo)}">${esc(nameOf(yo))}의 답</div><div class="ans">${esc(qz.o[theirs.self])}</div><div class="hit">${iHit?"⭕ 내가 맞혔어요!":"❌ 내 예측: "+esc(qz.o[mine.guess])}</div></div>
+    </div>
+    <div class="sync-line">${iHit&&uHit?"💘 완벽한 싱크로! 둘 다 맞혔어요":(iHit||uHit)?"💗 한 명 적중! 내일 또 도전해요":"🙈 둘 다 빗나감! 그만큼 알아갈 게 많다는 뜻"}${st.rate!==null?" · 싱크로율 "+st.rate+"%":""}</div>`;
+  }
+  el.innerHTML = html;
+  el.querySelectorAll("[data-quiz-opt]").forEach(b=>b.addEventListener("click",()=>{
+    const i = +b.dataset.quizOpt;
+    if(quizPick === null){
+      quizPick = i;
+      renderQuiz();
+    }else{
+      const k2 = todayKey();
+      if(!S.quiz[k2]) S.quiz[k2] = {};
+      const r = S.quiz[k2];
+      if(r.qi === undefined) r.qi = quizIndexFor(k2);
+      r[S.current] = { self: quizPick, guess: i };
+      quizPick = null;
+      save(); renderAll();
+      const done = r.p1 && r.p2;
+      toast(done ? "🎉 결과 공개! 싱크로를 확인해보세요" : "제출 완료! 상대가 풀면 공개돼요");
+      if(done) notify("우리의 계절","💘 오늘의 커플 퀴즈 결과가 공개됐어요");
+    }
+  }));
+}
+
+/* ==================================================================
    모달
    ================================================================== */
 function openModal(html){
@@ -2196,10 +2499,12 @@ function renderAll(){
   renderMood();
   renderHomeQuestion();
   renderMission();
+  renderPet();
   renderHomeTime();
   renderHomeAnniv();
   renderTime();
   renderQaToday();
+  renderQuiz();
   renderQaArchive();
   renderMemories();
   renderThanks();
