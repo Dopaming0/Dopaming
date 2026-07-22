@@ -184,6 +184,28 @@ header{
 .coupon b{font-size:15px}
 .coupon p{font-size:11px;color:#666;margin-top:4px}
 
+/* ---------- 우리의 이야기 책 (인쇄용) ---------- */
+.book-cover{text-align:center;padding:140px 24px 60px;page-break-after:always}
+.book-cover .bc-small{font-size:12px;letter-spacing:.35em;color:#E5484D;margin-bottom:22px}
+.book-cover .bc-title{font-size:36px;font-weight:800;line-height:1.4}
+.book-cover .bc-names{font-size:17px;margin-top:14px;color:#555}
+.book-cover .bc-days{font-size:13px;margin-top:6px;color:#888}
+.book-cover .bc-heart{font-size:30px;margin:36px 0}
+.book-cover .bc-tag{font-size:13px;color:#E5484D}
+.book-ch{page-break-before:always}
+.book-h{font-size:21px;font-weight:800;margin:8px 0 4px;color:#E5484D}
+.book-hs{font-size:12px;color:#999;margin-bottom:16px}
+.book-qa{padding:9px 0;border-bottom:1px dashed #ddd;font-size:12px;break-inside:avoid;line-height:1.6}
+.book-qa .bq{font-weight:800;font-size:12.5px}
+.book-qa .bd{color:#999;font-size:10.5px}
+.book-mem{break-inside:avoid;margin:0 0 16px;font-size:12px;line-height:1.6}
+.book-mem img{max-width:64%;border-radius:8px;display:block;margin:6px 0}
+.book-mem .bm-t{font-weight:800;font-size:13px}
+.book-last{page-break-before:always;text-align:center;padding-top:230px}
+.book-last .bl-label{font-size:11px;letter-spacing:.3em;color:#999;margin-bottom:18px}
+.book-last .bl-line{font-size:19px;font-weight:700;line-height:1.8}
+.book-last .bl-end{font-size:12px;color:#999;margin-top:40px}
+
 /* ---------- 문답 아카이브 ---------- */
 .qa-item{border-bottom:1px solid var(--line);padding:14px 2px}
 .qa-item:last-child{border-bottom:0}
@@ -518,6 +540,8 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
       </div>
       <p style="font-size:.76rem;color:var(--ink-soft);margin-top:12px;word-break:keep-all">애정 온도는 문답·기분·고마워·추억·미션을 꾸준히 나눌수록 올라가요. 최근 2주의 기록이 반영돼요.</p>
     </div>
+    <div class="card" id="book-card"></div>
+
     <div class="card">
       <div class="card-title">설정</div>
       <div class="settings-row" id="set-sync">💞 커플 연결 (두 기기 동기화) <span class="arrow">›</span></div>
@@ -529,7 +553,7 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
       <div class="settings-row danger" id="set-reset">전체 초기화</div>
       <input type="file" id="import-file" accept="application/json" style="display:none" />
     </div>
-    <p style="text-align:center;font-size:.72rem;color:#C9B4AD;margin:8px 0 4px">우리의 계절 v1.2 · 모든 기록은 두 사람의 기기에만</p>
+    <p style="text-align:center;font-size:.72rem;color:#C9B4AD;margin:8px 0 4px">우리의 계절 v1.3 · 모든 기록은 두 사람의 기기에만</p>
     <p style="text-align:center;font-family:var(--hand);font-size:1rem;color:var(--peach);margin:0 0 20px">인연이 필연이 되는 순간까지 🫶</p>
   </section>
 
@@ -1576,6 +1600,89 @@ function renderMore(){
   const qs = quizStats();
   $("#st-sync").textContent = qs.rate!==null ? qs.rate+"%" : "—";
   $("#st-bucket").textContent = S.bucket.filter(b=>b.done).length;
+  renderBookCard();
+}
+
+/* ---------- 우리의 이야기 책: 모든 기록을 한 권으로 (실사용자 아이디어) ---------- */
+function renderBookCard(){
+  const el = $("#book-card");
+  if(!el) return;
+  const both = Object.values(S.answers).filter(a=>a.p1&&a.p2).length;
+  const photos = S.memories.filter(m=>m.img).length;
+  el.innerHTML = `
+    <div class="card-title">📖 우리의 이야기 책</div>
+    <p style="font-size:.88rem;color:var(--ink-soft);word-break:keep-all;line-height:1.65;margin-bottom:6px">
+      지금까지의 기록 — <b style="color:var(--primary-deep)">문답 ${both}개 · 추억 ${S.memories.length}개 (사진 ${photos}장) · 고마워 ${S.thanks.length}줄</b> — 을
+      표지부터 마지막 문장까지 한 권의 책으로 엮어드려요.</p>
+    <p style="font-family:var(--hand);font-size:1rem;color:var(--peach);margin-bottom:12px">우리만의 이야기가 담긴 책, 사진도 함께 🫶</p>
+    <button class="btn" id="book-make">📖 책 만들기 (인쇄 · PDF 저장)</button>
+    <p style="font-size:.72rem;color:#C9B4AD;margin-top:8px;text-align:center">인쇄 화면에서 'PDF로 저장'을 고르면 파일로 간직할 수 있어요</p>`;
+  $("#book-make").addEventListener("click", makeBook);
+}
+
+function makeBook(){
+  const both = Object.entries(S.answers).filter(([k,a])=>a.p1&&a.p2).sort();
+  const qzs = Object.entries(S.quiz).filter(([k,r])=>r.p1&&r.p2&&r.p1.guess!=null&&r.p2.guess!=null).sort();
+  const mems = [...S.memories].sort((a,b)=>a.date<b.date?-1:1);
+  const qs = quizStats();
+  const days = daysSince(S.couple.start);
+
+  const cover = `<div class="book-cover">
+    <div class="bc-small">OUR SEASONS</div>
+    <div class="bc-title">${esc(S.couple.title)}</div>
+    <div class="bc-names">${esc(S.couple.n1)} ♥ ${esc(S.couple.n2)}</div>
+    <div class="bc-days">${fmtKor(S.couple.start)}부터 오늘까지, 함께한 ${days}일의 기록</div>
+    <div class="bc-heart">🫶</div>
+    <div class="bc-tag">인연이 필연이 되는 순간까지</div>
+  </div>`;
+
+  const chFoot = `<div>
+    <div class="book-h">하나 · 우리의 발자국</div><div class="book-hs">숫자로 남은 우리</div>
+    <div class="book-qa">함께한 날 <b>${days}일</b> · 완성한 문답 <b>${both.length}개</b> · 퀴즈 싱크로율 <b>${qs.rate!==null?qs.rate+"%":"집계 전"}</b></div>
+    <div class="book-qa">기록한 추억 <b>${S.memories.length}개</b> · 고마워 한 줄 <b>${S.thanks.length}개</b> · 애정 온도 <b>${loveTemp()}°C</b></div>
+  </div>`;
+
+  const chQa = both.length ? `<div class="book-ch">
+    <div class="book-h">둘 · 우리가 나눈 문답</div><div class="book-hs">서로 몰래 답하고, 함께 열어본 마음들</div>
+    ${both.map(([k,a])=>{
+      const item = FLAT[a.qi!==undefined?a.qi:0];
+      return `<div class="book-qa"><span class="bd">${fmtShort(k)}</span><br><span class="bq">${esc(item.q)}</span><br>
+        ${esc(nameOf("p1"))} — ${esc(a.p1)}<br>${esc(nameOf("p2"))} — ${esc(a.p2)}
+        ${a.reply&&a.reply.p1?`<br><span class="bd">${esc(nameOf("p1"))}의 답글: ${esc(a.reply.p1)}</span>`:""}
+        ${a.reply&&a.reply.p2?`<br><span class="bd">${esc(nameOf("p2"))}의 답글: ${esc(a.reply.p2)}</span>`:""}</div>`;
+    }).join("")}</div>` : "";
+
+  const chQuiz = qzs.length ? `<div class="book-ch">
+    <div class="book-h">셋 · 서로를 맞힌 순간들</div><div class="book-hs">커플 퀴즈의 기록 · 최종 싱크로율 ${qs.rate}%</div>
+    ${qzs.map(([k,r])=>{
+      const qz = QUIZZES[r.qi!==undefined?r.qi:0];
+      const h1 = r.p1.guess===r.p2.self, h2 = r.p2.guess===r.p1.self;
+      return `<div class="book-qa"><span class="bd">${fmtShort(k)}</span><br><span class="bq">${esc(qz.q)}</span><br>
+        ${esc(nameOf("p1"))} — ${esc(qz.o[r.p1.self])} ${h2?"(상대가 맞힘 ⭕)":""}<br>
+        ${esc(nameOf("p2"))} — ${esc(qz.o[r.p2.self])} ${h1?"(상대가 맞힘 ⭕)":""}</div>`;
+    }).join("")}</div>` : "";
+
+  const chMem = mems.length ? `<div class="book-ch">
+    <div class="book-h">넷 · 우리의 추억</div><div class="book-hs">사진과 함께 남은 날들</div>
+    ${mems.map(m=>`<div class="book-mem"><span class="bd">${fmtShort(m.date)}</span> <span class="bm-t">${m.emoji} ${esc(m.title)}</span>
+      ${m.img&&m.img.indexOf("data:image")===0?`<img src="${m.img}" alt="" />`:""}
+      ${m.text?`<div>${esc(m.text)}</div>`:""}</div>`).join("")}</div>` : "";
+
+  const chThx = S.thanks.length ? `<div class="book-ch">
+    <div class="book-h">다섯 · 고마워 한 줄</div><div class="book-hs">사소해서 더 소중했던 마음들</div>
+    ${[...S.thanks].reverse().map(t=>`<div class="book-qa"><span class="bd">${fmtShort(t.date)} · ${esc(nameOf(t.from))}</span><br>${esc(t.text)}</div>`).join("")}</div>` : "";
+
+  const chBucket = S.bucket.length ? `<div class="book-ch">
+    <div class="book-h">여섯 · 우리 버킷리스트</div><div class="book-hs">남은 계절을 선물로 바꾸는 목록</div>
+    ${S.bucket.map(b=>`<div class="book-qa">${b.done?"✅":"⬜"} ${esc(b.text)}</div>`).join("")}</div>` : "";
+
+  const last = `<div class="book-last">
+    <div class="bl-label">OUR LAST LINE</div>
+    <div class="bl-line">${S.lastline?esc(S.lastline):"(마지막 문장은 아직 쓰는 중이에요)"}</div>
+    <div class="bl-end">— 그리고 이야기는 계속됩니다 · ${fmtKor(todayKey())} 엮음</div>
+  </div>`;
+
+  printHTML(cover + chFoot + chQa + chQuiz + chMem + chThx + chBucket + last);
 }
 $("#set-profile").addEventListener("click",()=>{
   openModal(`
@@ -2165,6 +2272,7 @@ function renderTime(){
       <div class="tt">OUR SEASONS</div>
       <div class="big">우리에게 계절이<br>약 <b>${seasonsLeft.toLocaleString()}</b>번 남았어요</div>
       <div class="sub2">${esc(S.couple.n1)} ♥ ${esc(S.couple.n2)} · 함께한 지 ${daysSince(S.couple.start)}일 · 그래서 오늘이 소중해요</div>
+      <div class="sub2" style="margin-top:6px">적어 보여도 슬퍼하지 마요. 이 숫자들은 전부, <b>아직 오지 않은 선물</b>이니까요 🎁</div>
     </div>
 
     <div class="card">
@@ -2180,8 +2288,20 @@ function renderTime(){
 
     <div class="card">
       <div class="card-title">횟수의 언어</div>
+      <p style="font-size:.8rem;color:var(--ink-soft);margin-bottom:8px;word-break:keep-all">우리는 벌써 주말을 약 <b style="color:var(--primary-deep)">${Math.floor(daysSince(S.couple.start)/7).toLocaleString()}번</b> 함께 보냈어요. 아래는 앞으로의 몫 —</p>
       <div>${counts.map(c=>`<div class="count-item"><span>${c[0]} ${esc(c[1])}</span><b>약 ${c[2].toLocaleString()}<em>${c[3]}</em></b></div>`).join("")}</div>
-      <p class="counts-note">시간은 길이가 아니라 횟수로 셀 때 절실해져요. 끝이 보이면 사람은 사소한 것을 내려놓고, 소중한 것에 시간을 쓰기 시작하니까요.</p>
+      <p class="counts-note">슬퍼지라고 세는 게 아니에요. 아껴 쓰자고, 오늘 한 번 더 안아주자고 세는 거예요 🫶 끝이 보이면 사람은 사소한 것을 내려놓고, 소중한 것에 시간을 쓰기 시작하니까요.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">우리 버킷리스트 <span style="font-weight:600;color:#C9B4AD">남은 횟수를 선물로 바꿔요</span></div>
+      <div>${bucketSorted.length ? bucketSorted.map(b=>`
+        <div class="bucket-item ${b.done?"done":""}">
+          <input type="checkbox" data-bucket-chk="${b.id}" ${b.done?"checked":""} style="border:0;padding:0" />
+          <span class="tx">${esc(b.text)}</span>
+          <button class="del-btn" data-bucket-del="${b.id}" style="float:none">지우기</button>
+        </div>`).join("") : `<div class="empty">위의 횟수가 유한해서, 이 목록이 소중해요.<br>'언젠가'를 '조만간'으로 바꿔보세요.</div>`}</div>
+      <div class="reply-row" style="margin-top:10px"><input id="bucket-input" maxlength="40" placeholder="예: 벚꽃 필 때 경주 가기" /><button class="btn sm" id="bucket-add">담기</button></div>
     </div>
 
     <div class="card">
@@ -2201,17 +2321,6 @@ function renderTime(){
           </label>
         </div>`).join("")}</div>
       <p id="regret-praise" style="text-align:center;color:var(--primary-deep);font-size:.85rem;font-weight:700;padding-top:12px;display:${cst.length?"block":"none"}">오늘 몫의 후회를 ${cst.length}개 미리 지웠어요 🌷</p>
-    </div>
-
-    <div class="card">
-      <div class="card-title">우리 버킷리스트 <span style="font-weight:600;color:#C9B4AD">미루면 계절이 지나가요</span></div>
-      <div>${bucketSorted.length ? bucketSorted.map(b=>`
-        <div class="bucket-item ${b.done?"done":""}">
-          <input type="checkbox" data-bucket-chk="${b.id}" ${b.done?"checked":""} style="border:0;padding:0" />
-          <span class="tx">${esc(b.text)}</span>
-          <button class="del-btn" data-bucket-del="${b.id}" style="float:none">지우기</button>
-        </div>`).join("") : `<div class="empty">함께하고 싶은 일을 하나씩 적어보세요.<br>'언젠가'를 '조만간'으로 바꾸는 목록이에요.</div>`}</div>
-      <div class="reply-row" style="margin-top:10px"><input id="bucket-input" maxlength="40" placeholder="예: 벚꽃 필 때 경주 가기" /><button class="btn sm" id="bucket-add">담기</button></div>
     </div>
 
     <div class="lastline-box" style="margin-bottom:14px">
