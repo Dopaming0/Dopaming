@@ -444,6 +444,8 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
       </div>
     </div>
 
+    <div class="card" id="quote-card" style="background:linear-gradient(135deg,#FFF9F6,#FFF1EC)"></div>
+
     <div class="card" id="home-install-card" style="display:none"></div>
 
     <div class="card" id="pet-card"></div>
@@ -545,7 +547,7 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
     <div class="card">
       <div class="card-title">설정</div>
       <div class="settings-row" id="set-sync">💞 커플 연결 (두 기기 동기화) <span class="arrow">›</span></div>
-      <div class="settings-row" id="set-noti">🔔 브라우저 알림 켜기 <span class="arrow">›</span></div>
+      <div class="settings-row" id="set-noti">🔔 알림 켜기 — 상대 소식 + 하루 한 줄 사랑 <span class="arrow">›</span></div>
       <div class="settings-row" id="set-theme">🎨 커플 테마 <span class="arrow">›</span></div>
       <div class="settings-row" id="set-profile">커플 정보 수정 <span class="arrow">›</span></div>
       <div class="settings-row" id="set-export">기록 내보내기 (백업) <span class="arrow">›</span></div>
@@ -553,7 +555,7 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
       <div class="settings-row danger" id="set-reset">전체 초기화</div>
       <input type="file" id="import-file" accept="application/json" style="display:none" />
     </div>
-    <p style="text-align:center;font-size:.72rem;color:#C9B4AD;margin:8px 0 4px">우리의 계절 v1.3 · 모든 기록은 두 사람의 기기에만</p>
+    <p style="text-align:center;font-size:.72rem;color:#C9B4AD;margin:8px 0 4px">우리의 계절 v1.4 · 모든 기록은 두 사람의 기기에만</p>
     <p style="text-align:center;font-family:var(--hand);font-size:1rem;color:var(--peach);margin:0 0 20px">인연이 필연이 되는 순간까지 🫶</p>
   </section>
 
@@ -571,6 +573,7 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
 <div id="modal-root"></div>
 <div id="print-area"></div>
 
+<script src="quotes.js"></script>
 <script>
 "use strict";
 
@@ -1963,9 +1966,18 @@ function notify(title, body){
 }
 $("#set-noti").addEventListener("click",()=>{
   if(!("Notification" in window)){ toast("이 브라우저는 알림을 지원하지 않아요"); return; }
-  if(Notification.permission==="granted"){ toast("알림이 이미 켜져 있어요"); return; }
+  if(Notification.permission==="granted"){
+    setupDailyQuote(); previewQuoteNotification();
+    toast("🔔 알림이 켜져 있어요 — 오늘의 한 줄을 방금 보냈어요");
+    return;
+  }
   Notification.requestPermission().then(p=>{
-    toast(p==="granted" ? "🔔 알림이 켜졌어요" : "알림이 거부됐어요. 브라우저 설정에서 바꿀 수 있어요");
+    if(p==="granted"){
+      setupDailyQuote(); previewQuoteNotification();
+      toast("🔔 알림 켜짐! 하루 한 번 사랑 한 줄이 도착해요");
+    }else{
+      toast("알림이 거부됐어요. 브라우저 설정에서 바꿀 수 있어요");
+    }
   });
 });
 $("#set-theme").addEventListener("click",()=>{
@@ -2569,6 +2581,41 @@ function closeModal(){ $("#modal-root").innerHTML = ""; }
    진짜 앱처럼: 서비스 워커(오프라인) + 홈 화면 설치 안내
    ================================================================== */
 if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
+
+/* 오늘의 사랑 한 줄 (홈 카드) */
+function renderQuote(){
+  const el = $("#quote-card");
+  if(!el) return;
+  const q = quoteOfDay(parseKey(todayKey()));
+  el.innerHTML = `<div class="card-title">💌 오늘의 사랑 한 줄</div>
+    <p style="font-family:var(--hand);font-size:1.18rem;line-height:1.6;word-break:keep-all">“${esc(q.t)}”</p>
+    ${q.by?`<p style="font-size:.74rem;color:var(--ink-soft);margin-top:4px;text-align:right">— ${esc(q.by)}</p>`:""}`;
+}
+
+/* 하루 한 번 사랑 한 줄 알림: 안드로이드 설치형 앱은 주기적 백그라운드 동기화로 도착 */
+async function setupDailyQuote(){
+  try{
+    if(!("serviceWorker" in navigator) || !("Notification" in window) || Notification.permission!=="granted") return;
+    const reg = await navigator.serviceWorker.ready;
+    if("periodicSync" in reg){
+      const tags = await reg.periodicSync.getTags();
+      if(!tags.includes("daily-love-quote")){
+        await reg.periodicSync.register("daily-love-quote", { minInterval: 20*60*60*1000 });
+      }
+    }
+  }catch(e){ /* 미지원 기기는 홈 카드로 충분 */ }
+}
+async function previewQuoteNotification(){
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    const q = quoteOfDay(parseKey(todayKey()));
+    reg.showNotification("💌 오늘의 사랑 한 줄", {
+      body: q.t + (q.by ? " — " + q.by : ""),
+      icon: "icon-192.png", badge: "icon-192.png", tag: "daily-quote",
+    });
+  }catch(e){}
+}
+setupDailyQuote();
 let deferredInstall = null;
 window.addEventListener("beforeinstallprompt",(e)=>{ e.preventDefault(); deferredInstall = e; renderInstallCard(); });
 function isStandalone(){ return matchMedia("(display-mode: standalone)").matches || navigator.standalone === true; }
@@ -2608,6 +2655,7 @@ function renderAll(){
   renderMood();
   renderHomeQuestion();
   renderMission();
+  renderQuote();
   renderPet();
   renderHomeTime();
   renderHomeAnniv();

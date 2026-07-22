@@ -1,11 +1,35 @@
 /* 우리의 계절 — 서비스 워커
    전략: 같은 출처는 네트워크 우선(항상 최신) + 실패 시 캐시(오프라인),
    Supabase 등 외부 요청은 건드리지 않음 */
-const CACHE = "ourseasons-v3";
+importScripts("quotes.js");
+const CACHE = "ourseasons-v4";
 
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"])));
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(["./", "./index.html", "./manifest.json", "./quotes.js", "./icon-192.png", "./icon-512.png"])));
   self.skipWaiting();
+});
+
+/* 하루 한 번, 오늘의 사랑 한 줄 알림 (안드로이드 설치형 앱에서 동작) */
+self.addEventListener("periodicsync", (e) => {
+  if (e.tag === "daily-love-quote") e.waitUntil(showDailyQuote());
+});
+function showDailyQuote() {
+  const q = quoteOfDay(new Date());
+  return self.registration.showNotification("💌 오늘의 사랑 한 줄", {
+    body: q.t + (q.by ? " — " + q.by : ""),
+    icon: "icon-192.png",
+    badge: "icon-192.png",
+    tag: "daily-quote",
+  });
+}
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close();
+  e.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((ws) => {
+      for (const w of ws) { if ("focus" in w) return w.focus(); }
+      return clients.openWindow("./");
+    })
+  );
 });
 
 self.addEventListener("activate", (e) => {
