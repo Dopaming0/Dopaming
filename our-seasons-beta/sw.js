@@ -4,7 +4,7 @@
 importScripts("quotes.js");
 /* 베타(-beta 경로)는 캐시도 분리해 정식 앱과 간섭하지 않게 한다 */
 const IS_BETA = self.registration.scope.indexOf("-beta") > -1;
-const CACHE = (IS_BETA ? "ourseasons-beta-" : "ourseasons-") + "v5";
+const CACHE = (IS_BETA ? "ourseasons-beta-" : "ourseasons-") + "v6";
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(["./", "./index.html", "./manifest.json", "./quotes.js", "./icon-192.png", "./icon-512.png"])));
