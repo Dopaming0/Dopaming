@@ -394,6 +394,30 @@ header{
 .vline .wave{display:flex;align-items:flex-end;gap:2px;height:14px;flex:1}
 .vline .wave i{flex:1;background:var(--primary-soft);border-radius:2px;min-height:3px}
 .vline .wave.on i{background:var(--primary)}
+/* ---------- 🩺 진단 ---------- */
+.doc-list{display:flex;flex-direction:column;gap:2px;max-height:46vh;overflow-y:auto}
+.doc-row{display:flex;gap:9px;align-items:flex-start;padding:8px 2px;border-bottom:1px solid var(--line)}
+.doc-row:last-child{border-bottom:0}
+.doc-row .m{flex-shrink:0;font-size:.95rem;line-height:1.4}
+.doc-row b{font-size:.86rem}
+.doc-row .d{font-size:.78rem;color:var(--ink-soft);word-break:keep-all;line-height:1.5;margin-top:1px}
+.doc-speech{margin-top:10px}
+.doc-mic{font-size:2.2rem;text-align:center;animation:recpulse 1.1s ease-in-out infinite;border-radius:50%}
+.doc-say{text-align:center;font-size:.88rem;margin-top:4px;word-break:keep-all}
+.doc-heard{
+  margin-top:8px;padding:10px;background:#FFF9F6;border-radius:12px;min-height:2.4em;
+  font-size:.9rem;text-align:center;color:var(--ink-soft);word-break:keep-all;
+}
+.doc-ok,.doc-bad{border-radius:12px;padding:12px;font-size:.86rem;font-weight:700;word-break:keep-all;line-height:1.5}
+.doc-ok{background:#EAF7EE;color:#2C6B41}
+.doc-bad{background:#FFF3E2;color:#B0731B}
+.doc-ok .q{font-family:var(--hand);font-size:1.25rem;margin-top:6px;color:var(--ink)}
+.doc-note{font-size:.76rem;font-weight:600;margin-top:6px;opacity:.85}
+.doc-sum{text-align:center;font-weight:800;font-size:.92rem;padding:10px;border-radius:12px;margin-bottom:10px}
+.doc-sum.ok{background:#EAF7EE;color:#2C6B41}
+.doc-sum.warn{background:#FFF3E2;color:#B0731B}
+.doc-sum.bad{background:#FFECEC;color:#B03A3A}
+
 .mood-note{background:#FFF9F6;border-radius:12px;padding:10px;margin-top:10px}
 .mood-note .tx{font-size:.85rem;color:var(--ink-soft);word-break:keep-all;line-height:1.5}
 
@@ -662,6 +686,7 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
       <div class="settings-row" id="set-export">기록 내보내기 (백업) <span class="arrow">›</span></div>
       <div class="settings-row" id="set-import">기록 가져오기 <span class="arrow">›</span></div>
       <div class="settings-row" id="set-snap">🛟 자동 백업 · 복원 (최근 3일) <span class="arrow">›</span></div>
+      <div class="settings-row" id="set-doctor">🩺 이 폰 진단하기 <span class="arrow">›</span></div>
       <div class="settings-row danger" id="set-reset">전체 초기화</div>
       <input type="file" id="import-file" accept="application/json" style="display:none" />
     </div>
@@ -2873,6 +2898,220 @@ $("#set-snap").addEventListener("click",()=>{
     save(); closeModal(); renderAll();
     toast("🛟 "+b.dataset.restore+" 시점으로 복원했어요");
   }));
+});
+
+/* ==================================================================
+   🩺 이 폰 진단하기
+   아이폰은 맥 없이는 개발자 콘솔을 볼 수 없다. 그래서 폰이 스스로 검사하고
+   사람이 읽을 수 있는 결과를 내놓게 한다 — 결과는 한 번에 복사해 보낼 수 있다.
+   ================================================================== */
+const DOC = []; // 진단 결과 누적
+function docLine(name, ok, detail){
+  DOC.push({name, ok, detail});
+  const el = $("#doc-list");
+  if(!el) return;
+  const mark = ok === true ? "✅" : ok === false ? "❌" : ok === "warn" ? "⚠️" : "⏳";
+  const row = document.createElement("div");
+  row.className = "doc-row";
+  row.innerHTML = `<span class="m">${mark}</span><div><b>${esc(name)}</b><div class="d">${esc(detail)}</div></div>`;
+  el.appendChild(row);
+}
+function docDevice(){
+  const ua = navigator.userAgent;
+  const ios = /iphone|ipad|ipod/i.test(ua);
+  const android = /android/i.test(ua);
+  const safari = /safari/i.test(ua) && !/chrome|crios|edg/i.test(ua);
+  return {
+    ios, android, safari,
+    label: (ios ? "아이폰" : android ? "안드로이드" : "기타") + " · " +
+           (/crios|chrome/i.test(ua) ? "크롬" : safari ? "사파리" : "기타 브라우저"),
+  };
+}
+async function runDoctor(){
+  DOC.length = 0;
+  const el = $("#doc-list");
+  if(el) el.innerHTML = "";
+  const dev = docDevice();
+
+  docLine("기기", true, dev.label + " · " + (isInstalled() ? "홈 화면 앱으로 열림 🛡" : "브라우저로 열림"));
+  if(!isInstalled()){
+    docLine("홈 화면 설치", dev.ios ? false : "warn",
+      dev.ios ? "아이폰 사파리는 한동안 안 들어오면 기록을 지울 수 있어요. 공유(⬆️) → 홈 화면에 추가 꼭 해주세요"
+              : "설치하면 알림과 기록 보관이 안정돼요");
+  }
+
+  // 오늘 날짜(한국시간 기준으로 두 사람이 같아야 한다)
+  const off = -new Date().getTimezoneOffset()/60;
+  docLine("오늘 날짜", true, todayKey() + " · 이 폰 시간대 UTC" + (off>=0?"+":"") + off + (Math.abs(off-9)<0.01 ? " (한국)" : " — 앱은 항상 한국시간 기준이라 괜찮아요"));
+
+  // 저장 공간
+  let free = 0;
+  try{
+    const CH = 100*1024, blob = "x".repeat(CH);
+    let n = 0;
+    try{ for(; n<120; n++) localStorage.setItem("__doc."+n, blob); }catch(e){}
+    free = n*CH;
+    for(let i=0;i<120;i++) localStorage.removeItem("__doc."+i);
+  }catch(e){}
+  const freeMB = (free/1024/1024).toFixed(1);
+  const clips = Math.floor(free/320000);
+  docLine("저장 공간", free > 2*1024*1024 ? true : free > 700*1024 ? "warn" : false,
+    "여유 " + freeMB + "MB · 30초 목소리 약 " + clips + "개 분량");
+
+  // 기록 영구 보관 요청
+  let persisted = null;
+  try{
+    if(navigator.storage && navigator.storage.persisted){
+      persisted = await navigator.storage.persisted();
+      if(!persisted && navigator.storage.persist) persisted = await navigator.storage.persist();
+    }
+  }catch(e){}
+  docLine("기록 보호", persisted === true ? true : "warn",
+    persisted === true ? "브라우저가 우리 기록을 지켜주기로 했어요"
+                       : "브라우저가 보호를 약속하지 않았어요 (홈 화면 설치가 가장 확실해요)");
+
+  // μ-law 재생 — 앱이 실제로 쓰는 방식 그대로 만들어 열어본다
+  try{
+    const n = VOICE_RATE, pcm = new Float32Array(n); // 1초짜리 삐-
+    for(let i=0;i<n;i++) pcm[i] = 0.35*Math.sin(2*Math.PI*440*i/VOICE_RATE);
+    const url = wavDataUrl(pcm, VOICE_RATE);
+    window.__docTone = url;
+    const a = new Audio(); a.src = url;
+    const r = await new Promise(res=>{
+      let d = false;
+      a.onloadedmetadata = ()=>{ if(!d){ d=true; res({ok:true, sec:a.duration}); } };
+      a.onerror = ()=>{ if(!d){ d=true; res({ok:false}); } };
+      setTimeout(()=>{ if(!d){ d=true; res({ok:false, to:true}); } }, 4000);
+    });
+    docLine("목소리 파일 열기", r.ok, r.ok ? "이 폰에서 우리 앱의 목소리를 열 수 있어요 (아래 ▶로 소리도 확인해보세요)"
+                                          : "❗목소리를 열지 못했어요 — 이건 꼭 알려주세요");
+  }catch(e){ docLine("목소리 파일 열기", false, "만들다 실패: " + String(e).slice(0,60)); }
+
+  // 녹음 (실제로 1.5초 녹음해본다)
+  if(!recSupported()){
+    docLine("녹음", false, "이 브라우저는 녹음을 지원하지 않아요");
+  }else{
+    try{
+      const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+      const AC = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AC();
+      try{ await ctx.resume(); }catch(e){}
+      const src = ctx.createMediaStreamSource(stream);
+      const proc = ctx.createScriptProcessor(4096,1,1);
+      const mute = ctx.createGain(); mute.gain.value = 0;
+      let frames = 0, peak = 0;
+      proc.onaudioprocess = e=>{
+        frames++;
+        const d = e.inputBuffer.getChannelData(0);
+        for(let i=0;i<d.length;i+=8){ const v = d[i]<0?-d[i]:d[i]; if(v>peak) peak = v; }
+      };
+      src.connect(proc); proc.connect(mute); mute.connect(ctx.destination);
+      await new Promise(r=>setTimeout(r, 1800));
+      try{ proc.disconnect(); src.disconnect(); mute.disconnect(); }catch(e){}
+      stream.getTracks().forEach(t=>t.stop());
+      const rate = ctx.sampleRate;
+      try{ ctx.close(); }catch(e){}
+      docLine("녹음", frames > 0, frames > 0
+        ? "마이크가 들어와요 · " + Math.round(rate/1000) + "kHz · 소리 크기 " + Math.round(peak*100) + "%"
+          + (peak < 0.01 ? " (아주 조용해요 — 말하면서 다시 해보세요)" : "")
+        : "❗마이크가 열렸는데 소리가 안 들어와요 — 꼭 알려주세요");
+    }catch(e){
+      const nm = (e && e.name) || "";
+      docLine("녹음", false, nm === "NotAllowedError" ? "마이크를 허용하지 않았어요. 다시 진단하면서 '허용'을 눌러주세요"
+                                                      : "마이크를 못 열었어요 (" + nm + ")");
+    }
+  }
+
+  // 동기화 서버 왕복
+  if(syncConfigured()){
+    const t0 = Date.now();
+    try{
+      await syncApi("GET", "couples?select=code&limit=1");
+      docLine("동기화 서버", true, "연결돼요 · " + (Date.now()-t0) + "ms");
+    }catch(e){ docLine("동기화 서버", false, "서버에 못 닿았어요 (" + String(e).slice(0,40) + ")"); }
+  }
+
+  // 알림
+  docLine("알림", "Notification" in window ? ("granted" === Notification.permission ? true : "warn") : false,
+    !("Notification" in window) ? "이 브라우저는 알림을 지원하지 않아요"
+      : Notification.permission === "granted" ? "켜져 있어요"
+      : Notification.permission === "denied" ? "거부돼 있어요 (설정에서 다시 켜야 해요)"
+      : "아직 안 켰어요 (더보기 → 알림 켜기)");
+
+  // 받아쓰기는 사람이 말해야 하므로 버튼으로 따로
+  docLine("받아쓰기", sttSupported() ? "wait" : false,
+    sttSupported() ? "아래 버튼을 눌러 소리 내어 말해보세요 — 이게 이번 테스트의 핵심이에요"
+                   : "❗이 폰은 말을 글로 바꾸는 기능이 없어요. 목소리만 저장되고 글은 직접 적게 돼요");
+  renderDoctorFoot();
+}
+/* 받아쓰기만은 사람이 실제로 말해야 확인된다 */
+async function docSpeech(){
+  const box = $("#doc-speech");
+  if(!box || !sttSupported()) return;
+  box.innerHTML = `<div class="doc-mic">🎤</div><p class="doc-say">지금 말해보세요 — <b>"오늘 하루도 고마웠어"</b></p><div class="doc-heard" id="doc-heard">듣는 중…</div>`;
+  const r = new SR();
+  r.lang = "ko-KR"; r.continuous = true; r.interimResults = true;
+  let got = "", err = null;
+  r.onresult = e=>{
+    let t = "";
+    for(let i=0;i<e.results.length;i++) t += e.results[i][0].transcript;
+    got = t.trim();
+    const h = $("#doc-heard");
+    if(h) h.textContent = got || "듣는 중…";
+  };
+  r.onerror = e=>{ err = e.error; };
+  try{ r.start(); }catch(e){ err = String(e); }
+  await new Promise(res=>setTimeout(res, 7000));
+  try{ r.onend = null; r.stop(); }catch(e){}
+  const ok = !!got;
+  const idx = DOC.findIndex(d=>d.name === "받아쓰기");
+  if(idx >= 0) DOC[idx] = {name:"받아쓰기", ok, detail: ok ? "들린 말: \"" + got + "\"" : ("실패" + (err ? " (" + err + ")" : " — 아무것도 못 알아들었어요"))};
+  box.innerHTML = ok
+    ? `<div class="doc-ok">✅ 이렇게 들었어요<div class="q">"${esc(got)}"</div>
+       <p class="doc-note">글자가 조금 틀려도 괜찮아요 — 보내기 전에 고칠 수 있어요</p></div>`
+    : `<div class="doc-bad">❌ 못 알아들었어요${err?` (${esc(err)})`:""}
+       <p class="doc-note">마이크 허용을 안 했거나, 이 폰이 지원하지 않을 수 있어요.<br>다시 눌러 한 번만 더 해보고, 또 안 되면 사장님께 알려주세요</p></div>`;
+  renderDoctorFoot();
+}
+function docReport(){
+  const dev = docDevice();
+  const lines = DOC.map(d=>(d.ok===true?"[정상] ":d.ok===false?"[실패] ":d.ok==="warn"?"[주의] ":"[대기] ")+d.name+" — "+d.detail);
+  return ["우리의 계절 진단 결과", "버전: v2.0" + (IS_BETA?" 베타":" 정식"), "기기: "+dev.label,
+          "시각: "+new Date().toLocaleString("ko-KR"), ""].concat(lines).join("\n");
+}
+function renderDoctorFoot(){
+  const f = $("#doc-foot");
+  if(!f) return;
+  const bad = DOC.filter(d=>d.ok===false).length, warn = DOC.filter(d=>d.ok==="warn").length;
+  f.innerHTML = `<div class="doc-sum ${bad?"bad":warn?"warn":"ok"}">${
+    bad ? `❌ 안 되는 게 ${bad}개 있어요` : warn ? `⚠️ 확인할 게 ${warn}개 있어요` : `✅ 다 정상이에요!`}</div>
+    <button class="btn" id="doc-copy">📋 결과 복사하기 (사장님께 보내주세요)</button>`;
+  $("#doc-copy").addEventListener("click",async ()=>{
+    const t = docReport();
+    try{ await navigator.clipboard.writeText(t); toast("복사했어요! 카톡에 붙여넣어 주세요"); }
+    catch(e){
+      openModal(`<h3>진단 결과</h3><textarea readonly style="height:240px;font-size:.78rem">${esc(t)}</textarea>
+        <p style="font-size:.76rem;color:var(--ink-soft);margin:8px 0">길게 눌러 전체 선택 → 복사해주세요</p>
+        <button class="btn line" data-close>닫기</button>`);
+    }
+  });
+}
+$("#set-doctor").addEventListener("click",()=>{
+  openModal(`<h3>🩺 이 폰 진단하기</h3>
+    <p style="font-size:.85rem;color:var(--ink-soft);word-break:keep-all;line-height:1.6;margin-bottom:12px">
+      이 폰에서 목소리 기능이 제대로 되는지 스스로 검사해요. 마이크를 물어보면 <b>허용</b>을 눌러주세요.</p>
+    <div id="doc-list" class="doc-list"><div class="empty">검사하는 중…</div></div>
+    <div id="doc-speech" class="doc-speech"></div>
+    <div style="height:6px"></div>
+    <button class="btn ghost" id="doc-speak">🎤 받아쓰기 시험하기 (소리 내어 말해요)</button>
+    <div style="height:10px"></div>
+    <div id="doc-foot"></div>
+    <div style="height:10px"></div>
+    <div class="row2"><button class="btn line" data-close>닫기</button><button class="btn ghost" id="doc-again">다시 검사</button></div>`);
+  const speak = $("#doc-speak");
+  if(speak) speak.addEventListener("click", docSpeech);
+  $("#doc-again").addEventListener("click", runDoctor);
+  runDoctor();
 });
 
 $("#set-reset").addEventListener("click",()=>{
