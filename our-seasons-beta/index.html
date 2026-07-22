@@ -287,6 +287,9 @@ header{
 .pet-feed .pf{flex:1;text-align:center;background:#FFF9F6;border-radius:10px;padding:7px 2px;font-size:.7rem;font-weight:700;color:#C9B4AD}
 .pet-feed .pf.on{background:var(--primary-soft);color:var(--primary-deep)}
 
+/* ---------- 질문 넘기기 ---------- */
+.skip-note{font-size:.74rem;color:#C9B4AD;text-align:center;margin-top:7px;word-break:keep-all;line-height:1.5}
+
 /* ---------- 커플 퀴즈 ---------- */
 .quiz-opts{display:flex;flex-direction:column;gap:8px}
 .quiz-opt{
@@ -492,6 +495,7 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
 
   <!-- ================= 질문 ================= -->
   <section class="screen" id="screen-qa">
+    <div class="card" id="deferred-card" style="display:none"></div>
     <div class="card" id="qa-today-card"></div>
     <div class="card" id="quiz-card"></div>
     <div class="card">
@@ -563,7 +567,7 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
       <div class="settings-row danger" id="set-reset">전체 초기화</div>
       <input type="file" id="import-file" accept="application/json" style="display:none" />
     </div>
-    <p style="text-align:center;font-size:.72rem;color:#C9B4AD;margin:8px 0 4px">우리의 계절 v1.6 · 모든 기록은 두 사람의 기기에만</p>
+    <p style="text-align:center;font-size:.72rem;color:#C9B4AD;margin:8px 0 4px">우리의 계절 v1.7 · 모든 기록은 두 사람의 기기에만</p>
     <p style="text-align:center;font-family:var(--hand);font-size:1rem;color:var(--peach);margin:0 0 20px">인연이 필연이 되는 순간까지 🫶</p>
   </section>
 
@@ -981,6 +985,8 @@ function defaultState(){
     lastline:"",  // 우리 이야기의 마지막 문장
     quiz:{},      // dateKey -> {qi, p1:{self,guess}, p2:{self,guess}} — 커플 퀴즈
     pet:null,     // {name} — 콩닥이 이름
+    skips:{},     // dateKey -> [qi,...] 그날 넘긴 질문 (커리큘럼이 그만큼 앞으로 나아간다)
+    deferred:[],  // {qi, at:dateKey} 미뤄둔 질문 — 버리지 않고 3개월 뒤 되돌려준다
     sync:null,    // {code, me:"p1"|"p2"} — 커플 연결 정보 (동기화 대상에서 제외)
   };
 }
@@ -1015,6 +1021,28 @@ function save(){
     }
   }
   scheduleSyncPush();
+}
+
+/* 기록 보호: 브라우저가 저장 데이터를 임의로 지우지 못하게 요청한다.
+   (사파리는 홈 화면에 설치하지 않으면 일정 기간 방문이 없을 때 저장을 비우므로,
+    설치 안내가 사실상 유일한 보호책이다) */
+let storagePersisted = null;
+function requestPersistence(){
+  try{
+    if(!navigator.storage || !navigator.storage.persist) return;
+    navigator.storage.persisted().then(p=>{
+      storagePersisted = p;
+      if(!p) navigator.storage.persist().then(ok=>{ storagePersisted = ok; });
+    });
+  }catch(e){}
+}
+function isInstalled(){
+  return matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+}
+function protectionState(){
+  if(isInstalled()) return { level:"safe", label:"보호됨 🛡", desc:"홈 화면 앱이라 기록이 안전하게 보관돼요" };
+  if(storagePersisted) return { level:"ok", label:"어느 정도 보호됨", desc:"브라우저가 기록을 지키기로 했어요. 홈 화면에 추가하면 더 안전해요" };
+  return { level:"risk", label:"보호 안 됨 ⚠️", desc:"브라우저로만 열면 한동안 안 들어올 때 기록이 지워질 수 있어요. 홈 화면에 추가해주세요" };
 }
 
 /* 저장 공간 사용량 — 사용자가 한도에 부딪히기 전에 스스로 확인할 수 있게 */
@@ -1073,11 +1101,28 @@ function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(
 
 /* 오늘의 질문: 함께 기록을 시작한 날 기준으로 커리큘럼을 순차 진행.
    답변 시점의 질문 번호(qi)를 기록에 저장해 아카이브가 어긋나지 않게 한다. */
+/* 넘긴 질문 수만큼 커리큘럼이 앞으로 나아간다 (넘긴 질문은 버려지지 않고 deferred로 간다) */
+function skipCountUpTo(key){
+  let c = 0;
+  for(const k in S.skips){ if(k <= key) c += (S.skips[k]||[]).length; }
+  return c;
+}
 function qIndexFor(key){
   const base = S.couple ? (S.couple.joined || S.couple.start) : "2026-01-01";
-  const n = Math.max(0, diffDays(base, key));
+  const n = Math.max(0, diffDays(base, key)) + skipCountUpTo(key);
   if(n < FLAT.length) return n;
   return DEEP_FROM + ((n - FLAT.length) % (FLAT.length - DEEP_FROM));
+}
+const SKIP_PER_DAY = 2;      // 하루에 넘길 수 있는 횟수
+const DEFER_DAYS = 90;       // 미뤄둔 질문이 되돌아오기까지
+function skipsLeftToday(){
+  return Math.max(0, SKIP_PER_DAY - ((S.skips[todayKey()]||[]).length));
+}
+/* 되돌아올 때가 된 미뤄둔 질문 (가장 오래된 것 하나) */
+function dueDeferred(){
+  const today = todayKey();
+  const due = (S.deferred||[]).filter(d=>diffDays(d.at, today) >= DEFER_DAYS);
+  return due.length ? due.sort((a,b)=>a.at<b.at?-1:1)[0] : null;
 }
 function missionIndex(){
   const wk = weekKey();
@@ -1398,6 +1443,15 @@ function renderQaToday(){
   }else{
     html += `<textarea id="qa-input" placeholder="솔직하게, 편하게. 상대는 답하기 전엔 볼 수 없어요."></textarea>
       <div style="height:10px"></div><button class="btn" id="qa-submit">답변 남기기</button>`;
+    /* 안 맞는 질문에서 빠져나갈 유일한 출구.
+       상대가 이미 답한 뒤에는 질문이 바뀌면 안 되므로 잠근다. */
+    if(!st.theirs && skipsLeftToday() > 0){
+      html += `<div style="height:8px"></div>
+        <button class="btn sm line" id="qa-skip">🐣 다른 질문 주세요</button>
+        <p class="skip-note">안 맞는 날도 있으니까요. 넘겨도 오늘 기록은 그대로예요 · 오늘 ${skipsLeftToday()}번 남음</p>`;
+    }else if(!st.theirs){
+      html += `<p class="skip-note">오늘은 더 넘길 수 없어요. 내일 콩닥이가 새 질문을 물어올게요 🐣</p>`;
+    }
   }
   if(st.both){
     html += `<div class="answer-box">
@@ -1441,6 +1495,28 @@ function renderQaToday(){
     else r.react[S.current] = b.dataset.react;
     save(); renderAll();
   }));
+  const skipBtn = $("#qa-skip");
+  if(skipBtn) skipBtn.addEventListener("click",()=>{
+    const k2 = todayKey();
+    const rec2 = S.answers[k2] || {};
+    if(rec2[other(S.current)]){ toast("상대가 이미 답해서 질문을 바꿀 수 없어요"); return; }
+    if(!S.deferred) S.deferred = [];
+    if(rec2.qi !== undefined && !rec2.p1 && !rec2.p2){
+      /* 되돌아왔던 질문을 다시 미루기 — 커리큘럼은 건드리지 않는다 */
+      const pinned = rec2.qi;
+      delete rec2.qi;
+      if(!Object.keys(rec2).length) delete S.answers[k2];
+      const had = S.deferred.find(d=>d.qi===pinned);
+      if(had) had.at = k2; else S.deferred.push({qi:pinned, at:k2});
+    }else{
+      const fi = qIndexFor(k2);
+      if(!S.skips[k2]) S.skips[k2] = [];
+      S.skips[k2].push(fi);
+      if(!S.deferred.some(d=>d.qi===fi)) S.deferred.push({qi:fi, at:k2});
+    }
+    save(); renderAll();
+    toast("🐣 콩닥이가 다른 질문을 물어왔어요");
+  });
   const sendBtn = $("#reply-send");
   if(sendBtn) sendBtn.addEventListener("click",()=>{
     const v = $("#reply-input").value.trim();
@@ -1451,6 +1527,39 @@ function renderQaToday(){
     r.reply[S.current] = v;
     save(); renderAll();
     toast("💬 답글을 남겼어요");
+  });
+}
+
+/* 미뤄둔 질문 되돌려주기 — 다른 앱은 넘긴 질문을 버리지만,
+   우리는 기기에 다 남아 있으니 3개월 뒤 조용히 다시 물어볼 수 있다 */
+function renderDeferred(){
+  const el = $("#deferred-card");
+  if(!el) return;
+  const k = todayKey();
+  const rec = S.answers[k] || {};
+  const d = dueDeferred();
+  if(!d || rec[S.current] || rec.qi !== undefined || !FLAT[d.qi]){ el.style.display = "none"; return; }
+  el.style.display = "block";
+  el.innerHTML = `<div class="card-title">🌱 그때 미뤄뒀던 질문</div>
+    <p style="font-size:.8rem;color:var(--ink-soft);margin-bottom:8px;word-break:keep-all">${fmtShort(d.at)}에 넘겼던 질문이에요. 지금은 어때요?</p>
+    <div class="q-text" style="font-size:1rem">${esc(FLAT[d.qi].q)}</div>
+    <div style="display:flex;gap:10px">
+      <button class="btn sm line" id="defer-later" style="flex:1">아직은 아니에요</button>
+      <button class="btn sm" id="defer-take" style="flex:1">오늘 답해볼래요</button>
+    </div>`;
+  $("#defer-take").addEventListener("click",()=>{
+    const k2 = todayKey();
+    if(!S.answers[k2]) S.answers[k2] = {};
+    S.answers[k2].qi = d.qi;
+    S.deferred = S.deferred.filter(x=>x.qi !== d.qi);
+    save(); renderAll();
+    toast("🌱 그때의 질문을 오늘 다시 만났어요");
+  });
+  $("#defer-later").addEventListener("click",()=>{
+    const it = S.deferred.find(x=>x.qi === d.qi);
+    if(it) it.at = todayKey();
+    save(); renderAll();
+    toast("괜찮아요. 나중에 다시 물어볼게요 🌷");
   });
 }
 
@@ -1783,6 +1892,7 @@ $("#set-export").addEventListener("click",()=>{
   a.download = "our-seasons-backup-"+todayKey()+".json";
   a.click();
   URL.revokeObjectURL(a.href);
+  try{ localStorage.setItem(KEY+".lastExport", todayKey()); }catch(e){}
   toast("백업 파일을 내려받았어요");
 });
 $("#set-import").addEventListener("click",()=>$("#import-file").click());
@@ -1823,12 +1933,20 @@ function autoSnapshot(){
 $("#set-snap").addEventListener("click",()=>{
   const snaps = JSON.parse(localStorage.getItem(KEY+".snaps")||"[]");
   const si = storageInfo();
-  openModal(`<h3>🛟 자동 백업</h3>
-    <p style="font-size:.85rem;color:var(--ink-soft);word-break:keep-all;margin-bottom:10px">매일 첫 실행 때 그날의 기록을 자동으로 저장해둬요 (최근 3일). 업데이트 후 뭔가 이상하면 여기서 안전하게 되돌릴 수 있어요.</p>
+  const pr = protectionState();
+  const lastEx = localStorage.getItem(KEY+".lastExport");
+  const exLabel = lastEx ? diffDays(lastEx, todayKey())+"일 전 ("+fmtShort(lastEx)+")" : "아직 없어요";
+  openModal(`<h3>🛟 기록 지키기</h3>
+    <div class="answer-box" style="margin-bottom:10px;${pr.level==="risk"?"border:1.5px solid var(--peach)":""}"><div class="txt" style="font-size:.84rem">
+      <b>기록 보호 상태 · ${pr.label}</b><br>
+      <span style="color:var(--ink-soft);font-size:.78rem">${pr.desc}</span>
+    </div></div>
     <div class="answer-box" style="margin-bottom:10px"><div class="txt" style="font-size:.84rem">
       🗂 우리 기록 <b>${si.usedKB.toLocaleString()}KB</b> · 사진 <b>${si.photos}장</b><br>
+      💾 마지막 내보내기 백업 <b>${exLabel}</b><br>
       <span style="color:var(--ink-soft);font-size:.78rem">사진이 많아지면 저장 공간이 찰 수 있어요. 가끔 '기록 내보내기'로 백업해두면 안심이에요.</span>
     </div></div>
+    <p style="font-size:.85rem;color:var(--ink-soft);word-break:keep-all;margin-bottom:10px">아래는 매일 첫 실행 때 자동으로 저장되는 기록이에요 (최근 3일). 업데이트 후 뭔가 이상하면 안전하게 되돌릴 수 있어요.</p>
     ${snaps.length ? snaps.slice().reverse().map(d=>
       `<div class="settings-row">${d} 자동 백업 <button class="btn sm ghost" data-restore="${d}" style="width:auto;padding:8px 14px">이 시점으로 복원</button></div>`).join("")
       : `<div class="empty">아직 자동 백업이 없어요.<br>내일 첫 실행 때부터 쌓여요.</div>`}
@@ -2174,6 +2292,12 @@ function mergeState(local, remote){
     for(const p of ["p1","p2"]) if(!r[p] && s[p]) r[p] = s[p];
   }
   if(!m.pet && remote.pet) m.pet = remote.pet;
+  /* 넘긴 질문·미뤄둔 질문은 합집합 (한쪽에서 넘긴 걸 다른 쪽도 따라간다) */
+  for(const k in (remote.skips||{})){
+    const r = m.skips[k] = m.skips[k] || [];
+    (remote.skips[k]||[]).forEach(q=>{ if(r.indexOf(q) < 0) r.push(q); });
+  }
+  (remote.deferred||[]).forEach(d=>{ if(!m.deferred.some(x=>x.qi === d.qi)) m.deferred.push(d); });
   return m;
 }
 window.__mergeState = mergeState; // 테스트용
@@ -2760,23 +2884,29 @@ async function previewQuoteNotification(){
   }catch(e){}
 }
 setupDailyQuote();
+requestPersistence();
 let deferredInstall = null;
 window.addEventListener("beforeinstallprompt",(e)=>{ e.preventDefault(); deferredInstall = e; renderInstallCard(); });
 function isStandalone(){ return matchMedia("(display-mode: standalone)").matches || navigator.standalone === true; }
 function renderInstallCard(){
   const el = $("#home-install-card");
   if(!el) return;
-  if(isStandalone() || localStorage.getItem("ourseasons.installTip")==="off"){ el.style.display="none"; return; }
+  const snooze = localStorage.getItem("ourseasons.installTip");   // 날짜 = 그날부터 14일간 접어두기
+  const snoozed = snooze && snooze !== "off" && diffDays(snooze, todayKey()) < 14;
+  if(isStandalone() || snoozed){ el.style.display="none"; return; }
   const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
   el.style.display = "block";
-  el.innerHTML = `<div class="card-title">📲 진짜 앱처럼 쓰기 <button class="more" id="install-hide">다시 안 보기</button></div>
+  el.innerHTML = `<div class="card-title">🛡 우리 기록을 안전하게 <button class="more" id="install-hide">나중에</button></div>
+    <p style="font-size:.88rem;color:var(--ink-soft);margin-bottom:10px;word-break:keep-all">
+      브라우저로만 열면 <b style="color:var(--primary-deep)">한동안 안 들어올 때 기록이 지워질 수 있어요.</b>
+      홈 화면에 추가하면 기록이 안전해지고, 전체 화면 앱이 되고, 알림도 받을 수 있어요.</p>
     ${deferredInstall
-      ? `<p style="font-size:.88rem;color:var(--ink-soft);margin-bottom:10px;word-break:keep-all">홈 화면에 설치하면 전체 화면으로 열리고, 오프라인에서도 켜져요.</p><button class="btn sm" id="install-now">🫶 홈 화면에 설치하기</button>`
+      ? `<button class="btn sm" id="install-now">🫶 홈 화면에 추가하기</button>`
       : ios
-        ? `<p style="font-size:.88rem;color:var(--ink-soft);word-break:keep-all">사파리 하단 <b>공유 버튼(⬆️)</b> → <b>'홈 화면에 추가'</b>를 누르면 하트 아이콘이 생기고, 전체 화면 앱이 돼요.</p>`
-        : `<p style="font-size:.88rem;color:var(--ink-soft);word-break:keep-all">브라우저 메뉴(⋮)에서 <b>'홈 화면에 추가'</b> 또는 <b>'앱 설치'</b>를 누르면 진짜 앱처럼 쓸 수 있어요.</p>`}`;
+        ? `<div class="answer-box"><div class="txt" style="font-size:.85rem">사파리 하단 <b>공유 버튼(⬆️)</b> → <b>'홈 화면에 추가'</b></div></div>`
+        : `<div class="answer-box"><div class="txt" style="font-size:.85rem">브라우저 메뉴(⋮) → <b>'홈 화면에 추가'</b> 또는 <b>'앱 설치'</b></div></div>`}`;
   const hide = $("#install-hide");
-  if(hide) hide.addEventListener("click",()=>{ localStorage.setItem("ourseasons.installTip","off"); el.style.display="none"; });
+  if(hide) hide.addEventListener("click",()=>{ localStorage.setItem("ourseasons.installTip", todayKey()); el.style.display="none"; toast("2주 뒤에 다시 알려드릴게요"); });
   const now = $("#install-now");
   if(now) now.addEventListener("click",async ()=>{
     if(!deferredInstall) return;
@@ -2805,6 +2935,7 @@ function renderAll(){
   renderHomeAnniv();
   renderTime();
   renderQaToday();
+  renderDeferred();
   renderQuiz();
   renderQaArchive();
   renderMemories();
