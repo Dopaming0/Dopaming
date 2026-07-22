@@ -2254,7 +2254,7 @@ function renderSheet(){
   bind("pv-play", ()=>{
     if(!pending.url) return;
     radioQueue = null;
-    audioEl().src = pending.url;
+    audioEl().src = playUrl(pending.url);
     vAudio.play().catch(()=>toast("재생할 수 없어요"));
   });
   bind("pv-send", ()=>commitSheet(false));
@@ -2341,6 +2341,78 @@ function wavDataUrl(pcm, rate){
   for(let i=0;i<bytes.length;i+=0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i+0x8000));
   return "data:audio/wav;base64," + btoa(bin);
 }
+/* ==================================================================
+   μ-law 재생 안전망
+   애플 공식 문서는 아이폰이 여는 WAV를 "압축하지 않은 것"으로만 적어두었다.
+   실제로 되는지는 실기기에서만 알 수 있으므로, 앱이 시작할 때 스스로 한 번 확인하고
+   못 여는 기기라면 재생 순간에만 옛날 방식(16비트)으로 되돌려 들려준다.
+   저장과 전송은 그대로 μ-law(절반 용량) — 늘어난 문자열은 듣고 나면 버린다.
+   ================================================================== */
+const MU_TABLE = (function(){
+  const t = new Int16Array(256);
+  for(let i=0;i<256;i++){
+    const u = ~i & 0xFF;
+    const sign = u & 0x80, exp = (u >> 4) & 0x07, mant = u & 0x0F;
+    let v = ((mant << 3) + 0x84) << exp;
+    v -= 0x84;
+    t[i] = sign ? -v : v;
+  }
+  return t;
+})();
+function b64ToBytes(b64){
+  const bin = atob(b64);
+  const out = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+/* μ-law WAV → 16비트 WAV (어느 기기에서나 열리는 형식) */
+function ulawToPcmUrl(url){
+  try{
+    const b = b64ToBytes(url.split(",")[1]);
+    const dv = new DataView(b.buffer);
+    if(dv.getUint16(20, true) !== 7) return url;      // μ-law가 아니면 그대로
+    const rate = dv.getUint32(24, true);
+    // data 청크 찾기 (fact 청크 유무에 흔들리지 않게)
+    let off = 12, len = 0, pos = -1;
+    while(off + 8 <= b.length){
+      const id = String.fromCharCode(b[off],b[off+1],b[off+2],b[off+3]);
+      const sz = dv.getUint32(off+4, true);
+      if(id === "data"){ pos = off+8; len = Math.min(sz, b.length-pos); break; }
+      off += 8 + sz + (sz & 1);
+    }
+    if(pos < 0) return url;
+    const out = new Uint8Array(44 + len*2);
+    const o = new DataView(out.buffer);
+    const put = (p,s)=>{ for(let i=0;i<s.length;i++) o.setUint8(p+i, s.charCodeAt(i)); };
+    put(0,"RIFF"); o.setUint32(4, 36+len*2, true); put(8,"WAVEfmt ");
+    o.setUint32(16,16,true); o.setUint16(20,1,true); o.setUint16(22,1,true);
+    o.setUint32(24,rate,true); o.setUint32(28,rate*2,true); o.setUint16(32,2,true); o.setUint16(34,16,true);
+    put(36,"data"); o.setUint32(40, len*2, true);
+    for(let i=0;i<len;i++) o.setInt16(44+i*2, MU_TABLE[b[pos+i]], true);
+    let bin = "";
+    for(let i=0;i<out.length;i+=0x8000) bin += String.fromCharCode.apply(null, out.subarray(i, i+0x8000));
+    return "data:audio/wav;base64," + btoa(bin);
+  }catch(e){ return url; }
+}
+let ulawOK = null; // null=확인 전, true=이 기기는 μ-law를 연다, false=못 연다
+function playUrl(url){ return ulawOK === false ? ulawToPcmUrl(url) : url; }
+async function probeUlaw(){
+  try{
+    const n = VOICE_RATE, pcm = new Float32Array(n);
+    for(let i=0;i<n;i++) pcm[i] = 0.3*Math.sin(2*Math.PI*440*i/VOICE_RATE);
+    const url = wavDataUrl(pcm, VOICE_RATE);
+    const bytes = b64ToBytes(url.split(",")[1]);
+    const AC = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AC();
+    await ctx.decodeAudioData(bytes.buffer.slice(0));   // 진짜로 풀어보는 검사
+    try{ ctx.close(); }catch(e){}
+    ulawOK = true;
+  }catch(e){
+    ulawOK = false;   // 못 여는 기기 → 재생할 때마다 옛날 방식으로 바꿔 들려준다
+  }
+}
+probeUlaw();
+
 /* ---- 재생 ---- */
 let vAudio = null, vPlaying = null;
 /* 재생기는 하나만 둔다. 한 곡이 끝났을 때 라디오 중이면 다음 꼭지로, 아니면 멈춘다 */
@@ -2360,7 +2432,7 @@ function playVoice(id){
   radioQueue = null;              // 낱개 재생은 이어듣기를 끊는다
   audioEl();
   if(vPlaying === id){ vAudio.pause(); vPlaying = null; paintVoices(); return; }
-  vAudio.src = v.url;
+  vAudio.src = playUrl(v.url);
   vPlaying = id;
   vAudio.play().catch(()=>{ vPlaying = null; toast("재생할 수 없는 목소리예요"); paintVoices(); });
   markHeard(id);
@@ -2418,7 +2490,7 @@ function bindVoiceRows(root){
     const v = (S.voices||[]).find(x=>x.id===b.dataset.voiceSave);
     if(!v) return;
     const a = document.createElement("a");
-    a.href = v.url; a.download = "목소리-"+v.date+".wav"; a.click();
+    a.href = playUrl(v.url); a.download = "목소리-"+v.date+".wav"; a.click();
     toast("목소리 파일을 내려받았어요 — 이건 영영 남아요");
   }));
   root.querySelectorAll("[data-voice-del]").forEach(b=>b.addEventListener("click",e=>{
@@ -2610,7 +2682,7 @@ function radioNext(first){
   const id = radioQueue.shift();
   const v = voiceById(id);
   if(!v){ radioNext(); return; }
-  vAudio.src = v.url;
+  vAudio.src = playUrl(v.url);
   vPlaying = id;
   vAudio.play().catch(()=>{ radioQueue = null; vPlaying = null; paintVoices(); });
   markHeard(id);
@@ -2944,19 +3016,36 @@ async function runDoctor(){
   const off = -new Date().getTimezoneOffset()/60;
   docLine("오늘 날짜", true, todayKey() + " · 이 폰 시간대 UTC" + (off>=0?"+":"") + off + (Math.abs(off-9)<0.01 ? " (한국)" : " — 앱은 항상 한국시간 기준이라 괜찮아요"));
 
-  // 저장 공간
+  // 어떻게 열었는가 — 이걸 먼저 봐야 나머지 결과를 오해하지 않는다
+  const inApp = /kakaotalk|instagram|fban|fbav|line\/|naver|daum/i.test(navigator.userAgent);
+  let canStore = true;
+  try{ localStorage.setItem("__doc.t","1"); localStorage.removeItem("__doc.t"); }catch(e){ canStore = false; }
+  docLine("열린 방식", inApp ? false : canStore ? true : false,
+    inApp ? "❗카카오톡 같은 앱 안에서 열렸어요. 목소리·받아쓰기가 막힐 수 있으니 사파리/크롬으로 다시 열어주세요"
+          : !canStore ? "❗저장이 안 되는 상태예요 (개인정보 보호 탭일 수 있어요). 일반 탭으로 다시 열어주세요"
+          : (isInstalled() ? "홈 화면 앱" : "일반 브라우저 탭") + " · 저장 가능");
+
+  /* 저장 공간: 아이폰은 오리진당 5MB뿐이라 크게 써보다가 탭이 죽으면
+     시험용 찌꺼기가 남아 앱이 영영 저장을 못 하게 된다. 작게, 그리고 무조건 치운다. */
   let free = 0;
-  try{
-    const CH = 100*1024, blob = "x".repeat(CH);
+  if(canStore){
+    const CH = 10*1024, blob = "x".repeat(CH), MAXN = 200; // 최대 2MB까지만
     let n = 0;
-    try{ for(; n<120; n++) localStorage.setItem("__doc."+n, blob); }catch(e){}
+    try{ for(; n<MAXN; n++) localStorage.setItem("__doc.p"+n, blob); }
+    catch(e){}
+    finally{ for(let i=0;i<MAXN;i++){ try{ localStorage.removeItem("__doc.p"+i); }catch(e){} } }
     free = n*CH;
-    for(let i=0;i<120;i++) localStorage.removeItem("__doc."+i);
-  }catch(e){}
+  }
+  const atCap = free >= 200*10*1024;
   const freeMB = (free/1024/1024).toFixed(1);
   const clips = Math.floor(free/320000);
-  docLine("저장 공간", free > 2*1024*1024 ? true : free > 700*1024 ? "warn" : false,
-    "여유 " + freeMB + "MB · 30초 목소리 약 " + clips + "개 분량");
+  docLine("저장 공간", free >= 2*1024*1024 ? true : free > 700*1024 ? "warn" : false,
+    (atCap ? "여유 2MB 이상" : "여유 " + freeMB + "MB")
+    + " · 30초 목소리 약 " + clips + (atCap ? "개 이상" : "개") + " 분량");
+
+  // 이 폰에 남아 있는 가장 오래된 기록 — 8일 뒤 이 날짜가 그대로면 안 지워진 것
+  const oldest = Object.keys(S.answers||{}).concat((S.voices||[]).map(v=>v.date)).sort()[0];
+  docLine("기록 나이", true, oldest ? "가장 오래된 기록 " + oldest : "아직 기록이 없어요");
 
   // 기록 영구 보관 요청
   let persisted = null;
@@ -2970,21 +3059,28 @@ async function runDoctor(){
     persisted === true ? "브라우저가 우리 기록을 지켜주기로 했어요"
                        : "브라우저가 보호를 약속하지 않았어요 (홈 화면 설치가 가장 확실해요)");
 
-  // μ-law 재생 — 앱이 실제로 쓰는 방식 그대로 만들어 열어본다
+  /* 목소리 파일 열기 — 이번 테스트의 최대 관문.
+     헤더만 읽고 성공이라 하면 "초록인데 소리가 안 나요"를 놓친다.
+     ①길이가 진짜 1초인지 ②실제로 풀리는지(decodeAudioData) 둘 다 본다. */
   try{
     const n = VOICE_RATE, pcm = new Float32Array(n); // 1초짜리 삐-
     for(let i=0;i<n;i++) pcm[i] = 0.35*Math.sin(2*Math.PI*440*i/VOICE_RATE);
     const url = wavDataUrl(pcm, VOICE_RATE);
     window.__docTone = url;
     const a = new Audio(); a.src = url;
-    const r = await new Promise(res=>{
+    const meta = await new Promise(res=>{
       let d = false;
       a.onloadedmetadata = ()=>{ if(!d){ d=true; res({ok:true, sec:a.duration}); } };
       a.onerror = ()=>{ if(!d){ d=true; res({ok:false}); } };
       setTimeout(()=>{ if(!d){ d=true; res({ok:false, to:true}); } }, 4000);
     });
-    docLine("목소리 파일 열기", r.ok, r.ok ? "이 폰에서 우리 앱의 목소리를 열 수 있어요 (아래 ▶로 소리도 확인해보세요)"
-                                          : "❗목소리를 열지 못했어요 — 이건 꼭 알려주세요");
+    const lenOK = meta.ok && isFinite(meta.sec) && Math.abs(meta.sec - 1) < 0.25;
+    if(ulawOK === null) await probeUlaw();
+    const both = lenOK && ulawOK === true;
+    docLine("목소리 파일 열기", both ? true : (ulawOK === false ? "warn" : false),
+      both ? "이 폰이 우리 목소리 파일을 그대로 열 수 있어요"
+           : ulawOK === false ? "이 폰은 원래 형식을 못 열어서, 재생할 때 자동으로 바꿔 들려줘요 (그래도 들려야 정상)"
+           : "❗목소리를 열지 못했어요 — 꼭 알려주세요" + (meta.ok ? " (길이 " + (meta.sec||0).toFixed(2) + "초)" : ""));
   }catch(e){ docLine("목소리 파일 열기", false, "만들다 실패: " + String(e).slice(0,60)); }
 
   // 녹음 (실제로 1.5초 녹음해본다)
@@ -3044,6 +3140,91 @@ async function runDoctor(){
                    : "❗이 폰은 말을 글로 바꾸는 기능이 없어요. 목소리만 저장되고 글은 직접 적게 돼요");
   renderDoctorFoot();
 }
+/* 소리 확인: 사람 귀로 들려야만 진짜 통과다 */
+async function docTone(){
+  if(!window.__docTone) return;
+  try{
+    const a = new Audio();
+    a.src = playUrl(window.__docTone);
+    await a.play();
+    await new Promise(r=>setTimeout(r,1300));
+    openModal(`<h3>🔔 '삐-' 소리가 들렸나요?</h3>
+      <p style="font-size:.85rem;color:var(--ink-soft);word-break:keep-all;line-height:1.6;margin-bottom:12px">
+        안 들렸다면 폰 옆면 <b>무음 스위치</b>와 볼륨을 먼저 확인하고 다시 눌러주세요.</p>
+      <div class="row2"><button class="btn line" id="tone-no">안 들렸어요</button><button class="btn" id="tone-yes">들렸어요</button></div>`);
+    $("#tone-yes").addEventListener("click",()=>{
+      const i = DOC.findIndex(d=>d.name==="목소리 파일 열기");
+      if(i>=0) DOC[i] = {name:"목소리 파일 열기", ok:true, detail:DOC[i].detail + " · 사람 귀로 소리 확인함 ✔"};
+      closeModal(); renderDoctorFoot(); toast("좋아요! 목소리는 문제없어요");
+    });
+    $("#tone-no").addEventListener("click",()=>{
+      const i = DOC.findIndex(d=>d.name==="목소리 파일 열기");
+      if(i>=0) DOC[i] = {name:"목소리 파일 열기", ok:false, detail:"화면은 열렸다는데 실제 소리가 안 남 (무음 스위치·볼륨 확인 후에도)"};
+      closeModal(); renderDoctorFoot(); toast("알겠어요. 결과를 복사해 사장님께 보내주세요");
+    });
+  }catch(e){ toast("소리를 낼 수 없어요"); }
+}
+/* ★ 실전과 같은 조건: 녹음과 받아쓰기를 동시에 — 아이폰에서 가장 깨지기 쉬운 조합 */
+async function docReal(){
+  const box = $("#doc-speech");
+  if(!box) return;
+  box.innerHTML = `<div class="doc-mic">🎤</div><p class="doc-say">실제로 남길 때처럼 해볼게요 — <b>"오늘 하루도 고마웠어"</b></p><div class="doc-heard" id="doc-heard">듣는 중…</div>`;
+  let frames = 0, peak = 0, state = "?", heard = "", err = null, stream = null, ctx = null;
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true}});
+    const AC = window.AudioContext || window.webkitAudioContext;
+    ctx = new AC();
+    try{ await Promise.race([ctx.resume(), new Promise(r=>setTimeout(r,1500))]); }catch(e){}
+    state = ctx.state;
+    const src = ctx.createMediaStreamSource(stream);
+    const proc = ctx.createScriptProcessor(4096,1,1);
+    const mute = ctx.createGain(); mute.gain.value = 0;
+    proc.onaudioprocess = e=>{
+      frames++;
+      const d = e.inputBuffer.getChannelData(0);
+      for(let i=0;i<d.length;i+=8){ const v = d[i]<0?-d[i]:d[i]; if(v>peak) peak = v; }
+    };
+    src.connect(proc); proc.connect(mute); mute.connect(ctx.destination);
+    if(sttSupported()){
+      const r = new SR();
+      r.lang = "ko-KR"; r.continuous = true; r.interimResults = true;
+      r.onresult = e=>{
+        let t = "";
+        for(let i=0;i<e.results.length;i++) t += e.results[i][0].transcript;
+        heard = t.trim();
+        const h = $("#doc-heard"); if(h) h.textContent = heard || "듣는 중…";
+      };
+      r.onerror = e=>{ err = e.error; };
+      try{ r.start(); }catch(e){ err = String(e).slice(0,40); }
+      await new Promise(res=>setTimeout(res, 7000));
+      try{ r.onend = null; r.stop(); }catch(e){}
+    }else{
+      err = "미지원";
+      await new Promise(res=>setTimeout(res, 5000));
+    }
+    try{ proc.disconnect(); src.disconnect(); mute.disconnect(); }catch(e){}
+  }catch(e){ err = (e && e.name) || String(e).slice(0,40); }
+  finally{
+    try{ if(stream) stream.getTracks().forEach(t=>t.stop()); }catch(e){}
+    try{ if(ctx) ctx.close(); }catch(e){}
+  }
+  const micOK = frames > 0, sttOK = !!heard;
+  const detail = "마이크 " + (micOK ? frames + "회 · 음량 " + Math.round(peak*100) + "%" : "안 들어옴")
+    + " · " + state + " · " + (sttOK ? "들린 말: \"" + heard + "\"" : "글 못 받음" + (err ? " (" + err + ")" : ""));
+  const idx = DOC.findIndex(d=>d.name === "받아쓰기");
+  const verdict = micOK && sttOK ? true : micOK ? "warn" : false;
+  if(idx >= 0) DOC[idx] = {name:"받아쓰기(실전 조건)", ok:verdict, detail};
+  else docLine("받아쓰기(실전 조건)", verdict, detail);
+  box.innerHTML = micOK && sttOK
+    ? `<div class="doc-ok">✅ 실전 조건에서도 잘 돼요<div class="q">"${esc(heard)}"</div>
+       <p class="doc-note">글자가 조금 틀려도 괜찮아요 — 보내기 전에 고칠 수 있어요</p></div>`
+    : micOK
+    ? `<div class="doc-bad">⚠️ 목소리는 들어오는데 글로는 안 바뀌었어요${err?` (${esc(err)})`:""}
+       <p class="doc-note">이 폰은 목소리만 저장하고, 글은 나중에 직접 적는 방식으로 쓰면 돼요. 앱이 알아서 그 화면을 띄워줍니다.</p></div>`
+    : `<div class="doc-bad">❌ 마이크가 안 들어왔어요${err?` (${esc(err)})`:""}
+       <p class="doc-note">마이크 허용을 안 했을 수 있어요. 앱을 완전히 껐다 켠 뒤 다시 해보고, 또 안 되면 사장님께 알려주세요</p></div>`;
+  renderDoctorFoot();
+}
 /* 받아쓰기만은 사람이 실제로 말해야 확인된다 */
 async function docSpeech(){
   const box = $("#doc-speech");
@@ -3073,11 +3254,25 @@ async function docSpeech(){
        <p class="doc-note">마이크 허용을 안 했거나, 이 폰이 지원하지 않을 수 있어요.<br>다시 눌러 한 번만 더 해보고, 또 안 되면 사장님께 알려주세요</p></div>`;
   renderDoctorFoot();
 }
+/* 무엇이 왜 안 됐는지 사람이 못 보는 것까지 담는다 — 이 텍스트 하나로 원인을 좁힐 수 있게 */
+const DOC_ERRS = [];
+window.addEventListener("error", e=>{ DOC_ERRS.push((e.message||"오류") + " @" + (e.lineno||"?")); while(DOC_ERRS.length>5) DOC_ERRS.shift(); });
+window.addEventListener("unhandledrejection", e=>{ DOC_ERRS.push("promise: " + String(e.reason).slice(0,80)); while(DOC_ERRS.length>5) DOC_ERRS.shift(); });
 function docReport(){
   const dev = docDevice();
   const lines = DOC.map(d=>(d.ok===true?"[정상] ":d.ok===false?"[실패] ":d.ok==="warn"?"[주의] ":"[대기] ")+d.name+" — "+d.detail);
+  const extra = [
+    "",
+    "── 기술 정보 (그대로 전달해주세요) ──",
+    "UA: " + navigator.userAgent,
+    "설치: " + (isInstalled() ? "홈 화면 앱" : "브라우저 탭") + " · 화면 " + window.innerWidth + "x" + window.innerHeight,
+    "μ-law 직접재생: " + (ulawOK === true ? "가능" : ulawOK === false ? "불가(자동 변환 사용)" : "미확인"),
+    "목소리 " + (S.voices||[]).length + "개 / " + Math.round((S.voices||[]).reduce((a,v)=>a+(v.url||"").length,0)/1024) + "KB",
+    "동기화: " + (S.sync ? "연결됨(코드 " + String(S.sync.code).slice(0,2) + "**)" : "안 함") + " · 마지막 서버시각 " + (lastStamp || "없음"),
+    "최근 오류: " + (DOC_ERRS.length ? DOC_ERRS.join(" | ") : "없음"),
+  ];
   return ["우리의 계절 진단 결과", "버전: v2.0" + (IS_BETA?" 베타":" 정식"), "기기: "+dev.label,
-          "시각: "+new Date().toLocaleString("ko-KR"), ""].concat(lines).join("\n");
+          "시각: "+new Date().toLocaleString("ko-KR"), ""].concat(lines).concat(extra).join("\n");
 }
 function renderDoctorFoot(){
   const f = $("#doc-foot");
@@ -3101,15 +3296,19 @@ $("#set-doctor").addEventListener("click",()=>{
     <p style="font-size:.85rem;color:var(--ink-soft);word-break:keep-all;line-height:1.6;margin-bottom:12px">
       이 폰에서 목소리 기능이 제대로 되는지 스스로 검사해요. 마이크를 물어보면 <b>허용</b>을 눌러주세요.</p>
     <div id="doc-list" class="doc-list"><div class="empty">검사하는 중…</div></div>
+    <div style="height:6px"></div>
+    <button class="btn ghost" id="doc-tone">🔔 '삐-' 소리 들어보기 (꼭 해주세요)</button>
     <div id="doc-speech" class="doc-speech"></div>
     <div style="height:6px"></div>
-    <button class="btn ghost" id="doc-speak">🎤 받아쓰기 시험하기 (소리 내어 말해요)</button>
+    <button class="btn ghost" id="doc-speak">🎤 실전처럼 말해보기 (녹음+받아쓰기 동시)</button>
     <div style="height:10px"></div>
     <div id="doc-foot"></div>
     <div style="height:10px"></div>
     <div class="row2"><button class="btn line" data-close>닫기</button><button class="btn ghost" id="doc-again">다시 검사</button></div>`);
   const speak = $("#doc-speak");
-  if(speak) speak.addEventListener("click", docSpeech);
+  if(speak) speak.addEventListener("click", docReal);
+  const tone = $("#doc-tone");
+  if(tone) tone.addEventListener("click", docTone);
   $("#doc-again").addEventListener("click", runDoctor);
   runDoctor();
 });
@@ -3330,11 +3529,19 @@ function printHTML(html){
 /* ==================================================================
    알림: 탭이 열려 있는 동안 상대의 활동을 브라우저 알림으로
    ================================================================== */
+/* 모바일 브라우저는 new Notification()을 대부분 막아둔다(조용히 실패).
+   서비스워커의 showNotification이 폰에서 실제로 뜨는 유일한 길이다. */
 function notify(title, body){
   try{
-    if("Notification" in window && Notification.permission==="granted" && document.hidden){
-      new Notification(title, {body});
+    if(!("Notification" in window) || Notification.permission !== "granted") return;
+    if(!document.hidden) return;
+    if(navigator.serviceWorker && navigator.serviceWorker.ready){
+      navigator.serviceWorker.ready.then(reg=>{
+        reg.showNotification(title, {body, icon:"icon-192.png", badge:"icon-192.png", tag:"partner"});
+      }).catch(()=>{});
+      return;
     }
+    new Notification(title, {body});
   }catch(e){}
 }
 $("#set-noti").addEventListener("click",()=>{
