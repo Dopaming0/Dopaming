@@ -563,7 +563,7 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
       <div class="settings-row danger" id="set-reset">전체 초기화</div>
       <input type="file" id="import-file" accept="application/json" style="display:none" />
     </div>
-    <p style="text-align:center;font-size:.72rem;color:#C9B4AD;margin:8px 0 4px">우리의 계절 v1.5 · 모든 기록은 두 사람의 기기에만</p>
+    <p style="text-align:center;font-size:.72rem;color:#C9B4AD;margin:8px 0 4px">우리의 계절 v1.6 · 모든 기록은 두 사람의 기기에만</p>
     <p style="text-align:center;font-family:var(--hand);font-size:1rem;color:var(--peach);margin:0 0 20px">인연이 필연이 되는 순간까지 🫶</p>
   </section>
 
@@ -997,13 +997,52 @@ function load(){
     return st;
   }catch(e){ return defaultState(); }
 }
-function save(){ localStorage.setItem(KEY, JSON.stringify(S)); scheduleSyncPush(); }
+/* 저장: 공간이 가득 차도 앱이 멈추지 않게 방어한다.
+   1차 시도 실패 → 오래된 자동백업을 비우고 재시도 → 그래도 안 되면 사용자에게 알림 */
+function save(){
+  try{
+    localStorage.setItem(KEY, JSON.stringify(S));
+  }catch(e){
+    try{
+      const snaps = JSON.parse(localStorage.getItem(KEY+".snaps")||"[]");
+      while(snaps.length){ localStorage.removeItem(KEY+".snap."+snaps.shift()); }
+      localStorage.setItem(KEY+".snaps", "[]");
+      localStorage.setItem(KEY, JSON.stringify(S));
+      toast("저장 공간이 부족해 예전 자동백업을 정리했어요");
+    }catch(e2){
+      toast("⚠️ 저장 공간이 가득 찼어요. 더보기 → 기록 내보내기로 백업해주세요");
+      return; // 저장 실패 시 동기화도 보내지 않는다 (상대 기록 덮어쓰기 방지)
+    }
+  }
+  scheduleSyncPush();
+}
+
+/* 저장 공간 사용량 — 사용자가 한도에 부딪히기 전에 스스로 확인할 수 있게 */
+function storageInfo(){
+  let used = 0;
+  try{
+    for(let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      if(k && k.indexOf(KEY) === 0) used += (localStorage.getItem(k)||"").length;
+    }
+  }catch(e){}
+  const photos = S.memories ? S.memories.filter(m=>m.img).length : 0;
+  return { usedKB: Math.round(used/1024), photos };
+}
 
 /* ==================================================================
    날짜 유틸
    ================================================================== */
 const DAY = 86400000;
-function todayKey(){ return dateKey(new Date()); }
+/* 두 사람의 "오늘"은 항상 한국 시간 기준으로 같다.
+   기기 시간을 쓰면 한쪽이 해외에 나가는 순간 서로 다른 날짜 칸을 보게 되어
+   "둘 다 답해야 공개"가 열리지 않고 스트릭·주간미션이 어긋난다. */
+const HOME_TZ_MIN = 9*60; // KST (UTC+9)
+function nowShared(){
+  const d = new Date();
+  return new Date(d.getTime() + (HOME_TZ_MIN + d.getTimezoneOffset())*60000);
+}
+function todayKey(){ return dateKey(nowShared()); }
 function dateKey(d){
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
@@ -1089,7 +1128,7 @@ function loveTemp(){
   let pts = 0;
   const now = todayKey();
   for(let i=0;i<14;i++){
-    const d = new Date(); d.setDate(d.getDate()-i);
+    const d = nowShared(); d.setDate(d.getDate()-i);
     const k = dateKey(d);
     const a = S.answers[k];
     if(a && a.p1 && a.p2) pts += 3;
@@ -1110,7 +1149,7 @@ function loveTemp(){
 function streak(){
   let n = 0;
   for(let i=0;i<3650;i++){
-    const d = new Date(); d.setDate(d.getDate()-i);
+    const d = nowShared(); d.setDate(d.getDate()-i);
     const k = dateKey(d);
     const a = S.answers[k];
     if(a && a.p1 && a.p2) n++;
@@ -1439,9 +1478,15 @@ function renderQaArchive(){
           : ""
       ).join("");
     }else{
-      const who = rec.p1 ? "p1" : "p2";
-      answers = `<div class="a"><span class="who-dot" style="background:#D8C2BB"></span>
-        <p style="color:var(--ink-soft);font-size:.82rem">${esc(nameOf(who))}만 답했어요 — 둘 다 답해야 공개돼요</p></div>`;
+      /* 아직 한쪽만 답한 날 — 상대 답은 가리되, 내가 쓴 내 답은 나에게 보여준다 */
+      const me = S.current, yo = other(me);
+      answers = rec[me]
+        ? `<div class="a"><span class="who-dot" style="background:${colorOf(me)}"></span>
+            <p><b style="font-size:.78rem;color:${colorOf(me)}">${esc(nameOf(me))} (나)</b><br>${esc(rec[me])}</p></div>
+           <div class="a"><span class="who-dot" style="background:#D8C2BB"></span>
+            <p style="color:var(--ink-soft);font-size:.82rem">${esc(nameOf(yo))}의 답을 기다리는 중이에요</p></div>`
+        : `<div class="a"><span class="who-dot" style="background:#D8C2BB"></span>
+            <p style="color:var(--ink-soft);font-size:.82rem">${esc(nameOf(yo))}는 답했어요 — 내가 답하면 바로 공개돼요</p></div>`;
     }
     return `<div class="qa-item"><div class="date">${fmtShort(k)} · ${item.stage+1}단계</div><div class="q">${esc(item.q)}</div>${answers}</div>`;
   }).join("");
@@ -1765,7 +1810,11 @@ function autoSnapshot(){
     const today = todayKey();
     const snaps = JSON.parse(localStorage.getItem(KEY+".snaps")||"[]");
     if(snaps.indexOf(today) > -1) return;
-    localStorage.setItem(KEY+".snap."+today, JSON.stringify(S));
+    /* 사진은 백업에 복사하지 않는다 — 3일치를 통째로 복제하면 사진이 4벌이 되어
+       저장 공간이 순식간에 가득 찬다. 복원할 때 현재 사진을 다시 붙여준다. */
+    const light = JSON.parse(JSON.stringify(S));
+    (light.memories||[]).forEach(m=>{ if(m.img){ delete m.img; m.imgKept = true; } });
+    localStorage.setItem(KEY+".snap."+today, JSON.stringify(light));
     snaps.push(today);
     while(snaps.length > 3){ localStorage.removeItem(KEY+".snap."+snaps.shift()); }
     localStorage.setItem(KEY+".snaps", JSON.stringify(snaps));
@@ -1773,8 +1822,13 @@ function autoSnapshot(){
 }
 $("#set-snap").addEventListener("click",()=>{
   const snaps = JSON.parse(localStorage.getItem(KEY+".snaps")||"[]");
+  const si = storageInfo();
   openModal(`<h3>🛟 자동 백업</h3>
     <p style="font-size:.85rem;color:var(--ink-soft);word-break:keep-all;margin-bottom:10px">매일 첫 실행 때 그날의 기록을 자동으로 저장해둬요 (최근 3일). 업데이트 후 뭔가 이상하면 여기서 안전하게 되돌릴 수 있어요.</p>
+    <div class="answer-box" style="margin-bottom:10px"><div class="txt" style="font-size:.84rem">
+      🗂 우리 기록 <b>${si.usedKB.toLocaleString()}KB</b> · 사진 <b>${si.photos}장</b><br>
+      <span style="color:var(--ink-soft);font-size:.78rem">사진이 많아지면 저장 공간이 찰 수 있어요. 가끔 '기록 내보내기'로 백업해두면 안심이에요.</span>
+    </div></div>
     ${snaps.length ? snaps.slice().reverse().map(d=>
       `<div class="settings-row">${d} 자동 백업 <button class="btn sm ghost" data-restore="${d}" style="width:auto;padding:8px 14px">이 시점으로 복원</button></div>`).join("")
       : `<div class="empty">아직 자동 백업이 없어요.<br>내일 첫 실행 때부터 쌓여요.</div>`}
@@ -1783,7 +1837,10 @@ $("#set-snap").addEventListener("click",()=>{
     if(!confirm(b.dataset.restore+" 시점의 기록으로 되돌릴까요?\n지금 기록은 그 시점 이후 것이 사라져요.")) return;
     const raw = localStorage.getItem(KEY+".snap."+b.dataset.restore);
     if(!raw){ toast("백업을 찾을 수 없어요"); return; }
+    const photos = {};
+    (S.memories||[]).forEach(m=>{ if(m.img) photos[m.id] = m.img; }); // 현재 사진 보관
     S = Object.assign(defaultState(), JSON.parse(raw));
+    (S.memories||[]).forEach(m=>{ if(m.imgKept){ delete m.imgKept; if(photos[m.id]) m.img = photos[m.id]; } });
     save(); closeModal(); renderAll();
     toast("🛟 "+b.dataset.restore+" 시점으로 복원했어요");
   }));
@@ -2072,7 +2129,13 @@ function mergeState(local, remote){
   }
   for(const k in (remote.moods||{})){
     const r = m.moods[k] = m.moods[k] || {};
-    for(const p of ["p1","p2"]) if(!r[p] && remote.moods[k][p]) r[p] = remote.moods[k][p];
+    /* 기분은 하루에도 바뀌는 게 정상이므로 "먼저 쓴 쪽"이 아니라 "나중에 쓴 쪽"을 남긴다.
+       (선점 방식이면 아침의 '괜찮아'가 저녁의 '사실 좀 힘들어'를 영영 덮어버린다) */
+    for(const p of ["p1","p2"]){
+      const rv = r[p], sv = remote.moods[k][p];
+      if(!sv) continue;
+      if(!rv || (sv.at||0) > (rv.at||0)) r[p] = sv;
+    }
   }
   for(const key of ["thanks","memories","annivs"]){
     const ids = new Set(m[key].map(x=>x.id));
@@ -2549,6 +2612,21 @@ function quizIndexFor(key){
   const base = S.couple ? (S.couple.joined || S.couple.start) : "2026-01-01";
   return Math.max(0, diffDays(base, key)) % QUIZZES.length;
 }
+/* 퀴즈는 32문항 순환이라 32일마다 같은 문제가 돌아온다.
+   말없이 반복하면 "성의 없음"이지만, 지난번 답과 나란히 놓으면 "회고"가 된다. */
+function prevQuizRound(qi, key){
+  let best = null;
+  for(const k in S.quiz){
+    if(k >= key) continue;
+    const r = S.quiz[k];
+    const ri = r.qi !== undefined ? r.qi : quizIndexFor(k);
+    if(ri !== qi) continue;
+    if(r.p1 && r.p2 && r.p1.guess!=null && r.p2.guess!=null){
+      if(!best || k > best.key) best = { key:k, rec:r };
+    }
+  }
+  return best;
+}
 function quizStats(){
   let total=0, hit=0;
   for(const k in S.quiz){
@@ -2572,7 +2650,9 @@ function renderQuiz(){
   const me = S.current, yo = other(me);
   const mine = rec[me], theirs = rec[yo];
   const st = quizStats();
+  const again = prevQuizRound(qi, k);
   let html = `<div class="q-label"><span class="badge" style="background:var(--gold);color:#5B3A00">커플 퀴즈</span><span class="num">서로 맞히기${st.rate!==null?` · 누적 싱크로율 ${st.rate}%`:""}</span></div>
+    ${again?`<div style="margin-bottom:6px"><span class="stage-tag">🌱 다시 만난 퀴즈 · ${diffDays(again.key,k)}일 만이에요</span></div>`:""}
     <div class="q-text" style="font-size:1.02rem">${esc(qz.q)}</div>`;
   if(!mine){
     const step2 = quizPick !== null;
@@ -2590,6 +2670,22 @@ function renderQuiz(){
       <div class="qr"><div class="who" style="color:${colorOf(yo)}">${esc(nameOf(yo))}의 답</div><div class="ans">${esc(qz.o[theirs.self])}</div><div class="hit">${iHit?"⭕ 내가 맞혔어요!":"❌ 내 예측: "+esc(qz.o[mine.guess])}</div></div>
     </div>
     <div class="sync-line">${iHit&&uHit?"💘 완벽한 싱크로! 둘 다 맞혔어요":(iHit||uHit)?"💗 한 명 적중! 내일 또 도전해요":"🙈 둘 다 빗나감! 그만큼 알아갈 게 많다는 뜻"}${st.rate!==null?" · 싱크로율 "+st.rate+"%":""}</div>`;
+    if(again){
+      const changed = ["p1","p2"].filter(p=>again.rec[p] && rec[p] && again.rec[p].self !== rec[p].self);
+      html += `<div class="answer-box" style="margin-top:10px">
+        <div class="from" style="color:var(--ink-soft)">🌱 ${fmtShort(again.key)}의 우리는</div>
+        ${["p1","p2"].map(p=>{
+          const old = again.rec[p];
+          if(!old || !rec[p]) return "";
+          const same = old.self === rec[p].self;
+          return `<div class="txt" style="font-size:.85rem;margin-top:2px">
+            <b style="color:${colorOf(p)}">${esc(nameOf(p))}</b> ${esc(qz.o[old.self])}
+            <span style="color:${same?"var(--ink-soft)":"var(--primary-deep)"};font-weight:700">${same?" · 그대로예요":" → 지금은 "+esc(qz.o[rec[p].self])}</span></div>`;
+        }).join("")}
+        <div class="txt" style="font-size:.8rem;color:var(--ink-soft);margin-top:8px">${
+          changed.length ? "마음은 조금씩 변해요. 그걸 알아가는 게 우리죠 🌷" : "그때도 지금도 같은 마음이네요 🫶"
+        }</div></div>`;
+    }
   }
   el.innerHTML = html;
   el.querySelectorAll("[data-quiz-opt]").forEach(b=>b.addEventListener("click",()=>{
