@@ -311,6 +311,34 @@ header{
 .photo-view img{width:100%;border-radius:14px;display:block}
 .mem-photo-preview{width:100%;max-height:160px;object-fit:cover;border-radius:12px;margin-top:8px;display:none}
 
+/* ---------- 목소리 한 조각 ---------- */
+.rec-wrap{text-align:center;padding:6px 0 2px}
+.rec-btn{
+  width:96px;height:96px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;
+  font-size:2.3rem;background:linear-gradient(140deg,#FFD9CF,#FFB4A2);box-shadow:0 6px 18px rgba(248,109,109,.28);
+  transition:transform .12s;
+}
+.rec-btn:active{transform:scale(.94)}
+.rec-btn.rec{background:linear-gradient(140deg,#F86D6D,#E24B4B);animation:recpulse 1.1s ease-in-out infinite}
+@keyframes recpulse{0%,100%{box-shadow:0 0 0 0 rgba(248,109,109,.45)}50%{box-shadow:0 0 0 14px rgba(248,109,109,0)}}
+.rec-time{font-family:var(--hand);font-size:1.5rem;font-weight:700;color:var(--primary-deep);margin-top:10px;letter-spacing:.02em}
+.rec-hint{font-size:.78rem;color:var(--ink-soft);margin-top:2px;word-break:keep-all;line-height:1.55}
+.voice{display:flex;gap:11px;align-items:flex-start;padding:12px 2px;border-bottom:1px solid var(--line)}
+.voice:last-child{border-bottom:0}
+.voice.fresh{background:#FFF6F1;border-radius:12px;padding:12px 10px;border-bottom:0;margin-bottom:6px}
+.voice .play{
+  flex-shrink:0;width:44px;height:44px;border-radius:50%;background:var(--primary-soft);
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--primary-deep);
+}
+.voice .play.on{background:var(--primary);color:#fff}
+.voice .body{flex:1;min-width:0}
+.voice .who{font-size:.78rem;font-weight:800}
+.voice .dt{font-size:.72rem;color:#C9B4AD;font-weight:700;margin-top:1px}
+.voice .wave{display:flex;align-items:flex-end;gap:2px;height:16px;margin-top:6px}
+.voice .wave i{flex:1;background:var(--primary-soft);border-radius:2px;min-height:3px}
+.voice .wave.on i{background:var(--primary)}
+.voice .keep{font-size:.7rem;color:#D8C2BB;font-weight:700;padding:2px 4px;margin-left:6px}
+
 /* ---------- 계절 탭 (우리에게 남은 시간) ---------- */
 .time-hero{
   background:linear-gradient(135deg,#FFD3E0 0%,#FFB4A2 45%,#C4B5FD 100%);
@@ -454,6 +482,8 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
       </div>
     </div>
 
+    <div class="card" id="home-voice-card" style="display:none"></div>
+
     <div class="card" id="quote-card" style="background:linear-gradient(135deg,#FFF9F6,#FFF1EC)"></div>
 
     <div class="card" id="home-install-card" style="display:none"></div>
@@ -508,11 +538,16 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
   <section class="screen" id="screen-memory">
     <div class="subtabs">
       <button class="on" data-sub="mem">📸 추억</button>
+      <button data-sub="voice">🎙 목소리</button>
       <button data-sub="thx">💌 고마워</button>
     </div>
     <div id="sub-mem">
       <button class="btn ghost" id="memory-add" style="margin-bottom:14px">+ 추억 기록하기</button>
       <div class="card"><div id="memory-list"></div></div>
+    </div>
+    <div id="sub-voice" style="display:none">
+      <div class="card" id="voice-rec"></div>
+      <div class="card"><div class="card-title">주고받은 목소리</div><div id="voice-list"></div></div>
     </div>
     <div id="sub-thx" style="display:none">
       <div class="card"><div id="thank-list"></div></div>
@@ -567,7 +602,7 @@ nav button.on .i{filter:none;opacity:1;transform:translateY(-1px)}
       <div class="settings-row danger" id="set-reset">전체 초기화</div>
       <input type="file" id="import-file" accept="application/json" style="display:none" />
     </div>
-    <p style="text-align:center;font-size:.72rem;color:#C9B4AD;margin:8px 0 4px">우리의 계절 v1.7 · 모든 기록은 두 사람의 기기에만</p>
+    <p style="text-align:center;font-size:.72rem;color:#C9B4AD;margin:8px 0 4px">우리의 계절 v1.8 · 모든 기록은 두 사람의 기기에만</p>
     <p style="text-align:center;font-family:var(--hand);font-size:1rem;color:var(--peach);margin:0 0 20px">인연이 필연이 되는 순간까지 🫶</p>
   </section>
 
@@ -987,6 +1022,8 @@ function defaultState(){
     pet:null,     // {name} — 콩닥이 이름
     skips:{},     // dateKey -> [qi,...] 그날 넘긴 질문 (커리큘럼이 그만큼 앞으로 나아간다)
     deferred:[],  // {qi, at:dateKey} 미뤄둔 질문 — 버리지 않고 3개월 뒤 되돌려준다
+    voices:[],    // {id,date,from,at,dur,url} — 목소리 한 조각 (용량 탓에 최근 것만 보관)
+    voiceFed:{p1:0,p2:0}, // 각자 지금까지 남긴 목소리 수 (보관에서 밀려나도 콩닥이 밥은 남는다)
     sync:null,    // {code, me:"p1"|"p2"} — 커플 연결 정보 (동기화 대상에서 제외)
   };
 }
@@ -996,6 +1033,7 @@ function load(){
     const raw = localStorage.getItem(KEY);
     if(!raw) return defaultState();
     const st = Object.assign(defaultState(), JSON.parse(raw));
+    if(!st.voiceFed || typeof st.voiceFed !== "object") st.voiceFed = {p1:0,p2:0};
     // 커리큘럼 도입 이전 데이터: 기록 시작일을 첫 문답 날짜로 보정
     if(st.couple && !st.couple.joined){
       st.couple.joined = Object.keys(st.answers).sort()[0] || dateKey(new Date());
@@ -1005,22 +1043,27 @@ function load(){
 }
 /* 저장: 공간이 가득 차도 앱이 멈추지 않게 방어한다.
    1차 시도 실패 → 오래된 자동백업을 비우고 재시도 → 그래도 안 되면 사용자에게 알림 */
+function tryWrite(){
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); return true; }catch(e){ return false; }
+}
 function save(){
+  if(tryWrite()){ scheduleSyncPush(); return; }
+  // 1차: 예전 자동백업을 비운다
   try{
-    localStorage.setItem(KEY, JSON.stringify(S));
-  }catch(e){
-    try{
-      const snaps = JSON.parse(localStorage.getItem(KEY+".snaps")||"[]");
-      while(snaps.length){ localStorage.removeItem(KEY+".snap."+snaps.shift()); }
-      localStorage.setItem(KEY+".snaps", "[]");
-      localStorage.setItem(KEY, JSON.stringify(S));
-      toast("저장 공간이 부족해 예전 자동백업을 정리했어요");
-    }catch(e2){
-      toast("⚠️ 저장 공간이 가득 찼어요. 더보기 → 기록 내보내기로 백업해주세요");
-      return; // 저장 실패 시 동기화도 보내지 않는다 (상대 기록 덮어쓰기 방지)
-    }
+    const snaps = JSON.parse(localStorage.getItem(KEY+".snaps")||"[]");
+    while(snaps.length){ localStorage.removeItem(KEY+".snap."+snaps.shift()); }
+    localStorage.setItem(KEY+".snaps", "[]");
+  }catch(e){}
+  if(tryWrite()){ toast("저장 공간이 부족해 예전 자동백업을 정리했어요"); scheduleSyncPush(); return; }
+  // 2차: 제일 오래된 목소리부터 자리를 비운다 (글과 사진은 끝까지 지킨다)
+  let freed = 0;
+  while((S.voices||[]).length){
+    S.voices.sort((a,b)=>(a.at||0)-(b.at||0)).shift();
+    freed++;
+    if(tryWrite()){ toast("공간이 부족해 오래된 목소리 "+freed+"조각을 비웠어요"); scheduleSyncPush(); return; }
   }
-  scheduleSyncPush();
+  toast("⚠️ 저장 공간이 가득 찼어요. 더보기 → 기록 내보내기로 백업해주세요");
+  // 저장 실패 시 동기화도 보내지 않는다 (상대 기록 덮어쓰기 방지)
 }
 
 /* 기록 보호: 브라우저가 저장 데이터를 임의로 지우지 못하게 요청한다.
@@ -1055,7 +1098,9 @@ function storageInfo(){
     }
   }catch(e){}
   const photos = S.memories ? S.memories.filter(m=>m.img).length : 0;
-  return { usedKB: Math.round(used/1024), photos };
+  const voices = S.voices ? S.voices.length : 0;
+  const voiceKB = Math.round((S.voices||[]).reduce((a,v)=>a+(v.url||"").length,0)/1024);
+  return { usedKB: Math.round(used/1024), photos, voices, voiceKB };
 }
 
 /* ==================================================================
@@ -1604,11 +1649,12 @@ function renderQaArchive(){
 /* ==================================================================
    렌더: 추억 & 고마워
    ================================================================== */
-document.querySelectorAll("[data-sub]").forEach(b=>b.addEventListener("click",()=>{
-  document.querySelectorAll("[data-sub]").forEach(x=>x.classList.toggle("on",x===b));
-  $("#sub-mem").style.display = b.dataset.sub==="mem" ? "block":"none";
-  $("#sub-thx").style.display = b.dataset.sub==="thx" ? "block":"none";
-}));
+const SUBS = ["mem","voice","thx"];
+function showSub(name){
+  document.querySelectorAll("[data-sub]").forEach(x=>x.classList.toggle("on", x.dataset.sub===name));
+  SUBS.forEach(s=>{ const el = $("#sub-"+s); if(el) el.style.display = s===name ? "block":"none"; });
+}
+document.querySelectorAll("[data-sub]").forEach(b=>b.addEventListener("click",()=>showSub(b.dataset.sub)));
 
 function renderMemories(){
   if(!S.memories.length){
@@ -1712,6 +1758,273 @@ $("#memory-add").addEventListener("click",()=>{
 });
 
 /* ==================================================================
+   🎙 목소리 한 조각 (15초)
+   떨어져 있는 밤엔 글로 다 안 되는 게 있다. 목소리는 표정까지 담는다.
+   기기마다 녹음 파일 형식이 달라(사파리 mp4 / 크롬 webm) 그대로 저장하면
+   상대 기기에서 안 열릴 수 있다. 그래서 마이크 소리를 직접 받아
+   8kHz 모노 WAV로 담는다 — 어느 기기에서나 열리고, 용량도 작다.
+   ================================================================== */
+const VOICE_SEC = 15;          // 한 조각의 길이
+const VOICE_RATE = 8000;       // 목소리는 8kHz면 충분 (전화 음질)
+const VOICE_BUDGET = 1200000;  // 보관 한도(문자) — 짧은 조각은 그만큼 더 남는다
+const VOICE_MIN_KEEP = 2;      // 한도를 넘겨도 최근 2개는 지킨다
+const VOICE_SYNC_DAYS = 7, VOICE_SYNC_MAX = 3; // 상대 기기로 보내는 범위 (통신량)
+
+function fmtSec(s){ const m=Math.floor(s/60); return m+":"+String(Math.floor(s%60)).padStart(2,"0"); }
+function recSupported(){
+  return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && (window.AudioContext||window.webkitAudioContext));
+}
+
+/* ---- 보관: 용량 한도로 오래된 것부터 자리를 비운다 ---- */
+function pruneVoices(){
+  const list = (S.voices||[]).slice().sort((a,b)=>(b.at||0)-(a.at||0));
+  const keep = []; let sum = 0;
+  for(const v of list){
+    sum += (v.url||"").length;
+    if(keep.length < VOICE_MIN_KEEP || sum <= VOICE_BUDGET) keep.push(v);
+  }
+  const dropped = list.length - keep.length;
+  S.voices = keep;
+  return dropped;
+}
+/* ---- 들었는지 여부는 기기마다 다르므로 동기화하지 않고 이 기기에만 ---- */
+function heardIds(){ try{ return JSON.parse(localStorage.getItem(KEY+".heard")||"[]"); }catch(e){ return []; } }
+function markHeard(id){
+  try{
+    const h = heardIds();
+    if(h.indexOf(id) > -1) return;
+    h.push(id);
+    while(h.length > 60) h.shift();
+    localStorage.setItem(KEY+".heard", JSON.stringify(h));
+  }catch(e){}
+}
+function freshVoices(){
+  const h = heardIds();
+  return (S.voices||[]).filter(v=>v.from !== S.current && h.indexOf(v.id) < 0).sort((a,b)=>(b.at||0)-(a.at||0));
+}
+
+/* ---- 녹음: 마이크 → 원음(Float32) 모으기 ---- */
+let rec = null;
+async function recStart(){
+  if(rec) return;
+  let stream;
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true}});
+  }catch(e){
+    toast("마이크를 쓸 수 없어요. 브라우저에서 마이크를 허용해주세요");
+    return;
+  }
+  const AC = window.AudioContext || window.webkitAudioContext;
+  const ctx = new AC();
+  try{ await ctx.resume(); }catch(e){}
+  const src = ctx.createMediaStreamSource(stream);
+  const proc = ctx.createScriptProcessor(4096, 1, 1);
+  const mute = ctx.createGain(); mute.gain.value = 0; // 내 목소리가 스피커로 되돌지 않게
+  rec = {ctx, stream, src, proc, mute, chunks:[], n:0, max:Math.floor(VOICE_SEC*ctx.sampleRate)};
+  proc.onaudioprocess = e=>{
+    if(!rec || rec.stopping) return;
+    const d = e.inputBuffer.getChannelData(0);
+    rec.chunks.push(new Float32Array(d));
+    rec.n += d.length;
+    const t = $("#rec-time");
+    if(t) t.textContent = fmtSec(rec.n/ctx.sampleRate) + " / 0:" + VOICE_SEC;
+    if(rec.n >= rec.max) recStop();
+  };
+  src.connect(proc); proc.connect(mute); mute.connect(ctx.destination);
+  renderVoiceRec();
+}
+function recStop(keep){
+  if(!rec || rec.stopping) return;
+  rec.stopping = true;
+  const r = rec;
+  /* 오디오 콜백 안에서 노드를 끊으면 불안정해서 한 박자 뒤에 정리한다 */
+  setTimeout(()=>{
+    try{ r.proc.disconnect(); r.src.disconnect(); r.mute.disconnect(); }catch(e){}
+    try{ r.stream.getTracks().forEach(t=>t.stop()); }catch(e){}
+    const rate = r.ctx.sampleRate;
+    try{ r.ctx.close(); }catch(e){}
+    rec = null;
+    const sec = r.n / rate;
+    if(keep === false){ renderVoiceRec(); toast("녹음을 지웠어요"); return; }
+    if(sec < 1){ renderVoiceRec(); toast("너무 짧아요. 1초만 더 말해주세요"); return; }
+    const pcm = downTo(normalize(flatten(r.chunks, r.n)), rate, VOICE_RATE);
+    saveVoice(wavDataUrl(pcm, VOICE_RATE), Math.round(sec*10)/10);
+  }, 0);
+}
+function flatten(chunks, n){
+  const out = new Float32Array(n); let o = 0;
+  for(const c of chunks){ out.set(c, o); o += c.length; }
+  return out;
+}
+/* 폰을 멀리 두고 말해도 들리도록 가장 큰 소리에 맞춰 살짝 키운다 */
+function normalize(a){
+  let peak = 0;
+  for(let i=0;i<a.length;i++){ const v = a[i] < 0 ? -a[i] : a[i]; if(v > peak) peak = v; }
+  if(peak < 0.0005) return a;
+  const g = Math.min(6, 0.92/peak);
+  if(g <= 1.02) return a;
+  for(let i=0;i<a.length;i++) a[i] *= g;
+  return a;
+}
+/* 48kHz 마이크 소리를 8kHz로 — 구간 평균이라 잡음도 함께 줄어든다 */
+function downTo(a, from, to){
+  const ratio = from/to, len = Math.floor(a.length/ratio);
+  const out = new Float32Array(len);
+  for(let i=0;i<len;i++){
+    const s = Math.floor(i*ratio), e = Math.min(a.length, Math.floor((i+1)*ratio));
+    let sum = 0, c = 0;
+    for(let j=s;j<e;j++){ sum += a[j]; c++; }
+    out[i] = c ? sum/c : 0;
+  }
+  return out;
+}
+function wavDataUrl(pcm, rate){
+  const bytes = new Uint8Array(44 + pcm.length*2);
+  const v = new DataView(bytes.buffer);
+  const put = (o,s)=>{ for(let i=0;i<s.length;i++) v.setUint8(o+i, s.charCodeAt(i)); };
+  put(0,"RIFF"); v.setUint32(4, 36+pcm.length*2, true); put(8,"WAVEfmt ");
+  v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,rate,true); v.setUint32(28,rate*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true);
+  put(36,"data"); v.setUint32(40, pcm.length*2, true);
+  for(let i=0;i<pcm.length;i++){
+    const s = Math.max(-1, Math.min(1, pcm[i]));
+    v.setInt16(44+i*2, s<0 ? s*0x8000 : s*0x7FFF, true);
+  }
+  let bin = "";
+  for(let i=0;i<bytes.length;i+=0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i+0x8000));
+  return "data:audio/wav;base64," + btoa(bin);
+}
+function saveVoice(url, dur){
+  const v = {id:uid(), date:todayKey(), from:S.current, at:Date.now(), dur, url};
+  S.voices.push(v);
+  S.voiceFed[S.current] = (S.voiceFed[S.current]||0) + 1;
+  const dropped = pruneVoices();
+  markHeard(v.id);
+  save(); renderAll();
+  toast(dropped ? "🎙 목소리를 남겼어요 (오래된 "+dropped+"조각은 자리를 비웠어요)" : "🎙 목소리를 남겼어요");
+}
+
+/* ---- 재생 ---- */
+let vAudio = null, vPlaying = null;
+function playVoice(id){
+  const v = (S.voices||[]).find(x=>x.id===id);
+  if(!v) return;
+  if(!vAudio){
+    vAudio = new Audio();
+    vAudio.addEventListener("ended",()=>{ vPlaying = null; paintVoices(); });
+  }
+  if(vPlaying === id){ vAudio.pause(); vPlaying = null; paintVoices(); return; }
+  vAudio.src = v.url;
+  vPlaying = id;
+  vAudio.play().catch(()=>{ vPlaying = null; toast("재생할 수 없는 목소리예요"); paintVoices(); });
+  markHeard(id);
+  paintVoices();
+  renderHomeVoice();
+}
+function paintVoices(){
+  document.querySelectorAll("[data-voice]").forEach(el=>{
+    const on = el.dataset.voice === vPlaying;
+    const p = el.querySelector(".play"); if(p){ p.classList.toggle("on", on); p.textContent = on ? "❚❚" : "▶"; }
+    const w = el.querySelector(".wave"); if(w) w.classList.toggle("on", on);
+  });
+}
+/* 조각마다 다르지만 늘 같은 모양의 물결 (id로 만든 값이라 기기가 달라도 같다) */
+function waveBars(id){
+  let h = 0;
+  for(let i=0;i<id.length;i++) h = (h*31 + id.charCodeAt(i)) >>> 0;
+  let out = "";
+  for(let i=0;i<22;i++){ h = (h*1103515245 + 12345) >>> 0; out += `<i style="height:${18+(h%82)}%"></i>`; }
+  return out;
+}
+function voiceRow(v, cls){
+  return `<div class="voice ${cls||""}" data-voice="${v.id}">
+    <button class="play">▶</button>
+    <div class="body">
+      <div class="who" style="color:${colorOf(v.from)}">${esc(nameOf(v.from))}의 목소리
+        <button class="keep" data-voice-save="${v.id}">저장</button>
+        <button class="del-btn" data-voice-del="${v.id}">지우기</button></div>
+      <div class="dt">${fmtShort(v.date)} · ${v.dur}초</div>
+      <div class="wave">${waveBars(v.id)}</div>
+    </div>
+  </div>`;
+}
+function bindVoiceRows(root){
+  root.querySelectorAll("[data-voice]").forEach(el=>{
+    const p = el.querySelector(".play");
+    if(p) p.addEventListener("click",()=>playVoice(el.dataset.voice));
+  });
+  root.querySelectorAll("[data-voice-save]").forEach(b=>b.addEventListener("click",e=>{
+    e.stopPropagation();
+    const v = (S.voices||[]).find(x=>x.id===b.dataset.voiceSave);
+    if(!v) return;
+    const a = document.createElement("a");
+    a.href = v.url; a.download = "목소리-"+v.date+".wav"; a.click();
+    toast("목소리 파일을 내려받았어요 — 이건 영영 남아요");
+  }));
+  root.querySelectorAll("[data-voice-del]").forEach(b=>b.addEventListener("click",e=>{
+    e.stopPropagation();
+    if(!confirm("이 목소리를 지울까요?")) return;
+    if(vPlaying === b.dataset.voiceDel){ try{ vAudio.pause(); }catch(err){} vPlaying = null; }
+    S.voices = S.voices.filter(x=>x.id!==b.dataset.voiceDel);
+    save(); renderAll();
+  }));
+}
+
+/* ---- 화면 ---- */
+function renderVoiceRec(){
+  const el = $("#voice-rec");
+  if(!el) return;
+  if(!recSupported()){
+    el.innerHTML = `<div class="card-title">🎙 목소리 한 조각</div>
+      <p style="font-size:.86rem;color:var(--ink-soft);word-break:keep-all">이 브라우저는 녹음을 지원하지 않아요. 홈 화면에 추가한 앱이나 최신 크롬·사파리에서 열어주세요.</p>`;
+    return;
+  }
+  const on = !!rec;
+  el.innerHTML = `<div class="card-title">🎙 목소리 한 조각</div>
+    <div class="rec-wrap">
+      <button class="rec-btn ${on?"rec":""}" id="rec-toggle">${on?"⏹":"🎙"}</button>
+      <div class="rec-time" id="rec-time">${on?"0:00 / 0:"+VOICE_SEC:"최대 "+VOICE_SEC+"초"}</div>
+      <div class="rec-hint">${on
+        ? "말이 끝나면 한 번 더 눌러주세요"
+        : "잘 자라는 인사도, 오늘 있었던 일도 좋아요.<br>글로는 안 담기는 게 목소리엔 담겨요 🫶"}</div>
+      ${on?`<div style="height:10px"></div><button class="btn sm ghost" id="rec-cancel" style="max-width:160px;margin:0 auto">그만두기</button>`:""}
+    </div>`;
+  $("#rec-toggle").addEventListener("click",()=>{ rec ? recStop() : recStart(); });
+  const c = $("#rec-cancel");
+  if(c) c.addEventListener("click",()=>recStop(false));
+}
+function renderVoiceList(){
+  const el = $("#voice-list");
+  if(!el) return;
+  const list = (S.voices||[]).slice().sort((a,b)=>(b.at||0)-(a.at||0));
+  if(!list.length){
+    el.innerHTML = `<div class="empty">아직 주고받은 목소리가 없어요.<br>오늘 밤, 한 조각 남겨볼까요?</div>`;
+    return;
+  }
+  const h = heardIds();
+  el.innerHTML = list.map(v=>voiceRow(v, (v.from!==S.current && h.indexOf(v.id)<0) ? "fresh" : "")).join("")
+    + `<p style="font-size:.72rem;color:#C9B4AD;margin-top:10px;word-break:keep-all;line-height:1.55">
+        목소리는 용량이 커서 최근 것만 기기에 보관돼요. 오래 간직하고 싶은 조각은 <b>저장</b>을 눌러 파일로 내려받으세요.</p>`;
+  bindVoiceRows(el);
+  paintVoices();
+}
+function renderHomeVoice(){
+  const el = $("#home-voice-card");
+  if(!el) return;
+  const fresh = freshVoices();
+  if(!fresh.length){ el.style.display = "none"; return; }
+  const v = fresh[0];
+  el.style.display = "block";
+  el.style.background = "linear-gradient(135deg,#FFF1EC,#FFE4DC)";
+  el.innerHTML = `<div class="card-title">🎙 ${esc(nameOf(v.from))}의 목소리가 도착했어요${fresh.length>1?` <span style="font-weight:700;color:var(--primary)">+${fresh.length-1}</span>`:""}</div>
+    ${voiceRow(v)}
+    <p style="font-size:.76rem;color:var(--ink-soft);margin-top:6px">들으면 이 카드는 조용히 사라져요 · <button class="more" data-go="memory">목소리 모아보기</button></p>`;
+  bindVoiceRows(el);
+  el.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>{ go("memory"); showSub("voice"); }));
+  paintVoices();
+}
+
+/* ==================================================================
    렌더: 기념일 탭
    ================================================================== */
 function renderAnnivScreen(){
@@ -1790,8 +2103,33 @@ function renderBookCard(){
       표지부터 마지막 문장까지 한 권의 책으로 엮어드려요.</p>
     <p style="font-family:var(--hand);font-size:1rem;color:var(--peach);margin-bottom:12px">우리만의 이야기가 담긴 책, 사진도 함께 🫶</p>
     <button class="btn" id="book-make">📖 책 만들기 (인쇄 · PDF 저장)</button>
+    <div style="height:8px"></div>
+    <button class="btn sm ghost" id="book-bind">📕 손에 잡히는 실물 책으로 만들기</button>
     <p style="font-size:.72rem;color:#C9B4AD;margin-top:8px;text-align:center">인쇄 화면에서 'PDF로 저장'을 고르면 파일로 간직할 수 있어요</p>`;
   $("#book-make").addEventListener("click", makeBook);
+  $("#book-bind").addEventListener("click", openBindGuide);
+}
+
+/* 실물 제본: 앱이 대신 주문해줄 수는 없지만, 막히는 지점은 미리 알려줄 수 있다 */
+function openBindGuide(){
+  openModal(`<h3>📕 실물 책으로 만들기</h3>
+    <p style="font-size:.85rem;color:var(--ink-soft);word-break:keep-all;line-height:1.7;margin-bottom:12px">
+      화면 속 기록을 <b style="color:var(--primary-deep)">진짜 책</b>으로 만드는 방법이에요. 기념일 선물로 좋아요 🎁</p>
+    <div class="answer-box" style="margin-bottom:8px"><div class="txt" style="font-size:.85rem;line-height:1.75">
+      <b>1. PDF로 저장</b><br>위의 '책 만들기'를 누르고 인쇄 화면에서 <b>대상 → PDF로 저장</b>을 고르세요.
+      <span style="color:var(--ink-soft)">폰보다 컴퓨터에서 하면 훨씬 깔끔해요.</span></div></div>
+    <div class="answer-box" style="margin-bottom:8px"><div class="txt" style="font-size:.85rem;line-height:1.75">
+      <b>2. 용지는 A5, 여백은 '기본'</b><br>A5가 손에 쥐기 좋은 책 크기예요. 사진이 많으면 A4도 좋아요.
+      <span style="color:var(--ink-soft)">'배경 그래픽' 체크를 켜야 표지 색이 나와요.</span></div></div>
+    <div class="answer-box" style="margin-bottom:8px"><div class="txt" style="font-size:.85rem;line-height:1.75">
+      <b>3. 제본 맡기기</b><br>인터넷에서 <b>'PDF 인쇄 제본'</b> 또는 <b>'소량 책 제작'</b>으로 검색하면 한 권부터 만들어주는 곳이 많아요.
+      동네 인쇄소도 됩니다. <span style="color:var(--ink-soft)">무선제본(책처럼 붙이기)을 고르면 튼튼해요.</span></div></div>
+    <div class="answer-box" style="margin-bottom:12px"><div class="txt" style="font-size:.85rem;line-height:1.75">
+      <b>4. 만들기 전에</b><br>사진은 화면용으로 줄여 저장돼 크게 인쇄하면 흐릴 수 있어요.
+      표지에 넣고 싶은 사진은 원본을 따로 챙겨두면 좋아요.</div></div>
+    <p style="font-family:var(--hand);font-size:1.05rem;color:var(--peach);text-align:center;margin-bottom:12px">
+      우리 이야기가 책장에 꽂히는 날까지 🫶</p>
+    <button class="btn line" data-close>닫기</button>`);
 }
 
 function makeBook(){
@@ -1924,6 +2262,7 @@ function autoSnapshot(){
        저장 공간이 순식간에 가득 찬다. 복원할 때 현재 사진을 다시 붙여준다. */
     const light = JSON.parse(JSON.stringify(S));
     (light.memories||[]).forEach(m=>{ if(m.img){ delete m.img; m.imgKept = true; } });
+    light.voices = []; // 목소리도 같은 이유로 제외 — 복원해도 지금 것을 그대로 둔다
     localStorage.setItem(KEY+".snap."+today, JSON.stringify(light));
     snaps.push(today);
     while(snaps.length > 3){ localStorage.removeItem(KEY+".snap."+snaps.shift()); }
@@ -1942,9 +2281,9 @@ $("#set-snap").addEventListener("click",()=>{
       <span style="color:var(--ink-soft);font-size:.78rem">${pr.desc}</span>
     </div></div>
     <div class="answer-box" style="margin-bottom:10px"><div class="txt" style="font-size:.84rem">
-      🗂 우리 기록 <b>${si.usedKB.toLocaleString()}KB</b> · 사진 <b>${si.photos}장</b><br>
+      🗂 우리 기록 <b>${si.usedKB.toLocaleString()}KB</b> · 사진 <b>${si.photos}장</b> · 목소리 <b>${si.voices}조각</b>${si.voices?` (${si.voiceKB.toLocaleString()}KB)`:""}<br>
       💾 마지막 내보내기 백업 <b>${exLabel}</b><br>
-      <span style="color:var(--ink-soft);font-size:.78rem">사진이 많아지면 저장 공간이 찰 수 있어요. 가끔 '기록 내보내기'로 백업해두면 안심이에요.</span>
+      <span style="color:var(--ink-soft);font-size:.78rem">사진과 목소리가 많아지면 저장 공간이 찰 수 있어요. 목소리는 오래된 것부터 자동으로 자리를 비우고, 사진·글은 끝까지 지켜요. 가끔 '기록 내보내기'로 백업해두면 안심이에요.</span>
     </div></div>
     <p style="font-size:.85rem;color:var(--ink-soft);word-break:keep-all;margin-bottom:10px">아래는 매일 첫 실행 때 자동으로 저장되는 기록이에요 (최근 3일). 업데이트 후 뭔가 이상하면 안전하게 되돌릴 수 있어요.</p>
     ${snaps.length ? snaps.slice().reverse().map(d=>
@@ -1957,8 +2296,10 @@ $("#set-snap").addEventListener("click",()=>{
     if(!raw){ toast("백업을 찾을 수 없어요"); return; }
     const photos = {};
     (S.memories||[]).forEach(m=>{ if(m.img) photos[m.id] = m.img; }); // 현재 사진 보관
+    const voices = S.voices || [];                                   // 목소리도 그대로 보관
     S = Object.assign(defaultState(), JSON.parse(raw));
     (S.memories||[]).forEach(m=>{ if(m.imgKept){ delete m.imgKept; if(photos[m.id]) m.img = photos[m.id]; } });
+    S.voices = voices;
     save(); closeModal(); renderAll();
     toast("🛟 "+b.dataset.restore+" 시점으로 복원했어요");
   }));
@@ -2213,7 +2554,22 @@ $("#set-theme").addEventListener("click",()=>{
    ================================================================== */
 function syncConfigured(){ return !!(SYNC_CONFIG.url && SYNC_CONFIG.anonKey); }
 function syncReady(){ return syncConfigured() && S.sync && S.sync.code; }
-function exportable(){ const c = JSON.parse(JSON.stringify(S)); delete c.sync; delete c.current; return c; }
+/* 상대 기기로 보낼 목소리: 최근 것만.
+   전부 실어 보내면 저장할 때마다 몇 MB를 올려야 해서 데이터가 아깝다.
+   (양쪽이 같은 규칙으로 고르므로 합쳐진 결과는 서로 같아진다) */
+function syncVoices(){
+  const today = todayKey();
+  return (S.voices||[])
+    .filter(v=>diffDays(v.date, today) <= VOICE_SYNC_DAYS)
+    .sort((a,b)=>(b.at||0)-(a.at||0))
+    .slice(0, VOICE_SYNC_MAX);
+}
+function exportable(){
+  const c = {};
+  for(const k in S){ if(k==="sync"||k==="current"||k==="voices") continue; c[k] = S[k]; }
+  c.voices = syncVoices();
+  return JSON.parse(JSON.stringify(c));
+}
 
 async function syncApi(method, path, body){
   const res = await fetch(SYNC_CONFIG.url + "/rest/v1/" + path, {
@@ -2298,6 +2654,14 @@ function mergeState(local, remote){
     (remote.skips[k]||[]).forEach(q=>{ if(r.indexOf(q) < 0) r.push(q); });
   }
   (remote.deferred||[]).forEach(d=>{ if(!m.deferred.some(x=>x.qi === d.qi)) m.deferred.push(d); });
+  /* 목소리는 id 합집합 — 상대에게서 온 조각을 받고, 내 기기의 옛 조각도 잃지 않는다 */
+  {
+    const ids = new Set(m.voices.map(x=>x.id));
+    (remote.voices||[]).forEach(x=>{ if(!ids.has(x.id)) m.voices.push(x); });
+  }
+  for(const p of ["p1","p2"]){
+    m.voiceFed[p] = Math.max(m.voiceFed[p]||0, (remote.voiceFed||{})[p]||0);
+  }
   return m;
 }
 window.__mergeState = mergeState; // 테스트용
@@ -2331,14 +2695,20 @@ async function syncPull(){
     const remote = rows[0].data;
     const partner = other(S.sync.me);
     const hadAnswer = !!((S.answers[todayKey()]||{})[partner]);
+    const hadVoices = new Set((S.voices||[]).map(v=>v.id));
     const merged = mergeState(S, remote);
     merged.current = S.sync.me;
     merged.sync = S.sync;
     S = merged;
+    pruneVoices(); // 받아온 목소리까지 합쳐 보관 한도를 다시 맞춘다
     localStorage.setItem(KEY, JSON.stringify(S));
     if(!hadAnswer && (S.answers[todayKey()]||{})[partner]){
       notify("우리의 계절", nameOf(partner)+"님이 오늘의 답을 남겼어요 💌");
       toast(nameOf(partner)+"님이 오늘의 답을 남겼어요!");
+    }
+    if((S.voices||[]).some(v=>v.from===partner && !hadVoices.has(v.id))){
+      notify("우리의 계절", nameOf(partner)+"님의 목소리가 도착했어요 🎙");
+      toast(nameOf(partner)+"님의 목소리가 도착했어요 🎙");
     }
     if(JSON.stringify(exportable()) !== JSON.stringify(remote)) syncPush();
     renderAll();
@@ -2673,9 +3043,17 @@ function renderHomeTime(){
 function quizDoneDays(){
   return Object.values(S.quiz).filter(r=>r.p1&&r.p2&&r.p1.guess!=null&&r.p2.guess!=null).length;
 }
+/* 혼자 남긴 다정함도 밥이 된다.
+   둘 다 채운 날은 한 그릇, 나 혼자 남긴 날과 목소리 한 조각은 반 그릇.
+   상대가 바쁜 계절에도 콩닥이가 굶지 않도록 — 대신 "누가 안 했는지"는 절대 세지 않는다. */
+function soloHalves(){
+  const solo = Object.values(S.answers).filter(a=>(a.p1||a.p2) && !(a.p1&&a.p2)).length;
+  const fed = (S.voiceFed && (S.voiceFed.p1||0)+(S.voiceFed.p2||0)) || 0;
+  return solo + fed;
+}
 function petPoints(){
   const missions = Object.values(S.missions).filter(m=>m.p1&&m.p2).length;
-  return completedDays() + quizDoneDays() + missions;
+  return completedDays() + quizDoneDays() + missions + Math.floor(soloHalves()/2);
 }
 function renderPet(){
   const el = $("#pet-card");
@@ -2696,10 +3074,11 @@ function renderPet(){
   const line = fedCount===3
     ? "오늘 먹이 다 먹었어요! 배불러요 🫶"
     : PET_LINES[dayOfYear2(parseKey(k)) % PET_LINES.length];
+  const half = soloHalves();
   let pct = 100, nextTxt = "최고 단계! 우리 사랑처럼 다 컸어요 💘";
   if(next){
     pct = Math.min(100, Math.round(((pts-stage.min)/(next.min-stage.min))*100));
-    nextTxt = `다음 진화까지 밥 ${next.min-pts}그릇 (문답·퀴즈·미션이 밥이에요)`;
+    nextTxt = `다음 진화까지 밥 ${next.min-pts}그릇 (문답·퀴즈·미션·목소리가 밥이에요)`;
   }
   el.innerHTML = `
     <div class="card-title">우리의 ${esc(name)} <button class="more" id="pet-rename">이름 짓기</button></div>
@@ -2712,7 +3091,8 @@ function renderPet(){
       </div>
     </div>
     <div class="pet-bubble">${esc(line)}</div>
-    <div class="pet-feed">${feed.map(f=>`<div class="pf ${f[1]?"on":""}">${f[1]?"🍚":"🕊️"} ${f[0]}${f[1]?" 냠!":""}</div>`).join("")}</div>`;
+    <div class="pet-feed">${feed.map(f=>`<div class="pf ${f[1]?"on":""}">${f[1]?"🍚":"🕊️"} ${f[0]}${f[1]?" 냠!":""}</div>`).join("")}</div>
+    ${half ? `<div class="skip-note">🍚 혼자 남긴 마음 ${half}번도 반 그릇씩 챙겨뒀어요 — 오늘의 다정함은 헛되지 않아요</div>` : ""}`;
   $("#pet-rename").addEventListener("click",()=>{
     openModal(`<h3>🐣 이름 짓기</h3>
       <input id="pet-name-input" maxlength="8" value="${esc(name)}" placeholder="예: 콩닥이" />
@@ -2939,6 +3319,9 @@ function renderAll(){
   renderQuiz();
   renderQaArchive();
   renderMemories();
+  renderVoiceRec();
+  renderVoiceList();
+  renderHomeVoice();
   renderThanks();
   renderAnnivScreen();
   renderMore();
