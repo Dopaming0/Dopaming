@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>리뷰밋 — 체험단 운영 대시보드</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root {
+    --ink: #1d1d1f;
+    --sub: #6e6e73;
+    --gray-bg: #f5f5f7;
+    --white: #ffffff;
+    --blue: #0071e3;
+    --blue-hover: #0077ed;
+    --blue-light: #eaf3fd;
+    --line: #e8e8ed;
+    --green: #248a3d;
+    --green-light: #e8f5ec;
+    --orange: #bf4800;
+    --orange-light: #fff3e0;
+    --red: #d70015;
+    --red-light: #fde9e9;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "SF Pro KR", system-ui, sans-serif;
+    background: var(--white);
+    color: var(--ink);
+    line-height: 1.5;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font-family: inherit; cursor: pointer; }
+  input, select, textarea {
+    font-family: inherit; font-size: 14px; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 10px;
+    padding: 9px 12px; background: #fff; width: 100%;
+  }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--blue); outline-offset: -1px; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255,255,255,.86);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; flex-wrap: wrap; padding: 12px 24px;
+  }
+  .brand { font-size: 19px; font-weight: 800; letter-spacing: -.02em; }
+  .brand small { font-size: 13px; font-weight: 600; color: var(--sub); margin-left: 8px; }
+  .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .notice {
+    background: var(--gray-bg); color: var(--sub);
+    font-size: 12.5px; text-align: center; padding: 8px 16px;
+  }
+
+  .tabs { max-width: 1180px; margin: 0 auto; padding: 18px 24px 0; display: flex; gap: 8px; }
+  .tab-btn {
+    border: none; background: var(--gray-bg); color: var(--ink);
+    font-size: 14px; font-weight: 600; padding: 9px 20px; border-radius: 999px;
+    transition: background .15s, color .15s;
+  }
+  .tab-btn:hover { background: #e8e8ed; }
+  .tab-btn.active { background: var(--ink); color: #fff; }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 20px 24px 90px; }
+
+  .btn {
+    display: inline-block; border: none; background: var(--blue); color: #fff;
+    font-size: 13.5px; font-weight: 600; padding: 9px 18px; border-radius: 999px;
+    transition: background .15s;
+  }
+  .btn:hover { background: var(--blue-hover); }
+  .btn.ghost { background: transparent; border: 1.5px solid var(--blue); color: var(--blue); padding: 7.5px 16.5px; }
+  .btn.ghost:hover { background: var(--blue); color: #fff; }
+  .btn.danger { background: transparent; border: 1.5px solid var(--red); color: var(--red); padding: 7.5px 16.5px; }
+  .btn.danger:hover { background: var(--red); color: #fff; }
+  .btn.gray { background: var(--gray-bg); color: var(--ink); }
+  .btn.gray:hover { background: #e8e8ed; }
+  .btn.sm { font-size: 12px; padding: 5px 12px; }
+  .btn.ghost.sm, .btn.danger.sm { padding: 3.5px 10.5px; }
+  .btn:disabled { opacity: .35; cursor: not-allowed; }
+  .btn:disabled:hover { background: var(--blue); }
+  .btn.ghost:disabled:hover { background: transparent; color: var(--blue); }
+
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .kpi { background: var(--gray-bg); border-radius: 20px; padding: 22px; }
+  .kpi b { display: block; font-size: 32px; font-weight: 800; letter-spacing: -.02em; }
+  .kpi b em { font-style: normal; font-size: 16px; color: var(--sub); font-weight: 600; }
+  .kpi span { font-size: 13px; color: var(--sub); }
+  .kpi.warn b { color: var(--orange); }
+
+  .card { background: var(--gray-bg); border-radius: 20px; padding: 22px; margin-bottom: 20px; }
+  .card h2 { font-size: 19px; font-weight: 800; letter-spacing: -.01em; margin-bottom: 14px; }
+  .card h2 small { font-size: 13px; font-weight: 600; color: var(--sub); margin-left: 8px; }
+  .muted { color: var(--sub); font-size: 13px; }
+
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+  .toolbar input[type=search] { max-width: 230px; }
+  .toolbar select { width: auto; }
+  .toolbar .spacer { flex: 1; }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; min-width: 720px; border-collapse: separate; border-spacing: 0; background: #fff; border-radius: 14px; overflow: hidden; font-size: 13.5px; }
+  th {
+    text-align: left; padding: 11px 12px; font-size: 12px; font-weight: 600; color: var(--sub);
+    border-bottom: 1px solid var(--line); white-space: nowrap; background: #fff;
+  }
+  th[data-key] { cursor: pointer; }
+  th[data-key]:hover { color: var(--ink); }
+  td { padding: 10px 12px; border-bottom: 1px solid #f0f0f2; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr.clickable { cursor: pointer; }
+  tbody tr.clickable:hover { background: #f9f9fb; }
+
+  .badge {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    border-radius: 999px; padding: 3px 9px; white-space: nowrap;
+  }
+  .bg-A { background: var(--blue-light); color: var(--blue); }
+  .bg-B { background: var(--green-light); color: var(--green); }
+  .bg-C { background: var(--orange-light); color: var(--orange); }
+  .bg-X { background: var(--red-light); color: var(--red); }
+  .bg-gray { background: #ececf0; color: var(--sub); }
+  .st-모집중 { background: var(--blue-light); color: var(--blue); }
+  .st-선정 { background: #f1e8fd; color: #6d3fc0; }
+  .st-진행중 { background: var(--green-light); color: var(--green); }
+  .st-검수중 { background: var(--orange-light); color: var(--orange); }
+  .st-완료 { background: #ececf0; color: var(--sub); }
+
+  .todo-item {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    background: #fff; border-radius: 14px; padding: 12px 16px; margin-bottom: 8px;
+  }
+  .todo-item .who { font-weight: 700; }
+  .todo-item .what { color: var(--sub); font-size: 13px; flex: 1; min-width: 140px; }
+  .dday { font-size: 11px; font-weight: 700; border-radius: 999px; padding: 3px 9px; background: var(--orange-light); color: var(--orange); }
+  .dday.over { background: var(--red-light); color: var(--red); }
+
+  .camp-card {
+    background: var(--gray-bg); border-radius: 20px; padding: 22px; margin-bottom: 14px;
+    cursor: pointer; transition: background .15s;
+  }
+  .camp-card:hover { background: #efeff2; }
+  .camp-card h3 { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+  .camp-meta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; font-size: 13px; color: var(--sub); }
+  .camp-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+  .info-grid > div { background: #fff; border-radius: 12px; padding: 10px 14px; }
+  .info-grid dt { font-size: 11px; color: var(--sub); font-weight: 600; }
+  .info-grid dd { font-size: 14px; font-weight: 600; margin-top: 2px; }
+
+  details.score summary { cursor: pointer; list-style: none; font-weight: 700; white-space: nowrap; }
+  details.score summary::-webkit-details-marker { display: none; }
+  details.score summary::after { content: " ▾"; color: var(--sub); font-size: 11px; }
+  details.score[open] summary::after { content: " ▴"; }
+  details.score .brk { font-size: 11.5px; color: var(--sub); margin-top: 4px; white-space: nowrap; }
+
+  .fit-input { width: 62px; padding: 5px 8px; font-size: 13px; text-align: center; }
+
+  .board { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .board-card { background: #fff; border-radius: 16px; padding: 16px 18px; }
+  .board-card .bc-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .board-card .bc-head b { font-size: 15px; }
+  .board-card .bc-prog { margin-left: auto; font-size: 12px; color: var(--sub); font-weight: 600; }
+  .check-line { display: flex; align-items: center; gap: 8px; font-size: 13.5px; padding: 4px 0; }
+  .check-line input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--blue); flex: none; }
+  .url-line { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+  .url-line input { font-size: 12.5px; padding: 6px 10px; }
+  .bc-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .bc-note { font-size: 11.5px; color: var(--sub); margin-top: 6px; }
+
+  .overlay {
+    position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.4);
+    display: flex; align-items: center; justify-content: center; padding: 18px;
+  }
+  .sheet {
+    background: #fff; border-radius: 20px; padding: 26px;
+    width: min(600px, 94vw); max-height: 88vh; overflow-y: auto;
+  }
+  .sheet h2 { font-size: 20px; font-weight: 800; letter-spacing: -.01em; margin-bottom: 18px; }
+  .fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .fgrid .full { grid-column: 1 / -1; }
+  .fgrid label { display: block; font-size: 12px; font-weight: 600; color: var(--sub); margin-bottom: 4px; }
+  .sheet-actions { display: flex; gap: 8px; margin-top: 22px; }
+  .sheet-actions .spacer { flex: 1; }
+
+  #toast {
+    position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 200;
+    background: var(--ink); color: #fff; font-size: 13.5px; font-weight: 600;
+    border-radius: 999px; padding: 11px 22px; opacity: 0; pointer-events: none;
+    transition: opacity .25s;
+  }
+  #toast.show { opacity: 1; }
+
+  .empty { text-align: center; color: var(--sub); font-size: 14px; padding: 34px 0; }
+
+  @media (max-width: 900px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .topbar, .tabs, main { padding-left: 14px; padding-right: 14px; }
+    .fgrid { grid-template-columns: 1fr; }
+    .toolbar input[type=search] { max-width: none; flex: 1 1 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">리뷰밋<small>체험단 운영 대시보드</small></div>
+  <div class="top-actions">
+    <button class="btn gray sm" data-act="sample">샘플 데이터 넣기</button>
+    <button class="btn ghost sm" data-act="json-import">JSON 가져오기</button>
+    <button class="btn sm" data-act="json-export">JSON 내보내기</button>
+  </div>
+</header>
+<div class="notice">데이터는 이 브라우저에만 저장됩니다 — 주기적으로 백업하세요.</div>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-act="tab" data-tab="home">홈</button>
+  <button class="tab-btn" data-act="tab" data-tab="reviewers">리뷰어</button>
+  <button class="tab-btn" data-act="tab" data-tab="campaigns">캠페인</button>
+</nav>
+
+<main>
+  <section id="view-home" class="view">
+    <div class="kpis" id="kpiGrid"></div>
+    <div class="card">
+      <h2>등급 분포<small>리뷰어 풀 건강 지표</small></h2>
+      <div id="gradeDist"></div>
+    </div>
+    <div class="card">
+      <h2>오늘 할 일<small>발행마감 임박·초과 리뷰어</small></h2>
+      <div id="todoList"></div>
+    </div>
+  </section>
+
+  <section id="view-reviewers" class="view" hidden>
+    <div class="toolbar">
+      <input type="search" id="rvSearch" placeholder="이름·카톡ID·채널·메모 검색">
+      <select id="fGrade">
+        <option value="">등급 전체</option>
+        <option>A</option><option>B</option><option>C</option>
+        <option>신규</option><option>휴면</option><option>제외</option>
+      </select>
+      <select id="fStatus">
+        <option value="">상태 전체</option>
+        <option value="active">활성</option>
+        <option value="dormant">휴면</option>
+      </select>
+      <select id="fCat"><option value="">카테고리 전체</option></select>
+      <span class="spacer"></span>
+      <button class="btn ghost sm" data-act="csv-export">CSV 내보내기</button>
+      <button class="btn ghost sm" data-act="csv-import">CSV 가져오기</button>
+      <button class="btn sm" data-act="rv-add">리뷰어 추가</button>
+    </div>
+    <div class="card table-wrap" style="padding:10px">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th data-key="name">성명 ↕</th>
+            <th>채널</th>
+            <th data-key="visitors">일방문자/팔로워 ↕</th>
+            <th>카테고리</th>
+            <th data-key="parts">참여 ↕</th>
+            <th data-key="rate">이행률 ↕</th>
+            <th>미이행</th>
+            <th>노쇼</th>
+            <th data-key="grade">등급 ↕</th>
+            <th data-key="join">가입일 ↕</th>
+          </tr>
+        </thead>
+        <tbody id="rvTbody"></tbody>
+      </table>
+    </div>
+    <p class="muted" id="rvCount"></p>
+  </section>
+
+  <section id="view-campaigns" class="view" hidden>
+    <div id="campaignArea"></div>
+  </section>
+</main>
+
+<input type="file" id="csvFile" accept=".csv,text/csv" hidden>
+<input type="file" id="jsonFile" accept=".json,application/json" hidden>
+
+<div class="overlay" id="rvModal" hidden>
+  <div class="sheet">
+    <h2 id="rvModalTitle">리뷰어 추가</h2>
+    <div class="fgrid">
+      <div><label>성명 *</label><input id="rv_name"></div>
+      <div><label>카톡ID</label><input id="rv_kakao"></div>
+      <div><label>연락처</label><input id="rv_phone" placeholder="010-0000-0000"></div>
+      <div><label>채널유형</label>
+        <select id="rv_ctype">
+          <option>네이버블로그</option><option>인스타그램</option><option>유튜브</option><option>기타</option>
+        </select>
+      </div>
+      <div class="full"><label>채널URL</label><input id="rv_curl" placeholder="https://"></div>
+      <div><label>일평균방문자 (인스타는 팔로워 수)</label><input id="rv_visitors" type="number" min="0"></div>
+      <div><label>주력카테고리</label><input id="rv_cat" list="catList"></div>
+      <div><label>거주지역</label><input id="rv_region"></div>
+      <div><label>가입일</label><input id="rv_join" type="date"></div>
+      <div><label>참여캠페인수</label><input id="rv_parts" type="number" min="0"></div>
+      <div><label>마지막 참여일</label><input id="rv_last" type="date"></div>
+      <div><label>미이행횟수</label><input id="rv_miss" type="number" min="0"></div>
+      <div><label>노쇼횟수</label><input id="rv_noshow" type="number" min="0"></div>
+      <div><label>등급 (자동: <span id="rv_autoGrade">-</span>)</label>
+        <select id="rv_gradeOv">
+          <option value="">자동 산정</option>
+          <option value="A">수동 A</option><option value="B">수동 B</option>
+          <option value="C">수동 C</option><option value="제외">수동 제외</option>
+        </select>
+      </div>
+      <div><label>원고료계좌</label><input id="rv_account"></div>
+      <div class="full"><label>메모</label><textarea id="rv_memo" rows="2"></textarea></div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn danger sm" data-act="rv-del" id="rvDelBtn" hidden>삭제</button>
+      <span class="spacer"></span>
+      <button class="btn gray" data-act="modal-close">취소</button>
+      <button class="btn" data-act="rv-save">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="campModal" hidden>
+  <div class="sheet">
+    <h2 id="campModalTitle">캠페인 만들기</h2>
+    <div class="fgrid">
+      <div><label>캠페인명 *</label><input id="cp_name"></div>
+      <div><label>셀러명</label><input id="cp_seller"></div>
+      <div><label>유형</label>
+        <select id="cp_type"><option>배송형</option><option>방문형</option></select>
+      </div>
+      <div><label>카테고리</label><input id="cp_cat" list="catList"></div>
+      <div><label>제공 제품</label><input id="cp_product"></div>
+      <div><label>제품 정가 (원)</label><input id="cp_price" type="number" min="0"></div>
+      <div><label>타깃 키워드</label><input id="cp_keyword"></div>
+      <div><label>모집 인원</label><input id="cp_headcount" type="number" min="1"></div>
+      <div><label>모집마감일</label><input id="cp_apply" type="date"></div>
+      <div><label>발표일</label><input id="cp_announce" type="date"></div>
+      <div><label>발행마감일</label><input id="cp_publish" type="date"></div>
+      <div><label>패키지</label>
+        <select id="cp_pkg"><option>스타터</option><option>그로스</option><option>쿠팡부스트</option></select>
+      </div>
+      <div><label>대행료 (원, VAT 별도)</label><input id="cp_fee" type="number" min="0"></div>
+    </div>
+    <div class="sheet-actions">
+      <span class="spacer"></span>
+      <button class="btn gray" data-act="modal-close">취소</button>
+      <button class="btn" data-act="camp-save">저장</button>
+    </div>
+  </div>
+</div>
+
+<datalist id="catList"></datalist>
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+const STORE_KEY = 'reviewmeet_v1';
+const CSV_HEADER = 'ID,성명,카톡ID,연락처,채널유형,채널URL,일평균방문자,주력카테고리,거주지역,가입일,참여캠페인수,이행률(%),미이행횟수,노쇼횟수,등급,원고료계좌,메모';
+const PKG_FEES = { '스타터': 290000, '그로스': 490000, '쿠팡부스트': 390000 };
+const DAY = 86400000;
+const CAMP_STATUSES = ['모집중', '선정', '진행중', '검수중', '완료'];
+const MANUAL_GRADES = ['A', 'B', 'C', '제외'];
+
+let state = loadState();
+const ui = { tab: 'home', campaignId: null, sort: { key: 'name', dir: 1 }, editRvId: null, editCampId: null };
+
+/* ---------- store ---------- */
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      if (s && Array.isArray(s.reviewers) && Array.isArray(s.campaigns)) {
+        return normalizeState(s);
+      }
+    }
+  } catch (e) {}
+  return { reviewers: [], campaigns: [], settings: {} };
+}
+function saveState() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  } catch (e) {
+    toast('저장 실패 — 브라우저 저장 공간을 확인하세요');
+  }
+}
+
+/* ---------- utils ---------- */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const $ = id => document.getElementById(id);
+function todayStr(offset) {
+  const d = new Date(Date.now() + (offset || 0) * DAY);
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function dnum(s) { return s ? Date.parse(s + 'T00:00:00Z') : NaN; }
+function daysSince(s) { const x = dnum(s); return isNaN(x) ? Infinity : Math.round((dnum(todayStr()) - x) / DAY); }
+function daysUntil(s) { const x = dnum(s); return isNaN(x) ? null : Math.round((x - dnum(todayStr())) / DAY); }
+function won(n) { return n == null || n === '' ? '—' : Number(n).toLocaleString('ko-KR') + '원'; }
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast._tm);
+  toast._tm = setTimeout(() => t.classList.remove('show'), 2200);
+}
+function download(filename, text, mime) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: mime || 'text/plain;charset=utf-8' }));
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function copyText(text) {
+  const legacy = () => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    ta.remove();
+    return ok;
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text).then(() => true).catch(() => legacy());
+  }
+  return Promise.resolve(legacy());
+}
+function nextId(prefix, list) {
+  let max = 0;
+  const re = new RegExp('^' + prefix + '(\\d+)$');
+  list.forEach(x => { const m = re.exec(x.id); if (m) max = Math.max(max, Number(m[1])); });
+  return prefix + String(max + 1).padStart(3, '0');
+}
+function assignIds(list, prefix) {
+  const re = new RegExp('^' + prefix + '(\\d+)$');
+  let max = 0;
+  list.forEach(x => { const m = re.exec(x.id || ''); if (m) max = Math.max(max, Number(m[1])); });
+  const seen = new Set();
+  list.forEach(x => {
+    if (!x.id || seen.has(x.id)) { max += 1; x.id = prefix + String(max).padStart(3, '0'); }
+    seen.add(x.id);
+  });
+}
+function safeUrl(u) {
+  u = String(u || '').trim();
+  return /^https?:\/\//i.test(u) ? u : '';
+}
+function numVal(v, fallback) {
+  const s = String(v ?? '').replace(/,/g, '').trim();
+  if (s === '') return fallback;
+  const n = Number(s);
+  return isNaN(n) ? fallback : n;
+}
+function newProgress(o) {
+  o = o && typeof o === 'object' ? o : {};
+  return {
+    shipped: !!o.shipped, url: String(o.url || '').trim(),
+    disclosure: !!o.disclosure, keyword: !!o.keyword,
+    photos: !!o.photos, length: !!o.length, search: !!o.search,
+    outcome: ['passed', 'missed', 'noshow'].includes(o.outcome) ? o.outcome : null,
+    prevLast: o.prevLast ? String(o.prevLast) : null
+  };
+}
+function normReviewer(x) {
+  x = x && typeof x === 'object' ? x : {};
+  return {
+    id: String(x.id || '').trim(),
+    name: String(x.name || '').trim(),
+    kakao: String(x.kakao || '').trim(),
+    phone: String(x.phone || '').trim(),
+    channelType: String(x.channelType || '').trim(),
+    channelUrl: String(x.channelUrl || '').trim(),
+    visitors: x.visitors == null || x.visitors === '' ? null : Math.max(0, numVal(x.visitors, 0)),
+    category: String(x.category || '').trim(),
+    region: String(x.region || '').trim(),
+    joinDate: String(x.joinDate || '').trim(),
+    participations: Math.max(0, numVal(x.participations, 0)),
+    lastParticipation: x.lastParticipation ? String(x.lastParticipation) : null,
+    miss: Math.max(0, numVal(x.miss, 0)),
+    noShow: Math.max(0, numVal(x.noShow, 0)),
+    gradeOverride: MANUAL_GRADES.includes(x.gradeOverride) ? x.gradeOverride : null,
+    account: String(x.account || '').trim(),
+    memo: String(x.memo || '').trim()
+  };
+}
+function normCampaign(x) {
+  x = x && typeof x === 'object' ? x : {};
+  return {
+    id: String(x.id || '').trim(),
+    name: String(x.name || '').trim(),
+    seller: String(x.seller || '').trim(),
+    type: String(x.type || '배송형'),
+    category: String(x.category || '').trim(),
+    product: String(x.product || '').trim(),
+    productPrice: x.productPrice == null || x.productPrice === '' ? null : Math.max(0, numVal(x.productPrice, 0)),
+    keyword: String(x.keyword || '').trim(),
+    headcount: Math.max(1, numVal(x.headcount, 1)),
+    applyDeadline: String(x.applyDeadline || ''),
+    announceDate: String(x.announceDate || ''),
+    publishDeadline: String(x.publishDeadline || ''),
+    pkg: String(x.pkg || '스타터'),
+    fee: x.fee == null || x.fee === '' ? null : Math.max(0, numVal(x.fee, 0)),
+    status: CAMP_STATUSES.includes(x.status) ? x.status : '모집중',
+    applicants: (Array.isArray(x.applicants) ? x.applicants : []).map(a => ({
+      reviewerId: String((a && a.reviewerId) || ''),
+      selected: !!(a && a.selected),
+      fitOverride: a && a.fitOverride != null && a.fitOverride !== '' ? Math.min(25, Math.max(0, numVal(a.fitOverride, 0))) : null,
+      progress: newProgress(a && a.progress)
+    })).filter(a => a.reviewerId)
+  };
+}
+function normalizeState(s) {
+  const out = {
+    reviewers: (Array.isArray(s.reviewers) ? s.reviewers : []).map(normReviewer).filter(r => r.name),
+    campaigns: (Array.isArray(s.campaigns) ? s.campaigns : []).map(normCampaign).filter(c => c.name),
+    settings: s.settings && typeof s.settings === 'object' ? s.settings : {}
+  };
+  assignIds(out.reviewers, 'R');
+  assignIds(out.campaigns, 'C');
+  return out;
+}
+
+/* ---------- domain ---------- */
+function doneCount(r) { return Math.max(0, (r.participations || 0) - (r.miss || 0) - (r.noShow || 0)); }
+function fulfillRate(r) {
+  const p = r.participations || 0;
+  if (!p) return null;
+  return Math.min(100, Math.max(0, Math.round(doneCount(r) / p * 100)));
+}
+function calcGrade(r) {
+  if ((r.miss || 0) >= 2) return '제외';
+  if (isDormant(r)) return '휴면';
+  if ((r.miss || 0) >= 1 || (r.noShow || 0) >= 1) return 'C';
+  if ((r.participations || 0) === 0) return '';
+  if (fulfillRate(r) === 100 && doneCount(r) >= 3) return 'A';
+  return 'B';
+}
+function effGrade(r) { return r.gradeOverride || calcGrade(r); }
+function gradeLabel(g) { return g === '' ? '신규' : g; }
+function gradeClass(g) {
+  return g === '제외' ? 'bg-X' : g === '휴면' || g === '' ? 'bg-gray' : 'bg-' + g;
+}
+function isDormant(r) { return daysSince(r.lastParticipation || r.joinDate) > 90; }
+function findReviewer(id) { return state.reviewers.find(r => r.id === id); }
+function findCampaign(id) { return state.campaigns.find(c => c.id === id); }
+
+function scoreReviewer(reviewer, campaign) {
+  const v = Number(reviewer.visitors) || 0;
+  const size = v >= 3000 ? 30 : v >= 1000 ? 26 : v >= 600 ? 23 : v >= 300 ? 20 : v >= 100 ? 15 : v >= 50 ? 10 : 5;
+
+  let fit = (reviewer.category && campaign.category && reviewer.category === campaign.category) ? 25 : 5;
+  const app = (campaign.applicants || []).find(a => a.reviewerId === reviewer.id);
+  if (app && app.fitOverride !== null && app.fitOverride !== undefined && app.fitOverride !== '') {
+    fit = Math.min(25, Math.max(0, Number(app.fitOverride) || 0));
+  }
+
+  const trust = (reviewer.participations || 0) === 0
+    ? 15
+    : Math.max(0, Math.round((fulfillRate(reviewer) || 0) * 0.3) - 5 * (reviewer.noShow || 0));
+
+  const d = daysSince(reviewer.lastParticipation || reviewer.joinDate);
+  const activity = d <= 30 ? 15 : d <= 90 ? 10 : 5;
+
+  return { total: size + fit + trust + activity, size, fit, trust, activity };
+}
+
+/* ---------- 카톡 리마인드 (docs/06 템플릿 4·5) ---------- */
+function remindText(rv, camp) {
+  const dday = daysUntil(camp.publishDeadline);
+  if (dday !== null && dday > 0) {
+    const left = dday === 2 ? '이틀' : dday + '일';
+    return rv.name + '님, ' + camp.name + ' 리뷰 마감이 ' + left + ' 남았어요 ⏰\n'
+      + '마감: ' + camp.publishDeadline + '\n'
+      + '가이드라인: [링크]\n'
+      + '어려운 점 있으시면 미리 말씀 주세요. 조율 가능해요!';
+  }
+  return rv.name + '님, 오늘이 ' + camp.name + ' 리뷰 마감일이에요.\n'
+    + '오늘까지 발행이 어려우시면 꼭 회신 부탁드립니다.\n'
+    + '회신 없이 미발행 시 서약서에 따라 다음 선정이 제한될 수 있어요 🙏';
+}
+
+/* ---------- CSV ---------- */
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = '', inQ = false;
+  text = text.replace(/^\uFEFF/, '');
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; } else inQ = false;
+      } else field += c;
+    } else if (c === '"') inQ = true;
+    else if (c === ',') { row.push(field); field = ''; }
+    else if (c === '\n' || c === '\r') {
+      if (c === '\r' && text[i + 1] === '\n') i++;
+      row.push(field); rows.push(row); row = []; field = '';
+    } else field += c;
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row); }
+  return rows;
+}
+function csvField(v) {
+  v = String(v ?? '');
+  return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+}
+function exportCSV() {
+  const lines = [CSV_HEADER];
+  state.reviewers.forEach(r => {
+    lines.push([
+      r.id, r.name, r.kakao, r.phone, r.channelType, r.channelUrl,
+      r.visitors ?? '', r.category, r.region, r.joinDate,
+      r.participations || 0, fulfillRate(r) ?? '', r.miss || 0, r.noShow || 0,
+      effGrade(r), r.account, r.memo
+    ].map(csvField).join(','));
+  });
+  download('reviewers-' + todayStr() + '.csv', '\uFEFF' + lines.join('\r\n'), 'text/csv;charset=utf-8');
+  toast('CSV를 내보냈습니다');
+}
+function importCSV(text) {
+  const rows = parseCSV(text).filter(r => r.some(f => f.trim() !== ''));
+  if (!rows.length || rows[0].map(f => f.trim()).join(',') !== CSV_HEADER) {
+    alert('CSV 헤더가 리뷰어 DB 양식과 다릅니다.\n필요 헤더:\n' + CSV_HEADER);
+    return;
+  }
+  const prev = new Map(state.reviewers.map(r => [r.id, r]));
+  const imported = [];
+  rows.slice(1).forEach(f => {
+    if (!(f[1] || '').trim()) return;
+    const r = {
+      id: (f[0] || '').trim(),
+      name: f[1].trim(),
+      kakao: (f[2] || '').trim(),
+      phone: (f[3] || '').trim(),
+      channelType: (f[4] || '').trim(),
+      channelUrl: (f[5] || '').trim(),
+      visitors: (f[6] || '').trim() === '' ? null : Math.max(0, numVal(f[6], 0)),
+      category: (f[7] || '').trim(),
+      region: (f[8] || '').trim(),
+      joinDate: (f[9] || '').trim(),
+      participations: Math.max(0, numVal(f[10], 0)),
+      miss: Math.max(0, numVal(f[12], 0)),
+      noShow: Math.max(0, numVal(f[13], 0)),
+      gradeOverride: null,
+      account: (f[15] || '').trim(),
+      memo: (f[16] || '').trim(),
+      lastParticipation: null
+    };
+    const old = r.id ? prev.get(r.id) : null;
+    if (old) r.lastParticipation = old.lastParticipation || null;
+    const csvGrade = (f[14] || '').trim();
+    if (MANUAL_GRADES.includes(csvGrade) && csvGrade !== calcGrade(r)) r.gradeOverride = csvGrade;
+    imported.push(r);
+  });
+  if (!imported.length) { alert('가져올 리뷰어가 없습니다.'); return; }
+  if (!confirm('리뷰어 ' + imported.length + '명을 가져와 현재 리뷰어 목록을 덮어씁니다.\n'
+    + '- 이행률·등급은 앱이 재계산합니다 (CSV 등급이 자동 산정과 다르면 수동 등급으로 보존)\n'
+    + '- 마지막 참여일은 기존 목록과 ID로 병합됩니다 (전체 백업·복원은 JSON 사용 권장)\n계속할까요?')) return;
+  assignIds(imported, 'R');
+  state.reviewers = imported;
+  saveState();
+  renderAll();
+  toast('리뷰어 ' + imported.length + '명을 가져왔습니다');
+}
+
+/* ---------- render: 공통 ---------- */
+function renderAll() {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === ui.tab));
+  $('view-home').hidden = ui.tab !== 'home';
+  $('view-reviewers').hidden = ui.tab !== 'reviewers';
+  $('view-campaigns').hidden = ui.tab !== 'campaigns';
+  renderCatList();
+  if (ui.tab === 'home') renderHome();
+  if (ui.tab === 'reviewers') renderReviewers();
+  if (ui.tab === 'campaigns') renderCampaigns();
+}
+function renderCatList() {
+  const cats = [...new Set(state.reviewers.map(r => r.category).concat(state.campaigns.map(c => c.category)).filter(Boolean))];
+  $('catList').innerHTML = cats.map(c => '<option value="' + esc(c) + '">').join('');
+}
+
+/* ---------- render: 홈 ---------- */
+function dueItems() {
+  const items = [];
+  state.campaigns.forEach(c => {
+    if (c.status === '완료' || !c.publishDeadline) return;
+    const dday = daysUntil(c.publishDeadline);
+    if (dday === null || dday > 3) return;
+    (c.applicants || []).forEach(a => {
+      if (!a.selected || a.progress.outcome) return;
+      const rv = findReviewer(a.reviewerId);
+      if (rv) items.push({ rv, camp: c, dday });
+    });
+  });
+  items.sort((a, b) => a.dday - b.dday);
+  return items;
+}
+function renderHome() {
+  const active = state.reviewers.filter(r => effGrade(r) !== '제외' && !isDormant(r)).length;
+  const rates = state.reviewers.map(fulfillRate).filter(v => v !== null);
+  const avgRate = rates.length ? Math.round(rates.reduce((a, b) => a + b, 0) / rates.length) : null;
+  const running = state.campaigns.filter(c => c.status !== '완료').length;
+  const due = dueItems();
+  const dueSoon = due.filter(i => i.dday >= 0).length;
+
+  $('kpiGrid').innerHTML =
+    '<div class="kpi"><b>' + active + '<em>명</em></b><span>활성 리뷰어</span></div>' +
+    '<div class="kpi"><b>' + (avgRate === null ? '—' : avgRate + '<em>%</em>') + '</b><span>평균 이행률</span></div>' +
+    '<div class="kpi"><b>' + running + '<em>건</em></b><span>진행 중 캠페인</span></div>' +
+    '<div class="kpi' + (dueSoon ? ' warn' : '') + '"><b>' + dueSoon + '<em>명</em></b><span>발행마감 임박(3일 이내)</span></div>';
+
+  const dist = { A: 0, B: 0, C: 0, '': 0, '휴면': 0, '제외': 0 };
+  state.reviewers.forEach(r => {
+    const g = effGrade(r);
+    dist[g in dist ? g : ''] += 1;
+  });
+  $('gradeDist').innerHTML = state.reviewers.length
+    ? ['A', 'B', 'C', '', '휴면', '제외'].map(g =>
+        '<span class="badge ' + gradeClass(g) + '" style="margin:0 8px 6px 0;font-size:12.5px;padding:6px 13px">'
+        + gradeLabel(g) + ' ' + dist[g] + '명</span>').join('')
+    : '<div class="empty">리뷰어가 없습니다.</div>';
+
+  $('todoList').innerHTML = due.length ? due.map(i => {
+    const label = i.dday > 0 ? 'D-' + i.dday : i.dday === 0 ? 'D-DAY' : 'D+' + (-i.dday) + ' 초과';
+    return '<div class="todo-item">'
+      + '<span class="dday' + (i.dday < 0 ? ' over' : '') + '">' + label + '</span>'
+      + '<span class="who">' + esc(i.rv.name) + '</span>'
+      + '<span class="what">' + esc(i.camp.name) + ' · 마감 ' + esc(i.camp.publishDeadline) + '</span>'
+      + '<button class="btn ghost sm" data-act="copy-remind" data-cid="' + esc(i.camp.id) + '" data-rid="' + esc(i.rv.id) + '">리마인드 문안 복사</button>'
+      + '</div>';
+  }).join('') : '<div class="empty">발행마감 임박·초과 리뷰어가 없습니다.</div>';
+}
+
+/* ---------- render: 리뷰어 ---------- */
+function renderReviewers() {
+  const q = $('rvSearch').value.trim().toLowerCase();
+  const fg = $('fGrade').value, fs = $('fStatus').value, fc = $('fCat').value;
+
+  const prevCat = fc;
+  const cats = [...new Set(state.reviewers.map(r => r.category).filter(Boolean))].sort();
+  $('fCat').innerHTML = '<option value="">카테고리 전체</option>' + cats.map(c => '<option value="' + esc(c) + '">' + esc(c) + '</option>').join('');
+  $('fCat').value = cats.includes(prevCat) ? prevCat : '';
+
+  let list = state.reviewers.filter(r => {
+    if (q && ![r.name, r.kakao, r.channelUrl, r.channelType, r.memo, r.region].some(v => String(v || '').toLowerCase().includes(q))) return false;
+    if (fg && gradeLabel(effGrade(r)) !== fg) return false;
+    if (fs === 'active' && (isDormant(r) || effGrade(r) === '제외')) return false;
+    if (fs === 'dormant' && !isDormant(r)) return false;
+    if ($('fCat').value && r.category !== $('fCat').value) return false;
+    return true;
+  });
+
+  const rank = { A: 6, B: 5, C: 4, '': 3, '휴면': 2, '제외': 1 };
+  const key = ui.sort.key, dir = ui.sort.dir;
+  list.sort((a, b) => {
+    let va, vb;
+    if (key === 'name') { va = a.name || ''; vb = b.name || ''; return va.localeCompare(vb, 'ko') * dir; }
+    if (key === 'visitors') { va = Number(a.visitors) || 0; vb = Number(b.visitors) || 0; }
+    else if (key === 'parts') { va = a.participations || 0; vb = b.participations || 0; }
+    else if (key === 'rate') { va = fulfillRate(a) ?? -1; vb = fulfillRate(b) ?? -1; }
+    else if (key === 'grade') { va = rank[effGrade(a)] || 0; vb = rank[effGrade(b)] || 0; }
+    else { va = a.joinDate || ''; vb = b.joinDate || ''; return String(va).localeCompare(String(vb)) * dir; }
+    return (va - vb) * dir;
+  });
+
+  $('rvTbody').innerHTML = list.length ? list.map(r => {
+    const g = effGrade(r);
+    const rate = fulfillRate(r);
+    const curl = safeUrl(r.channelUrl);
+    return '<tr class="clickable" data-rid="' + esc(r.id) + '">'
+      + '<td class="muted">' + esc(r.id) + '</td>'
+      + '<td><b>' + esc(r.name) + '</b></td>'
+      + '<td>' + esc(r.channelType) + (curl ? ' <a href="' + esc(curl) + '" target="_blank" rel="noopener">링크</a>' : '') + '</td>'
+      + '<td>' + (r.visitors == null ? '—' : (Number(r.visitors) || 0).toLocaleString('ko-KR')) + '</td>'
+      + '<td>' + esc(r.category) + '</td>'
+      + '<td>' + (Number(r.participations) || 0) + '</td>'
+      + '<td>' + (rate === null ? '—' : rate + '%') + '</td>'
+      + '<td>' + (Number(r.miss) || 0) + '</td>'
+      + '<td>' + (Number(r.noShow) || 0) + '</td>'
+      + '<td><span class="badge ' + gradeClass(g) + '">' + esc(gradeLabel(g)) + '</span>'
+      + (r.gradeOverride ? ' <span class="badge bg-gray">수동</span>' : '')
+      + (isDormant(r) && g !== '휴면' ? ' <span class="badge bg-gray">휴면</span>' : '')
+      + '</td>'
+      + '<td class="muted">' + esc(r.joinDate) + '</td>'
+      + '</tr>';
+  }).join('') : '<tr><td colspan="11"><div class="empty">리뷰어가 없습니다. 리뷰어를 추가하거나 CSV를 가져오세요.</div></td></tr>';
+
+  $('rvCount').textContent = '총 ' + list.length + '명 / 전체 ' + state.reviewers.length + '명';
+}
+
+function openRvModal(id) {
+  ui.editRvId = id || null;
+  const r = id ? findReviewer(id) : null;
+  $('rvModalTitle').textContent = r ? '리뷰어 수정 — ' + r.id : '리뷰어 추가';
+  $('rv_name').value = r ? r.name : '';
+  $('rv_kakao').value = r ? r.kakao || '' : '';
+  $('rv_phone').value = r ? r.phone || '' : '';
+  $('rv_ctype').value = r && ['네이버블로그', '인스타그램', '유튜브', '기타'].includes(r.channelType) ? r.channelType : '네이버블로그';
+  $('rv_curl').value = r ? r.channelUrl || '' : '';
+  $('rv_visitors').value = r && r.visitors != null ? r.visitors : '';
+  $('rv_cat').value = r ? r.category || '' : '';
+  $('rv_region').value = r ? r.region || '' : '';
+  $('rv_join').value = r ? r.joinDate || '' : todayStr();
+  $('rv_parts').value = r ? r.participations || 0 : 0;
+  $('rv_last').value = r ? r.lastParticipation || '' : '';
+  $('rv_miss').value = r ? r.miss || 0 : 0;
+  $('rv_noshow').value = r ? r.noShow || 0 : 0;
+  $('rv_gradeOv').value = r ? r.gradeOverride || '' : '';
+  $('rv_account').value = r ? r.account || '' : '';
+  $('rv_memo').value = r ? r.memo || '' : '';
+  $('rv_autoGrade').textContent = r ? gradeLabel(calcGrade(r)) : '신규';
+  $('rvDelBtn').hidden = !r;
+  $('rvModal').hidden = false;
+}
+function saveRvModal() {
+  const name = $('rv_name').value.trim();
+  if (!name) { alert('성명은 필수입니다.'); return; }
+  const data = {
+    name,
+    kakao: $('rv_kakao').value.trim(),
+    phone: $('rv_phone').value.trim(),
+    channelType: $('rv_ctype').value,
+    channelUrl: $('rv_curl').value.trim(),
+    visitors: $('rv_visitors').value === '' ? null : Math.max(0, Number($('rv_visitors').value) || 0),
+    category: $('rv_cat').value.trim(),
+    region: $('rv_region').value.trim(),
+    joinDate: $('rv_join').value,
+    participations: Math.max(0, Number($('rv_parts').value) || 0),
+    lastParticipation: $('rv_last').value || null,
+    miss: Math.max(0, Number($('rv_miss').value) || 0),
+    noShow: Math.max(0, Number($('rv_noshow').value) || 0),
+    gradeOverride: $('rv_gradeOv').value || null,
+    account: $('rv_account').value.trim(),
+    memo: $('rv_memo').value.trim()
+  };
+  if (ui.editRvId) {
+    Object.assign(findReviewer(ui.editRvId), data);
+  } else {
+    data.id = nextId('R', state.reviewers);
+    state.reviewers.push(data);
+  }
+  saveState();
+  closeModals();
+  renderAll();
+  toast('저장했습니다');
+}
+function deleteReviewer() {
+  const r = findReviewer(ui.editRvId);
+  if (!r) return;
+  if (!confirm(r.name + ' 리뷰어를 삭제합니다. 캠페인 신청 이력에서도 제거됩니다. 계속할까요?')) return;
+  state.reviewers = state.reviewers.filter(x => x.id !== r.id);
+  state.campaigns.forEach(c => { c.applicants = (c.applicants || []).filter(a => a.reviewerId !== r.id); });
+  saveState();
+  closeModals();
+  renderAll();
+  toast('삭제했습니다');
+}
+
+/* ---------- render: 캠페인 ---------- */
+function renderCampaigns() {
+  const area = $('campaignArea');
+  const camp = ui.campaignId ? findCampaign(ui.campaignId) : null;
+  if (!camp) { ui.campaignId = null; area.innerHTML = campaignListHTML(); return; }
+  area.innerHTML = campaignDetailHTML(camp);
+}
+
+function campaignListHTML() {
+  let html = '<div class="toolbar"><h2 style="font-size:22px;font-weight:800">캠페인</h2><span class="spacer"></span>'
+    + '<button class="btn sm" data-act="camp-new">새 캠페인</button></div>';
+  if (!state.campaigns.length) return html + '<div class="card"><div class="empty">캠페인이 없습니다. 새 캠페인을 만들어 보세요.</div></div>';
+  html += state.campaigns.map(c => {
+    const sel = (c.applicants || []).filter(a => a.selected);
+    const passed = sel.filter(a => a.progress.outcome === 'passed').length;
+    return '<div class="camp-card" data-act="camp-open" data-cid="' + esc(c.id) + '">'
+      + '<div class="camp-head"><h3>' + esc(c.name) + '</h3>'
+      + '<span class="badge st-' + esc(c.status) + '">' + esc(c.status) + '</span>'
+      + (c.status === '완료' ? '<span class="badge bg-gray">발행 ' + passed + '/' + sel.length + '건</span>' : '')
+      + '</div>'
+      + '<div class="camp-meta">'
+      + '<span>' + esc(c.seller || '셀러 미정') + '</span>'
+      + '<span>' + esc(c.type) + ' · ' + esc(c.category || '카테고리 없음') + '</span>'
+      + '<span>' + esc(c.pkg) + ' · ' + won(c.fee) + '</span>'
+      + '<span>신청 ' + (c.applicants || []).length + ' · 선정 ' + sel.length + '/' + (c.headcount || 0) + '명</span>'
+      + (c.publishDeadline ? '<span>발행마감 ' + esc(c.publishDeadline) + '</span>' : '')
+      + '</div></div>';
+  }).join('');
+  return html;
+}
+
+function campaignDetailHTML(c) {
+  const applicants = (c.applicants || []).map(a => {
+    const rv = findReviewer(a.reviewerId);
+    return { a, rv, score: rv ? scoreReviewer(rv, c) : { total: 0, size: 0, fit: 0, trust: 0, activity: 0 } };
+  });
+  applicants.sort((x, y) =>
+    (y.score.total - x.score.total) ||
+    (((x.rv && (x.rv.participations || 0) === 0) ? 0 : 1) - ((y.rv && (y.rv.participations || 0) === 0) ? 0 : 1))
+  );
+  const selected = applicants.filter(x => x.a.selected);
+  const passed = selected.filter(x => x.a.progress.outcome === 'passed').length;
+
+  let html = '<div class="toolbar">'
+    + '<button class="btn gray sm" data-act="camp-back">← 목록</button>'
+    + '<h2 style="font-size:20px;font-weight:800">' + esc(c.name) + '</h2>'
+    + '<span class="badge st-' + esc(c.status) + '">' + esc(c.status) + '</span>'
+    + '<span class="spacer"></span>'
+    + '<select data-camp-status="' + esc(c.id) + '" style="width:auto">'
+    + CAMP_STATUSES.map(s => '<option' + (s === c.status ? ' selected' : '') + '>' + s + '</option>').join('')
+    + '</select>'
+    + '<button class="btn ghost sm" data-act="camp-edit" data-cid="' + esc(c.id) + '">정보 수정</button>'
+    + '<button class="btn danger sm" data-act="camp-del" data-cid="' + esc(c.id) + '">삭제</button>'
+    + '</div>';
+
+  html += '<div class="card"><dl class="info-grid">'
+    + infoCell('셀러', c.seller) + infoCell('유형', c.type) + infoCell('카테고리', c.category)
+    + infoCell('제공 제품', c.product) + infoCell('제품 정가', won(c.productPrice))
+    + infoCell('타깃 키워드', c.keyword) + infoCell('모집 인원', (c.headcount || 0) + '명')
+    + infoCell('모집마감', c.applyDeadline) + infoCell('발표일', c.announceDate)
+    + infoCell('발행마감', c.publishDeadline) + infoCell('패키지', c.pkg)
+    + infoCell('대행료 (VAT 별도)', won(c.fee))
+    + '</dl></div>';
+
+  if (c.status === '완료') {
+    html += '<div class="card"><h2>캠페인 요약</h2>'
+      + '<p style="font-size:16px;font-weight:700">발행 ' + passed + '/' + selected.length + '건</p>'
+      + (selected.length ? '<div style="margin-top:10px">' + selected.map(x => {
+          const out = x.a.progress.outcome;
+          const lbl = out === 'passed' ? '검수통과' : out === 'missed' ? '미이행' : out === 'noshow' ? '노쇼' : '미처리';
+          const purl = safeUrl(x.a.progress.url);
+          return '<div class="check-line">'
+            + '<span class="badge ' + (out === 'passed' ? 'bg-B' : out ? 'bg-X' : 'bg-gray') + '">' + lbl + '</span>'
+            + '<b>' + esc(x.rv ? x.rv.name : '(삭제된 리뷰어)') + '</b>'
+            + (purl ? '<a href="' + esc(purl) + '" target="_blank" rel="noopener">리뷰 URL</a>' : '')
+            + '</div>';
+        }).join('') + '</div>' : '')
+      + '</div>';
+  }
+
+  const pool = state.reviewers.filter(r => !(c.applicants || []).some(a => a.reviewerId === r.id));
+  html += '<div class="card"><h2>신청자 관리<small>신청 ' + applicants.length + '명 · 선정 ' + selected.length + '/' + (c.headcount || 0) + '명</small></h2>'
+    + '<div class="toolbar">'
+    + '<select id="appSel" style="width:auto;max-width:280px">'
+    + (pool.length
+      ? '<option value="">리뷰어 풀에서 선택…</option>' + pool.map(r =>
+          '<option value="' + esc(r.id) + '">' + esc(r.name) + ' (' + esc(gradeLabel(effGrade(r))) + ' · ' + esc(r.channelType || '') + ')</option>').join('')
+      : '<option value="">추가할 리뷰어 없음</option>')
+    + '</select>'
+    + '<button class="btn ghost sm" data-act="app-add" data-cid="' + esc(c.id) + '">신청자 추가</button>'
+    + '</div>';
+
+  html += applicants.length ? '<div class="table-wrap"><table><thead><tr>'
+    + '<th>순위</th><th>성명</th><th>채널</th><th>총점</th><th>적합도 조정 (0~25)</th><th>등급</th><th>선정</th><th></th>'
+    + '</tr></thead><tbody>'
+    + applicants.map((x, i) => {
+        const { a, rv, score } = x;
+        if (!rv) {
+          return '<tr><td>' + (i + 1) + '</td><td colspan="5" class="muted">(삭제된 리뷰어)</td><td></td>'
+            + '<td><button class="btn danger sm" data-act="app-remove" data-cid="' + esc(c.id) + '" data-rid="' + esc(a.reviewerId) + '">제거</button></td></tr>';
+        }
+        const g = effGrade(rv);
+        const blocked = g === '제외';
+        return '<tr>'
+          + '<td class="muted">' + (i + 1) + '</td>'
+          + '<td><b>' + esc(rv.name) + '</b>'
+          + (g === 'C' ? ' <span class="badge bg-C">보류</span>' : '')
+          + (isDormant(rv) && g !== '휴면' ? ' <span class="badge bg-gray">휴면</span>' : '')
+          + '</td>'
+          + '<td>' + esc(rv.channelType) + ' · ' + (rv.visitors == null ? '—' : (Number(rv.visitors) || 0).toLocaleString('ko-KR')) + '</td>'
+          + '<td><details class="score"><summary>' + score.total + '점</summary>'
+          + '<div class="brk">채널 ' + score.size + ' · 적합 ' + score.fit + ' · 신뢰 ' + score.trust + ' · 활동 ' + score.activity + '</div></details></td>'
+          + '<td><input class="fit-input" type="number" min="0" max="25" placeholder="자동"'
+          + ' value="' + esc(a.fitOverride ?? '') + '" data-fit data-cid="' + esc(c.id) + '" data-rid="' + esc(rv.id) + '"></td>'
+          + '<td><span class="badge ' + gradeClass(g) + '">' + esc(gradeLabel(g)) + '</span></td>'
+          + '<td>' + (blocked
+              ? '<button class="btn sm" disabled title="제외 등급은 선정할 수 없습니다">선정 불가</button>'
+              : '<button class="btn sm' + (a.selected ? '' : ' gray') + '" data-act="app-toggle" data-cid="' + esc(c.id) + '" data-rid="' + esc(rv.id) + '">'
+                + (a.selected ? '선정됨 ✓' : '선정') + '</button>')
+          + '</td>'
+          + '<td><button class="btn danger sm" data-act="app-remove" data-cid="' + esc(c.id) + '" data-rid="' + esc(rv.id) + '">제거</button></td>'
+          + '</tr>';
+      }).join('')
+    + '</tbody></table></div>'
+    : '<div class="empty">아직 신청자가 없습니다.</div>';
+  html += '</div>';
+
+  if (selected.length) {
+    html += '<div class="card"><h2>선정자 진행 보드<small>검수 기준: 대가표시 필수 · 키워드 · 사진 15장↑ · 1,000자↑ · 검색 노출</small></h2><div class="board">'
+      + selected.map(x => boardCardHTML(c, x.a, x.rv)).join('')
+      + '</div></div>';
+  }
+  return html;
+}
+function infoCell(k, v) {
+  return '<div><dt>' + esc(k) + '</dt><dd>' + (v ? esc(v) : '—') + '</dd></div>';
+}
+function boardCardHTML(c, a, rv) {
+  if (!rv) return '';
+  const p = a.progress;
+  const checks = [
+    ['shipped', '배송완료'], ['disclosure', '대가표시 확인'], ['keyword', '키워드 확인'],
+    ['photos', '사진 15장 이상'], ['length', '1,000자 이상'], ['search', '검색 노출 확인 (발행 24시간 후)']
+  ];
+  const doneN = checks.filter(([k]) => p[k]).length + (p.url ? 1 : 0);
+  const totalN = checks.length + 1;
+  const attr = ' data-cid="' + esc(c.id) + '" data-rid="' + esc(rv.id) + '"';
+  const openUrl = safeUrl(p.url);
+  let html = '<div class="board-card"><div class="bc-head"><b>' + esc(rv.name) + '</b>'
+    + (p.outcome === 'passed' ? '<span class="badge bg-B">검수통과</span>' : '')
+    + (p.outcome === 'missed' ? '<span class="badge bg-X">미이행</span>' : '')
+    + (p.outcome === 'noshow' ? '<span class="badge bg-X">노쇼</span>' : '')
+    + '<span class="bc-prog">' + doneN + '/' + totalN + '</span></div>';
+  html += checks.map(([k, label]) =>
+    '<label class="check-line"><input type="checkbox" data-chk="' + k + '"' + attr + (p[k] ? ' checked' : '') + (p.outcome ? ' disabled' : '') + '>' + label + '</label>'
+  ).join('');
+  html += '<div class="url-line"><input type="url" placeholder="리뷰 URL 제출" value="' + esc(p.url || '') + '" data-url' + attr + (p.outcome ? ' disabled' : '') + '>'
+    + (openUrl ? '<a href="' + esc(openUrl) + '" target="_blank" rel="noopener" style="font-size:12px;white-space:nowrap">열기</a>' : '')
+    + '</div>';
+  if (!p.outcome) {
+    html += '<div class="bc-actions">'
+      + '<button class="btn sm" data-act="outcome" data-kind="passed"' + attr + (p.disclosure ? '' : ' disabled title="공정위 대가표시 확인 전에는 검수통과할 수 없습니다"') + '>검수통과</button>'
+      + '<button class="btn danger sm" data-act="outcome" data-kind="missed"' + attr + '>미이행</button>'
+      + '<button class="btn danger sm" data-act="outcome" data-kind="noshow"' + attr + '>노쇼</button>'
+      + '</div>';
+    if (!p.disclosure) html += '<div class="bc-note">대가표시 미확인 — 누락 시 무조건 반려</div>';
+  } else {
+    html += '<div class="bc-actions"><button class="btn gray sm" data-act="outcome-cancel"' + attr + '>처리 취소</button></div>';
+  }
+  return html + '</div>';
+}
+
+function openCampModal(id) {
+  ui.editCampId = id || null;
+  const c = id ? findCampaign(id) : null;
+  $('campModalTitle').textContent = c ? '캠페인 수정 — ' + c.id : '캠페인 만들기';
+  $('cp_name').value = c ? c.name : '';
+  $('cp_seller').value = c ? c.seller || '' : '';
+  $('cp_type').value = c ? c.type : '배송형';
+  $('cp_cat').value = c ? c.category || '' : '';
+  $('cp_product').value = c ? c.product || '' : '';
+  $('cp_price').value = c && c.productPrice != null ? c.productPrice : '';
+  $('cp_keyword').value = c ? c.keyword || '' : '';
+  $('cp_headcount').value = c ? c.headcount || '' : 5;
+  $('cp_apply').value = c ? c.applyDeadline || '' : '';
+  $('cp_announce').value = c ? c.announceDate || '' : '';
+  $('cp_publish').value = c ? c.publishDeadline || '' : '';
+  $('cp_pkg').value = c ? c.pkg : '스타터';
+  $('cp_fee').value = c && c.fee != null ? c.fee : PKG_FEES['스타터'];
+  $('campModal').hidden = false;
+}
+function saveCampModal() {
+  const name = $('cp_name').value.trim();
+  if (!name) { alert('캠페인명은 필수입니다.'); return; }
+  const data = {
+    name,
+    seller: $('cp_seller').value.trim(),
+    type: $('cp_type').value,
+    category: $('cp_cat').value.trim(),
+    product: $('cp_product').value.trim(),
+    productPrice: $('cp_price').value === '' ? null : Number($('cp_price').value) || 0,
+    keyword: $('cp_keyword').value.trim(),
+    headcount: Math.max(1, Number($('cp_headcount').value) || 1),
+    applyDeadline: $('cp_apply').value,
+    announceDate: $('cp_announce').value,
+    publishDeadline: $('cp_publish').value,
+    pkg: $('cp_pkg').value,
+    fee: $('cp_fee').value === '' ? null : Number($('cp_fee').value) || 0
+  };
+  if (ui.editCampId) {
+    Object.assign(findCampaign(ui.editCampId), data);
+  } else {
+    data.id = nextId('C', state.campaigns);
+    data.status = '모집중';
+    data.applicants = [];
+    state.campaigns.push(data);
+    ui.campaignId = data.id;
+  }
+  saveState();
+  closeModals();
+  renderAll();
+  toast('저장했습니다');
+}
+
+/* ---------- 진행 처리 → 리뷰어 스탯 자동 갱신 ---------- */
+function applyOutcome(camp, rid, kind) {
+  const a = (camp.applicants || []).find(x => x.reviewerId === rid);
+  const rv = findReviewer(rid);
+  if (!a || !rv || a.progress.outcome) return;
+  const label = kind === 'passed' ? '검수통과' : kind === 'missed' ? '미이행' : '노쇼';
+  if (kind !== 'passed' && !confirm(rv.name + ' 리뷰어를 ' + label + ' 처리합니다.\n참여수·이행률·등급이 자동 갱신됩니다. 계속할까요?')) return;
+  a.progress.outcome = kind;
+  a.progress.prevLast = rv.lastParticipation || null;
+  rv.participations = (rv.participations || 0) + 1;
+  if (kind === 'missed') rv.miss = (rv.miss || 0) + 1;
+  if (kind === 'noshow') rv.noShow = (rv.noShow || 0) + 1;
+  rv.lastParticipation = todayStr();
+  saveState();
+  renderAll();
+  toast(rv.name + ' — ' + label + ' 처리 (등급 ' + effGrade(rv) + ')');
+}
+function cancelOutcome(camp, rid) {
+  const a = (camp.applicants || []).find(x => x.reviewerId === rid);
+  const rv = findReviewer(rid);
+  if (!a || !a.progress.outcome) return;
+  if (!confirm('처리를 취소하고 리뷰어 스탯을 되돌립니다. 계속할까요?')) return;
+  const kind = a.progress.outcome;
+  a.progress.outcome = null;
+  if (rv) {
+    rv.participations = Math.max(0, (rv.participations || 0) - 1);
+    if (kind === 'missed') rv.miss = Math.max(0, (rv.miss || 0) - 1);
+    if (kind === 'noshow') rv.noShow = Math.max(0, (rv.noShow || 0) - 1);
+    rv.lastParticipation = a.progress.prevLast || null;
+  }
+  a.progress.prevLast = null;
+  saveState();
+  renderAll();
+  toast('처리를 취소했습니다');
+}
+
+/* ---------- 샘플 데이터 ---------- */
+function loadSample() {
+  if ((state.reviewers.length || state.campaigns.length) &&
+    !confirm('기존 데이터가 있습니다. 샘플 데이터로 덮어쓸까요?')) return;
+  const t = todayStr;
+  const rv = (id, name, kakao, ctype, curl, visitors, cat, region, join, parts, miss, noShow, last, account, memo) =>
+    ({ id, name, kakao, phone: '010-0000-0000', channelType: ctype, channelUrl: curl, visitors, category: cat, region, joinDate: join, participations: parts, miss, noShow, lastParticipation: last, gradeOverride: null, account, memo });
+  const prog = newProgress;
+  state = {
+    reviewers: [
+      rv('R001', '김서연', 'seoyeon_k', '네이버블로그', 'https://blog.naver.com/seoyeon', 1200, '뷰티', '서울 마포', t(-300), 4, 0, 0, t(-10), '국민 000-00', '사진 퀄리티 우수'),
+      rv('R002', '이준호', 'junho_lee', '네이버블로그', 'https://blog.naver.com/junho', 450, '맛집', '서울 강남', t(-180), 2, 0, 0, t(-20), '', '주말 방문 선호'),
+      rv('R003', '박지은', 'jieun.p', '인스타그램', 'https://instagram.com/jieun', 3500, '뷰티', '경기 성남', t(-15), 0, 0, 0, null, '', '릴스 제작 가능 · 신규'),
+      rv('R004', '최민수', 'minsoo_c', '네이버블로그', 'https://blog.naver.com/minsoo', 80, '육아', '인천 부평', t(-260), 5, 1, 0, t(-40), '', '지난 캠페인 마감 1회 미이행'),
+      rv('R005', '정하늘', 'haneul_j', '네이버블로그', 'https://blog.naver.com/haneul', 650, '리빙', '서울 송파', t(-220), 3, 0, 0, t(-25), '신한 000-00', '본문 구성 꼼꼼함'),
+      rv('R006', '강도윤', 'doyun_k', '인스타그램', 'https://instagram.com/doyun', 900, '맛집', '서울 용산', t(-150), 1, 0, 1, t(-35), '', '방문형 노쇼 1회'),
+      rv('R007', '윤소라', 'sora_y', '네이버블로그', 'https://blog.naver.com/sora', 210, '뷰티', '부산 해운대', t(-320), 6, 2, 0, t(-60), '', '미이행 2회 누적 — 제외'),
+      rv('R008', '한지민', 'jimin_h', '네이버블로그', 'https://blog.naver.com/jimin', 3200, '맛집', '서울 서초', t(-400), 2, 0, 0, t(-120), '', '장기 미참여 — 휴면')
+    ],
+    campaigns: [
+      {
+        id: 'C001', name: '글로우 비타C 세럼 체험단', seller: '글로우랩', type: '배송형', category: '뷰티',
+        product: '글로우 비타C 세럼 30ml', productPrice: 38000, keyword: '비타민C세럼 추천', headcount: 5,
+        applyDeadline: t(-12), announceDate: t(-10), publishDeadline: t(2), pkg: '스타터', fee: 290000,
+        status: '진행중',
+        applicants: [
+          { reviewerId: 'R001', selected: true, fitOverride: null, progress: prog({ shipped: true, url: 'https://blog.naver.com/seoyeon/223000000', disclosure: true, keyword: true, photos: true, length: true }) },
+          { reviewerId: 'R003', selected: true, fitOverride: null, progress: prog({ shipped: true }) },
+          { reviewerId: 'R005', selected: true, fitOverride: 15, progress: prog({ shipped: true, url: 'https://blog.naver.com/haneul/223000001' }) },
+          { reviewerId: 'R002', selected: false, fitOverride: null, progress: prog({}) },
+          { reviewerId: 'R007', selected: false, fitOverride: null, progress: prog({}) }
+        ]
+      },
+      {
+        id: 'C002', name: '한강뷰 브런치 카페 체험단', seller: '카페 노을', type: '방문형', category: '맛집',
+        product: '2인 브런치 세트', productPrice: 45000, keyword: '망원 브런치 카페', headcount: 3,
+        applyDeadline: t(5), announceDate: t(9), publishDeadline: t(21), pkg: '스타터', fee: 290000,
+        status: '모집중',
+        applicants: [
+          { reviewerId: 'R002', selected: false, fitOverride: null, progress: prog({}) },
+          { reviewerId: 'R006', selected: false, fitOverride: null, progress: prog({}) },
+          { reviewerId: 'R008', selected: false, fitOverride: null, progress: prog({}) }
+        ]
+      }
+    ],
+    settings: {}
+  };
+  saveState();
+  ui.campaignId = null;
+  renderAll();
+  toast('샘플 데이터를 넣었습니다');
+}
+
+/* ---------- events ---------- */
+function closeModals() {
+  $('rvModal').hidden = true;
+  $('campModal').hidden = true;
+}
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]');
+  if (t) {
+    const act = t.dataset.act, cid = t.dataset.cid, rid = t.dataset.rid;
+    const camp = cid ? findCampaign(cid) : null;
+    if (act === 'tab') { ui.tab = t.dataset.tab; renderAll(); }
+    else if (act === 'sample') loadSample();
+    else if (act === 'json-export') {
+      download('reviewmeet-backup-' + todayStr() + '.json', JSON.stringify(state, null, 2), 'application/json');
+      toast('JSON 백업을 내보냈습니다');
+    }
+    else if (act === 'json-import') $('jsonFile').click();
+    else if (act === 'csv-export') exportCSV();
+    else if (act === 'csv-import') $('csvFile').click();
+    else if (act === 'copy-remind') {
+      const rv = findReviewer(rid);
+      if (rv && camp) copyText(remindText(rv, camp)).then(ok => toast(ok ? '리마인드 문안을 복사했습니다' : '복사에 실패했습니다'));
+    }
+    else if (act === 'rv-add') openRvModal(null);
+    else if (act === 'rv-save') saveRvModal();
+    else if (act === 'rv-del') deleteReviewer();
+    else if (act === 'modal-close') closeModals();
+    else if (act === 'camp-new') openCampModal(null);
+    else if (act === 'camp-open') { ui.campaignId = cid; renderAll(); }
+    else if (act === 'camp-back') { ui.campaignId = null; renderAll(); }
+    else if (act === 'camp-edit') openCampModal(cid);
+    else if (act === 'camp-save') saveCampModal();
+    else if (act === 'camp-del') {
+      if (camp && confirm('캠페인 "' + camp.name + '"을(를) 삭제합니다. 되돌릴 수 없습니다. 계속할까요?')) {
+        state.campaigns = state.campaigns.filter(x => x.id !== cid);
+        ui.campaignId = null;
+        saveState(); renderAll(); toast('삭제했습니다');
+      }
+    }
+    else if (act === 'app-add') {
+      const sel = $('appSel');
+      if (!sel || !sel.value) { toast('추가할 리뷰어를 선택하세요'); return; }
+      if (camp) {
+        camp.applicants = camp.applicants || [];
+        camp.applicants.push({ reviewerId: sel.value, selected: false, fitOverride: null, progress: newProgress() });
+        saveState(); renderAll();
+      }
+    }
+    else if (act === 'app-remove') {
+      const rv = findReviewer(rid);
+      if (camp && confirm((rv ? rv.name : '해당') + ' 신청자를 목록에서 제거할까요?')) {
+        camp.applicants = (camp.applicants || []).filter(a => a.reviewerId !== rid);
+        saveState(); renderAll();
+      }
+    }
+    else if (act === 'app-toggle') {
+      const a = camp && (camp.applicants || []).find(x => x.reviewerId === rid);
+      const rv = findReviewer(rid);
+      if (!a || !rv) return;
+      if (!a.selected && effGrade(rv) === '제외') { alert('제외 등급은 선정할 수 없습니다.'); return; }
+      if (!a.selected && effGrade(rv) === 'C' && !confirm(rv.name + ' 리뷰어는 C등급(자동 보류)입니다. 수동으로 선정할까요?')) return;
+      if (a.selected && a.progress.outcome && !confirm('이미 결과 처리된 리뷰어입니다. 선정을 해제할까요?')) return;
+      a.selected = !a.selected;
+      saveState(); renderAll();
+    }
+    else if (act === 'outcome') applyOutcome(camp, rid, t.dataset.kind);
+    else if (act === 'outcome-cancel') cancelOutcome(camp, rid);
+    return;
+  }
+
+  const th = e.target.closest('th[data-key]');
+  if (th) {
+    const k = th.dataset.key;
+    if (ui.sort.key === k) ui.sort.dir *= -1; else ui.sort = { key: k, dir: 1 };
+    renderReviewers();
+    return;
+  }
+
+  if (e.target.closest('a')) return;
+  const tr = e.target.closest('tr[data-rid]');
+  if (tr) { openRvModal(tr.dataset.rid); return; }
+
+  const ov = e.target.classList && e.target.classList.contains('overlay') ? e.target : null;
+  if (ov) closeModals();
+});
+
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el.id === 'fGrade' || el.id === 'fStatus' || el.id === 'fCat') { renderReviewers(); return; }
+  const cid = el.dataset.cid, rid = el.dataset.rid;
+  const camp = cid ? findCampaign(cid) : null;
+  const a = camp && (camp.applicants || []).find(x => x.reviewerId === rid);
+  if (el.hasAttribute('data-fit') && a) {
+    a.fitOverride = el.value === '' ? null : Math.min(25, Math.max(0, Number(el.value) || 0));
+    saveState(); renderAll();
+  } else if (el.dataset.chk && a) {
+    a.progress[el.dataset.chk] = el.checked;
+    saveState(); renderAll();
+  } else if (el.hasAttribute('data-url') && a) {
+    a.progress.url = el.value.trim();
+    saveState(); renderAll();
+  } else if (el.hasAttribute('data-camp-status')) {
+    const c = findCampaign(el.getAttribute('data-camp-status'));
+    if (c) { c.status = el.value; saveState(); renderAll(); }
+  } else if (el.id === 'cp_pkg') {
+    const fee = $('cp_fee');
+    if (fee.value === '' || Object.values(PKG_FEES).includes(Number(fee.value))) fee.value = PKG_FEES[el.value];
+  }
+});
+
+$('rvSearch').addEventListener('input', renderReviewers);
+
+$('csvFile').addEventListener('change', e => {
+  const f = e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  const fr = new FileReader();
+  fr.onload = () => importCSV(String(fr.result));
+  fr.readAsText(f, 'utf-8');
+});
+$('jsonFile').addEventListener('change', e => {
+  const f = e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    try {
+      const s = JSON.parse(String(fr.result));
+      if (!s || !Array.isArray(s.reviewers) || !Array.isArray(s.campaigns)) throw new Error('shape');
+      if (!confirm('백업 JSON으로 전체 데이터(리뷰어 ' + s.reviewers.length + '명 · 캠페인 ' + s.campaigns.length + '건)를 덮어씁니다. 계속할까요?')) return;
+      state = normalizeState(s);
+      ui.campaignId = null;
+      saveState(); renderAll();
+      toast('백업을 가져왔습니다');
+    } catch (err) {
+      alert('올바른 리뷰밋 백업 JSON이 아닙니다.');
+    }
+  };
+  fr.readAsText(f, 'utf-8');
+});
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModals(); });
+
+renderAll();
+</script>
+</body>
+</html>
