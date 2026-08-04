@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>리뷰밋 — 우리 동네 체험단</title>
+<meta name="description" content="맛집·카페·뷰티·생활용품을 무료로 체험하고 솔직한 리뷰를 남기는 동네 체험단, 리뷰밋. 리뷰어 신청과 광고주 문의를 받고 있어요.">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root {
+    --ink: #232025;
+    --sub: #6d6771;
+    --faint: #a49da8;
+    --paper: #faf8f5;
+    --card: #ffffff;
+    --line: #eee9e3;
+    --accent: #ff6b4a;
+    --accent-deep: #e5532f;
+    --accent-soft: #fff0ec;
+    --green: #2f9e6e;
+    --green-soft: #ecf8f2;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: #f1ede8;
+    color: var(--ink);
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+  .wrap {
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--paper);
+    min-height: 100dvh;
+    box-shadow: 0 0 40px rgba(0,0,0,.06);
+  }
+
+  /* ---------- header ---------- */
+  header {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px;
+    background: rgba(250,248,245,.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .logo { font-weight: 800; font-size: 18px; letter-spacing: -.02em; }
+  .logo em { font-style: normal; color: var(--accent); }
+  .header-cta {
+    font-size: 13px; font-weight: 700; color: #fff;
+    background: var(--ink); border-radius: 999px;
+    padding: 8px 14px; text-decoration: none;
+  }
+
+  /* ---------- hero ---------- */
+  .hero { padding: 44px 24px 36px; text-align: left; }
+  .hero .badge {
+    display: inline-block; font-size: 12px; font-weight: 700;
+    color: var(--accent-deep); background: var(--accent-soft);
+    border-radius: 999px; padding: 5px 12px; margin-bottom: 14px;
+  }
+  .hero h1 {
+    font-size: 27px; font-weight: 800; letter-spacing: -.03em; line-height: 1.4;
+    margin-bottom: 12px;
+  }
+  .hero h1 strong { color: var(--accent); }
+  .hero p { font-size: 15px; color: var(--sub); }
+  .hero .cta-row { display: flex; gap: 10px; margin-top: 24px; }
+  .btn {
+    flex: 1; display: block; text-align: center; text-decoration: none;
+    font-size: 15px; font-weight: 800; letter-spacing: -.01em;
+    padding: 15px 10px; border-radius: 14px; transition: transform .12s ease;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 6px 16px rgba(255,107,74,.28); }
+  .btn-ghost { background: var(--card); color: var(--ink); border: 1.5px solid var(--line); }
+
+  /* ---------- sections ---------- */
+  section { padding: 36px 24px; }
+  section + section { border-top: 1px solid var(--line); }
+  .sec-label {
+    font-size: 12px; font-weight: 800; color: var(--accent-deep);
+    letter-spacing: .08em; margin-bottom: 8px;
+  }
+  h2 { font-size: 21px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 18px; line-height: 1.4; }
+
+  /* benefit cards */
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 18px 16px;
+  }
+  .card .emoji { font-size: 26px; display: block; margin-bottom: 8px; }
+  .card b { display: block; font-size: 15px; margin-bottom: 4px; letter-spacing: -.01em; }
+  .card span { font-size: 13px; color: var(--sub); line-height: 1.5; display: block; }
+
+  /* steps */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step { display: flex; gap: 14px; position: relative; padding-bottom: 22px; }
+  .step:last-child { padding-bottom: 0; }
+  .step::before {
+    content: ""; position: absolute; left: 15px; top: 34px; bottom: 4px;
+    width: 2px; background: var(--line);
+  }
+  .step:last-child::before { display: none; }
+  .step .num {
+    flex: none; width: 32px; height: 32px; border-radius: 50%;
+    background: var(--ink); color: #fff; font-size: 14px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step b { display: block; font-size: 15px; margin-bottom: 2px; }
+  .step p { font-size: 13.5px; color: var(--sub); }
+
+  /* checklist */
+  .checks { display: flex; flex-direction: column; gap: 10px; }
+  .check {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 14px; padding: 14px 16px; font-size: 14px;
+  }
+  .check .tick { color: var(--green); font-weight: 800; flex: none; }
+
+  /* advertiser */
+  .adv { background: var(--ink); color: #f5f2ef; border-radius: 20px; padding: 26px 22px; }
+  .adv .sec-label { color: #ffb3a1; }
+  .adv h2 { color: #fff; margin-bottom: 10px; }
+  .adv p { font-size: 14px; color: #c9c3ce; margin-bottom: 18px; }
+  .adv ul { list-style: none; margin-bottom: 20px; }
+  .adv li { font-size: 14px; padding: 7px 0; border-bottom: 1px dashed #4a444f; display: flex; justify-content: space-between; gap: 10px; }
+  .adv li:last-child { border-bottom: none; }
+  .adv li span { color: #a8a1ae; }
+  .adv .btn-primary { display: block; }
+
+  /* honesty note */
+  .honest {
+    background: var(--green-soft); border: 1px solid #cdeadd;
+    border-radius: 16px; padding: 18px 18px; font-size: 13.5px; color: #23684b;
+  }
+  .honest b { display: block; margin-bottom: 6px; font-size: 14.5px; }
+
+  /* faq */
+  details {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 0 16px; margin-bottom: 10px;
+  }
+  summary {
+    cursor: pointer; list-style: none; font-size: 14.5px; font-weight: 700;
+    padding: 15px 0; position: relative;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; position: absolute; right: 2px; color: var(--faint); font-weight: 400; font-size: 18px; }
+  details[open] summary::after { content: "–"; }
+  details p { font-size: 13.5px; color: var(--sub); padding-bottom: 15px; }
+
+  footer {
+    padding: 30px 24px 110px; font-size: 12px; color: var(--faint);
+    border-top: 1px solid var(--line); line-height: 1.8;
+  }
+  footer b { color: var(--sub); }
+
+  /* floating cta */
+  .float-cta {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
+    max-width: 480px; margin: 0 auto;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: rgba(250,248,245,.94); backdrop-filter: blur(8px);
+    border-top: 1px solid var(--line);
+    display: flex; gap: 10px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo">리뷰<em>밋</em></div>
+    <a class="header-cta" href="#apply">리뷰어 신청</a>
+  </header>
+
+  <div class="hero">
+    <span class="badge">이번 달 체험단 모집 중</span>
+    <h1>맛집도, 신상도<br><strong>먼저 써보고</strong> 솔직하게<br>이야기해 주세요</h1>
+    <p>리뷰밋은 우리 동네 가게·브랜드와 리뷰어를 잇는 체험단이에요. 제공받은 만큼 과장하지 않고, 솔직한 후기만 남깁니다.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#apply">리뷰어로 참여하기</a>
+      <a class="btn btn-ghost" href="#advertiser">광고주 문의</a>
+    </div>
+  </div>
+
+  <section>
+    <div class="sec-label">BENEFIT</div>
+    <h2>리뷰어가 되면<br>이런 걸 받아요</h2>
+    <div class="cards">
+      <div class="card"><span class="emoji">🍽️</span><b>방문 체험</b><span>맛집·카페·미용실 등 서비스 무료 이용</span></div>
+      <div class="card"><span class="emoji">📦</span><b>제품 체험</b><span>뷰티·생활용품 등 신제품 무료 제공</span></div>
+      <div class="card"><span class="emoji">✍️</span><b>원고료 캠페인</b><span>프리미엄 캠페인은 별도 원고료 지급</span></div>
+      <div class="card"><span class="emoji">📈</span><b>블로그 성장</b><span>꾸준한 발행 소재와 키워드 가이드 제공</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">HOW IT WORKS</div>
+    <h2>참여는 이렇게 진행돼요</h2>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><div><b>캠페인 공지 확인</b><p>카카오톡 채널로 새 캠페인 소식을 보내드려요.</p></div></div>
+      <div class="step"><div class="num">2</div><div><b>신청 &amp; 선정</b><p>신청 폼 작성 후, 채널·카테고리 적합도로 선정해요.</p></div></div>
+      <div class="step"><div class="num">3</div><div><b>체험하기</b><p>매장 방문 또는 제품 수령 후 자유롭게 체험해요.</p></div></div>
+      <div class="step"><div class="num">4</div><div><b>솔직 리뷰 발행</b><p>가이드의 필수 항목(사진·분량·대가표시)만 지키면, 내용과 평가는 전적으로 리뷰어의 몫이에요.</p></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">WHO</div>
+    <h2>이런 분을 찾고 있어요</h2>
+    <div class="checks">
+      <div class="check"><span class="tick">✓</span><span>네이버 블로그·인스타그램을 운영 중이거나 시작할 의지가 있는 분</span></div>
+      <div class="check"><span class="tick">✓</span><span>약속한 기간 안에 책임감 있게 리뷰를 발행할 수 있는 분</span></div>
+      <div class="check"><span class="tick">✓</span><span>받은 만큼 부풀리지 않고, 좋은 점과 아쉬운 점을 솔직하게 쓸 수 있는 분</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="honest">
+      <b>🌱 리뷰밋의 원칙</b>
+      모든 체험 리뷰에는 「업체로부터 제품(서비스)을 제공받아 작성했다」는 사실을 명확히 표시합니다. 별점이나 리뷰 내용을 조건으로 걸지 않으며, 이는 공정거래위원회 추천·보증 심사지침을 따르는 저희의 약속입니다.
+    </div>
+  </section>
+
+  <section id="advertiser">
+    <div class="adv">
+      <div class="sec-label">FOR PARTNERS</div>
+      <h2>사장님, 첫 리뷰가<br>고민이신가요?</h2>
+      <p>검증된 동네 리뷰어들의 진짜 후기로 가게와 제품을 알려보세요. 모집부터 검수·결과 리포트까지 전 과정을 대행합니다.</p>
+      <ul>
+        <li>방문 체험단 (5인) <span>블로그 + 플레이스 리뷰</span></li>
+        <li>배송 체험단 (5인) <span>블로그 상품 리뷰</span></li>
+        <li>월 구독 패키지 <span>매달 정기 체험단 운영</span></li>
+      </ul>
+      <a class="btn btn-primary" href="http://pf.kakao.com/_리뷰밋채널ID" target="_blank" rel="noopener">카카오톡으로 문의하기</a>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">FAQ</div>
+    <h2>자주 묻는 질문</h2>
+    <details>
+      <summary>블로그 방문자가 적어도 신청할 수 있나요?</summary>
+      <p>네. 성실하게 발행해 주실 수 있다면 규모보다 꾸준함을 봐요. 초기 리뷰어에게는 블로그 성장 가이드도 함께 드려요.</p>
+    </details>
+    <details>
+      <summary>안 좋았던 점도 써도 되나요?</summary>
+      <p>물론이에요. 아쉬운 점을 포함한 솔직한 후기가 원칙이에요. 별점이나 칭찬을 조건으로 요구하지 않습니다.</p>
+    </details>
+    <details>
+      <summary>리뷰는 언제까지 올려야 하나요?</summary>
+      <p>보통 체험일로부터 7일 이내예요. 캠페인마다 안내해 드리며, 기한을 지키지 못하면 다음 선정에서 제외될 수 있어요.</p>
+    </details>
+    <details>
+      <summary>쿠팡·스마트스토어 구매평 캠페인도 있나요?</summary>
+      <p>아니요. 구매평(상품평) 대가 지급은 플랫폼 정책과 법에 어긋나 진행하지 않아요. 블로그·플레이스·SNS 리뷰만 운영합니다.</p>
+    </details>
+  </section>
+
+  <footer>
+    <b>리뷰밋 Reviewmeet</b><br>
+    대표 ○○○ · 사업자등록번호 000-00-00000<br>
+    문의 reviewmeet@example.com<br><br>
+    모든 체험단 콘텐츠에는 경제적 대가 관계가 표시됩니다.<br>
+    © 2026 Reviewmeet. All rights reserved.
+  </footer>
+
+  <div class="float-cta" id="apply">
+    <a class="btn btn-primary" href="https://forms.gle/신청폼주소" target="_blank" rel="noopener">📝 리뷰어 신청하기</a>
+    <a class="btn btn-ghost" href="https://open.kakao.com/o/오픈채팅주소" target="_blank" rel="noopener">💬 오픈채팅</a>
+  </div>
+
+</div>
+</body>
+</html>
