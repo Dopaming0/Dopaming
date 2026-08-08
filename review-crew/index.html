@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>리뷰밋 Reviewmeet — Dual-Track Commerce Review Infrastructure</title>
+<meta name="description" content="지인 1:1 감성 리뷰와 오픈채팅 대규모 자동 정산의 결합. 어뷰징 0% 인프라 스트럭처 솔루션.">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root {
+    --bg-black: #050505;
+    --bg-surface: #0c0c0e;
+    --bg-card: #121215;
+    --bg-card-hover: #18181c;
+    
+    --border-hairline: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.2);
+    
+    --text-primary: #ffffff;
+    --text-secondary: #a1a1aa;
+    --text-muted: #71717a;
+    
+    --accent-white: #ffffff;
+    --accent-blue: #0066ff;
+    --accent-blue-soft: rgba(0, 102, 255, 0.12);
+    
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 22px;
+    --radius-pill: 9999px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+    background: var(--bg-black);
+    color: var(--text-primary);
+    line-height: 1.5;
+    letter-spacing: -0.035em;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { text-decoration: none; color: inherit; }
+  button { font-family: inherit; cursor: pointer; border: none; outline: none; }
+
+  /* Navbar */
+  nav {
+    position: sticky; top: 0; z-index: 1000;
+    background: rgba(5, 5, 5, 0.8);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--border-hairline);
+  }
+  .nav-inner {
+    max-width: 1080px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; height: 54px;
+  }
+  .nav-brand { font-size: 17px; font-weight: 800; letter-spacing: -0.04em; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+  .nav-tag { font-size: 11px; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border-hairline); padding: 2px 8px; border-radius: var(--radius-pill); }
+  .nav-menu { display: flex; gap: 24px; align-items: center; }
+  .nav-link { color: var(--text-secondary); font-size: 13px; font-weight: 500; transition: color 0.2s; }
+  .nav-link:hover { color: var(--text-primary); }
+  .nav-btn {
+    background: var(--text-primary); color: #000 !important;
+    font-size: 12.5px; font-weight: 700; padding: 7px 16px; border-radius: var(--radius-pill);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .nav-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  /* Sections & Layout */
+  .section { padding: 130px 24px; text-align: center; border-bottom: 1px solid var(--border-hairline); }
+  .section-surface { background: var(--bg-surface); }
+  
+  .eyebrow {
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--text-muted); margin-bottom: 16px; display: inline-block;
+  }
+  
+  h1, h2, h3 { font-weight: 800; letter-spacing: -0.04em; }
+  h1 { font-size: clamp(44px, 8vw, 74px); line-height: 1.05; }
+  h2 { font-size: clamp(32px, 5.5vw, 48px); line-height: 1.1; }
+  
+  .headline-sub {
+    font-size: clamp(16px, 3vw, 19px); font-weight: 400; color: var(--text-secondary);
+    max-width: 620px; margin: 24px auto 0; line-height: 1.55; letter-spacing: -0.02em;
+  }
+
+  .linear-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--text-primary); color: #000;
+    font-size: 14.5px; font-weight: 700; padding: 12px 24px;
+    border-radius: var(--radius-pill); transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .linear-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  
+  .linear-btn-ghost {
+    background: rgba(255, 255, 255, 0.05); color: var(--text-primary);
+    border: 1px solid var(--border-hairline);
+  }
+  .linear-btn-ghost:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--border-hover); }
+
+  /* Hero Section */
+  .hero {
+    padding: 150px 24px 110px;
+    background: radial-gradient(60% 40% at 50% 0%, rgba(255, 255, 255, 0.05) 0%, rgba(5, 5, 5, 0) 100%);
+  }
+  .hero-badge-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+  .hero-badge {
+    background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-hairline);
+    color: var(--text-secondary); font-size: 12px; font-weight: 600; padding: 4px 14px; border-radius: var(--radius-pill);
+  }
+
+  .metrics-strip {
+    max-width: 980px; margin: 80px auto 0;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    background: var(--border-hairline); border: 1px solid var(--border-hairline); border-radius: var(--radius-md); overflow: hidden;
+  }
+  @media (max-width: 768px) { .metrics-strip { grid-template-columns: repeat(2, 1fr); } }
+  .metric-cell { background: var(--bg-card); padding: 28px 22px; text-align: left; transition: background 0.2s; }
+  .metric-cell:hover { background: var(--bg-card-hover); }
+  .metric-val { font-size: 32px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.045em; }
+  .metric-lbl { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
+
+  /* Bento Layout */
+  .bento-grid {
+    max-width: 1040px; margin: 60px auto 0;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; text-align: left;
+  }
+  @media (max-width: 800px) { .bento-grid { grid-template-columns: 1fr; } }
+  
+  .bento-box {
+    background: var(--bg-card); border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-lg); padding: 44px 36px;
+    display: flex; flex-direction: column; justify-between: space-between;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .bento-box:hover { border-color: var(--border-hover); background: var(--bg-card-hover); }
+  .bento-num { font-size: 12px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.1em; margin-bottom: 20px; }
+  .bento-box h3 { font-size: 24px; font-weight: 800; color: var(--text-primary); margin-bottom: 12px; }
+  .bento-box p { font-size: 14.5px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 28px; }
+  
+  .spec-list { list-style: none; margin-bottom: 36px; }
+  .spec-list li {
+    font-size: 13.5px; color: var(--text-secondary); padding-left: 20px; position: relative; margin-bottom: 10px; line-height: 1.5;
+  }
+  .spec-list li::before {
+    content: "—"; position: absolute; left: 0; color: var(--text-muted); font-weight: 700;
+  }
+
+  /* Live Playground Generator */
+  .playground-card {
+    max-width: 980px; margin: 60px auto 0;
+    background: var(--bg-card); border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-lg); padding: 40px; text-align: left;
+  }
+  .inputs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 28px; }
+  @media (max-width: 640px) { .inputs-grid { grid-template-columns: 1fr; } }
+  
+  .input-label { font-size: 11px; font-weight: 700; color: var(--text-muted); uppercase; letter-spacing: 0.06em; margin-bottom: 6px; display: block; }
+  .clean-input {
+    background: #09090b; border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-sm); padding: 11px 14px; color: var(--text-primary);
+    font-size: 13.5px; width: 100%; outline: none; transition: border-color 0.2s;
+  }
+  .clean-input:focus { border-color: rgba(255, 255, 255, 0.4); }
+
+  .code-preview-window {
+    background: #050505; border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-md); padding: 22px; font-family: monospace;
+    font-size: 13px; line-height: 1.6; color: #d4d4d8; white-space: pre-wrap;
+    max-width: 580px; margin: 0 auto; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+  }
+
+  /* Ranking Analytics Table */
+  .table-window {
+    max-width: 980px; margin: 60px auto 0;
+    background: var(--bg-card); border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-lg); overflow: hidden; text-align: left;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th { background: rgba(255,255,255,0.02); padding: 14px 20px; font-size: 11.5px; font-weight: 700; color: var(--text-muted); uppercase; border-bottom: 1px solid var(--border-hairline); }
+  td { padding: 16px 20px; border-bottom: 1px solid var(--border-hairline); color: var(--text-secondary); }
+  tr:last-child td { border-bottom: none; }
+
+  /* Footer */
+  footer { padding: 80px 24px; text-align: center; }
+  .footer-inner { max-width: 980px; margin: 0 auto; font-size: 12px; color: var(--text-muted); line-height: 1.8; }
+</style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="#">
+      리뷰밋 <span class="nav-tag">DUAL-TRACK</span>
+    </a>
+    <div class="nav-menu">
+      <a href="#bento" class="nav-link">아키텍처</a>
+      <a href="#playground" class="nav-link">카톡 템플릿 생성기</a>
+      <a href="#analytics" class="nav-link">순위 실적 데이터</a>
+      <a href="#pricing" class="nav-link">단가표</a>
+      <a href="./app/index.html" class="nav-btn">대시보드 앱 ➔</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<header class="hero section">
+  <div class="hero-badge-row">
+    <span class="hero-badge">공정위 지침 100% 검수</span>
+    <span class="hero-badge">어뷰징 0% 정석 로직</span>
+    <span class="hero-badge">세금계산서 100% 매입 공제</span>
+  </div>
+
+  <h1>리뷰가, 매출이 되는 순간.</h1>
+  <p class="headline-sub">
+    지인 1:1 감성 리뷰와 오픈채팅 대규모 자동 정산 인프라.<br>블라인드 어뷰징 리스크 0%와 마케팅 관리 리소스 80% 절감을 동시 구현합니다.
+  </p>
+
+  <div style="display: flex; justify-content: center; gap: 12px; margin-top: 40px; flex-wrap: wrap;">
+    <a href="#playground" class="linear-btn">카톡 문구 실시간 생성</a>
+    <a href="./app/index.html" class="linear-btn linear-btn-ghost">인터랙티브 웹 앱 시작 ➔</a>
+  </div>
+
+  <!-- Key Metrics Strip -->
+  <div class="metrics-strip">
+    <div class="metric-cell">
+      <div class="metric-val">100%</div>
+      <div class="metric-lbl">실제 쇼핑몰 이용자 검증</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-val">0%</div>
+      <div class="metric-lbl">매크로 / 어뷰징 리스크</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-val">10분</div>
+      <div class="metric-lbl">구글 폼 대량 정산 소요</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-val">1,800원~</div>
+      <div class="metric-lbl">대량 진행 프로모션가</div>
+    </div>
+  </div>
+</header>
+
+<!-- Bento Grid Section -->
+<section class="section section-surface" id="bento">
+  <div class="eyebrow">DUAL-TRACK ARCHITECTURE</div>
+  <h2>듀얼 트랙 시스템 구조</h2>
+  <p class="headline-sub">지인 대상 소규모 고품질 리뷰와 오픈채팅 대규모 확장 트래픽을 효율적으로 관리합니다.</p>
+
+  <div class="bento-grid">
+    <!-- Track 1 -->
+    <div class="bento-box">
+      <div>
+        <div class="bento-num">TRACK 01</div>
+        <h3>지인 1:1 실배송 리뷰</h3>
+        <p>1:1 카카오톡 메시지로 자연스럽게 소통하여 상세페이지 및 광고 소재용 감성 실사용 컷을 확보합니다.</p>
+        <ul class="spec-list">
+          <li>1:1 카톡 메시지 수령 ➔ 계좌 송금 즉각 정산</li>
+          <li>아이폰 기본 카메라, 자연광 실사용 컷 연출 가이드</li>
+          <li>제품 무료 제공으로 신뢰 기반 정성 리뷰 구축</li>
+        </ul>
+      </div>
+      <a href="#playground" class="linear-btn linear-btn-ghost" style="width: 100%; justify-content: center;">지인 카톡 문구 템플릿</a>
+    </div>
+
+    <!-- Track 2 -->
+    <div class="bento-box">
+      <div>
+        <div class="bento-num">TRACK 02</div>
+        <h3>오픈채팅방 대규모 자동화</h3>
+        <p>익명 오픈채팅방 운영 시 문의 피로도를 줄이고 구글 폼 일괄 필터링으로 대량 정산을 10분 만에 자동화합니다.</p>
+        <ul class="spec-list">
+          <li>공지 등록 ➔ TYPE A(실배송) / TYPE B(빈박스) 선택</li>
+          <li>구글 시트 '빈박스' 필터 1초 적용으로 대량 정산 완료</li>
+          <li>네트워크(Wi-Fi/LTE) 변경 및 AD 클릭 주의사항 세팅</li>
+        </ul>
+      </div>
+      <a href="#playground" class="linear-btn" style="width: 100%; justify-content: center;">오픈채팅 공지문 템플릿</a>
+    </div>
+  </div>
+</section>
+
+<!-- Live Playground Generator -->
+<section class="section" id="playground">
+  <div class="eyebrow">LIVE TEMPLATE GENERATOR</div>
+  <h2>카카오톡 메시지 생성기</h2>
+  <p class="headline-sub">상품 정보와 정산 조건만 입력하면 사람 냄새 나는 카톡 메시지가 만들어집니다.</p>
+
+  <div class="playground-card">
+    <div class="inputs-grid">
+      <div>
+        <label class="input-label">상품명</label>
+        <input type="text" id="highPName" value="아이스 홍시" class="clean-input" oninput="renderHighMsg()">
+      </div>
+      <div>
+        <label class="input-label">지정 검색어</label>
+        <input type="text" id="highPKw" value="산지직송 맛있는 아이스홍시" class="clean-input" oninput="renderHighMsg()">
+      </div>
+      <div>
+        <label class="input-label">결제 금액</label>
+        <input type="text" id="highPPrice" value="15,900원" class="clean-input" oninput="renderHighMsg()">
+      </div>
+      <div>
+        <label class="input-label">구글 폼 URL</label>
+        <input type="text" id="highPForm" value="bit.ly/오늘의캠페인" class="clean-input" oninput="renderHighMsg()">
+      </div>
+    </div>
+
+    <!-- Code Block Style Preview -->
+    <div class="code-preview-window" id="highMsgBox">Loading...</div>
+
+    <div style="text-align: center; margin-top: 24px;">
+      <button class="linear-btn" onclick="copyHighMsg()">📋 문구 전체 복사하기</button>
+    </div>
+  </div>
+</section>
+
+<!-- Analytics Performance Table -->
+<section class="section section-surface" id="analytics">
+  <div class="eyebrow">DATA PERFORMANCE</div>
+  <h2>키워드 순위 최적화 실적</h2>
+  <p class="headline-sub">타겟 키워드 검색 ➔ 체류 ➔ 찜 ➔ 구매 정석 로직으로 입증된 키워드 순위 상승 실적입니다.</p>
+
+  <div class="table-window">
+    <table>
+      <thead>
+        <tr>
+          <th>타겟 키워드</th>
+          <th>작업 전 순위</th>
+          <th>작업 후 순위</th>
+          <th>순위 상승 실적</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>혈당영양제</b></td>
+          <td>151위</td>
+          <td><b>9위</b></td>
+          <td><span style="color:#10b981; font-weight:700;">▲ 22계단 상승</span></td>
+        </tr>
+        <tr>
+          <td><b>바나바잎추출물</b></td>
+          <td>132위</td>
+          <td><b style="color:#10b981;">1페이지 1위</b></td>
+          <td><span style="color:#10b981; font-weight:800;">▲ 114계단 상승 (월 매출 6,100만원)</span></td>
+        </tr>
+        <tr>
+          <td><b>은행잎추출물</b></td>
+          <td>21위</td>
+          <td><b style="color:#10b981;">1페이지 1위</b></td>
+          <td><span style="color:#10b981; font-weight:700;">▲ 16계단 상승 (전환율 99.6%)</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Pricing Table Section -->
+<section class="section" id="pricing">
+  <div class="eyebrow">TRANSPARENT PRICING</div>
+  <h2>표준 단가표 & 세금계산서</h2>
+  <p class="headline-sub">투명한 건당 단가 구성 및 물품대금 + 대행수수료 전액 세금계산서 100% 매입 공제 발급을 지원합니다.</p>
+
+  <div class="table-window">
+    <table>
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>적용 구분</th>
+          <th>건당 단가</th>
+          <th>부가세 (VAT)</th>
+          <th>비고</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>01</td>
+          <td>모든 오픈마켓 / 스마트스토어 상품제공건</td>
+          <td><b>2,000원</b></td>
+          <td>별도</td>
+          <td>기본 1:1 전담 마케터 배정</td>
+        </tr>
+        <tr style="background: rgba(255,255,255,0.03);">
+          <td>02</td>
+          <td><b>프로모션 할인가 (100건 이상 진행 시)</b></td>
+          <td><b style="color:#10b981;">1,800원</b></td>
+          <td>별도</td>
+          <td>대량 진행 특가 & Drip-Feeding 적용</td>
+        </tr>
+        <tr>
+          <td>03</td>
+          <td>물품 세금계산서 증빙 처리</td>
+          <td>실시간 발급</td>
+          <td>포함</td>
+          <td>100% 법인 매입 세액 공제 지원</td>
+        </tr>
+        <tr>
+          <td>04</td>
+          <td>N스토어 블라인드 발생 시 대체 A/S건</td>
+          <td><b>500원</b></td>
+          <td>별도</td>
+          <td>'한 달 사용 리뷰' 대체 보증</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <b>리뷰밋 Reviewmeet — Dual-Track Commerce Review Infrastructure</b><br>
+    사업자등록번호 000-00-00000 · 공정위 표시광고 지침 100% 준수 · 100% 실사용자 진행<br>
+    Copyright © 2026 Reviewmeet. All rights reserved.
+  </div>
+</footer>
+
+<script>
+function renderHighMsg() {
+  const pName = document.getElementById('highPName').value || '상품명';
+  const pKw = document.getElementById('highPKw').value || '지정검색어';
+  const pPrice = document.getElementById('highPPrice').value || '0원';
+
+  const text = `안녕! 이번에 진행하는 [${pName}] 런칭 때문에 리뷰 테스터를 소소하게 구하고 있어서 연락했어! 😊
+맛있는 제품 무료로 보내줄 테니, 편하게 먹어보고 솔직한 리뷰 하나만 부탁해도 될까?
+
+[진행 방법]
+1. 아래 검색어로 들어가서 1분 정도 둘러보고 '찜' 누른 후 구매!
+   👉 지정 검색어: ${pKw}
+2. 나한테 [주문번호 / 환불받을 계좌 / 결제금액(${pPrice})] 톡으로 남겨주기! (확인하는 대로 바로 송금해 줄게!)
+
+[리뷰 가이드 📸]
+제품 받으면 리뷰 부탁할게! 사진은 너무 각 잡고 찍을 필요 없이, 햇빛 자연스럽게 들어오는 곳에서 아이폰 기본 카메라 느낌으로 무심한 듯 찍어주면 제일 좋아. (살짝 흠집이 보이거나 포장이 뜯겨 있어도 리얼해서 더 좋으니까 편하게 찍어줘!)
+
+진행 가능하면 편하게 톡 줘! 너무 고마워!! ❤️`;
+
+  document.getElementById('highMsgBox').innerText = text;
+}
+
+function copyHighMsg() {
+  const text = document.getElementById('highMsgBox').innerText;
+  navigator.clipboard.writeText(text);
+  alert('카카오톡 문구가 클립보드에 복사되었습니다!');
+}
+
+renderHighMsg();
+</script>
+
+</body>
+</html>
