@@ -1,0 +1,11 @@
+config.yaml
+service_account.json
+data/
+*.db
+*.sqlite3
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+build/
+dist/
