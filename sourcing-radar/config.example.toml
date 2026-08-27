@@ -1,0 +1,36 @@
+# cp config.example.toml config.toml 후 채우세요. config.toml은 커밋되지 않습니다.
+# 환경변수(NAVER_CLIENT_ID 등)를 쓰면 이 파일보다 우선합니다.
+
+[naver]
+# developers.naver.com → 애플리케이션 등록 → 검색 + 데이터랩 API 선택
+client_id = ""
+client_secret = ""
+
+# searchad.naver.com → 도구 → API 사용관리
+ad_api_key = ""
+ad_secret_key = ""
+ad_customer_id = ""
+
+[margin]
+# 판매가 대비 비율
+commission_rate = 0.108   # 플랫폼 판매 수수료 (카테고리별 4~10.8%)
+payment_rate    = 0.03
+ad_rate         = 0.05    # 무광고 전략이어도 초기 리뷰 확보분은 잡아둘 것
+return_rate     = 0.05
+vat_rate        = 0.10
+# 건당 원 단위
+shipping_cost     = 3000
+fulfillment_cost  = 0     # 로켓그로스를 쓴다면 입출고·보관료를 반드시 채울 것
+# 목표
+target_margin = 0.35
+floor_margin  = 0.25
+
+[thresholds]
+comp_max            = 0.7    # 경쟁강도 상한 (무광고 전략)
+volume_min          = 3000
+products_max        = 2000
+yoy_flat            = -0.15  # 전체 검색량 감소 보정
+yoy_growth          = 0.10
+surge_multiple      = 3.0    # 트렌드 진입 창 감지
+surge_products_max  = 500
+sustained_yoy       = 0.50   # 급등이 아니어도 이만큼 지속 성장하면 진입 창
