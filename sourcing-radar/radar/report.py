@@ -8,7 +8,7 @@ from datetime import datetime
 from pathlib import Path
 
 CSV_FIELDS = [
-    "rank", "verdict", "score", "item", "keyword",
+    "rank", "verdict", "score", "category", "item", "keyword",
     "products", "volume", "competition", "yoy", "surge",
     "entry_window", "price", "net_margin", "profit_per_unit",
     "peak_month", "amplitude", "notes",
@@ -99,6 +99,7 @@ def write_html(rows: list[dict], path: str | Path, title: str = "소싱 레이�
             f'<td class="num">{_fmt(r.get("rank"))}</td>'
             f'<td>{_verdict_chip(r.get("verdict", ""))} {window}</td>'
             f'<td class="num"><b>{_fmt(r.get("score"))}</b></td>'
+            f'<td class="num">{_fmt(r.get("category"))}</td>'
             f'<td class="item">{_fmt(r.get("item"))}</td>'
             f'<td><span class="kw">{_fmt(r.get("keyword"))}</span></td>'
             f'<td class="num">{_fmt(r.get("products"), "int")}</td>'
@@ -115,7 +116,7 @@ def write_html(rows: list[dict], path: str | Path, title: str = "소싱 레이�
         "<tr>"
         + "".join(
             f"<th>{h}</th>"
-            for h in ["#", "판정", "점수", "아이템", "키워드", "상품수", "월검색수",
+            for h in ["#", "판정", "점수", "분류", "아이템", "키워드", "상품수", "월검색수",
                       "경쟁강도", "전년비", "권장가", "순마진", "근거"]
         )
         + "</tr>"

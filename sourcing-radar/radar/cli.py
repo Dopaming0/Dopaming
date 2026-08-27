@@ -36,6 +36,7 @@ def read_keywords(path: str | Path) -> list[dict]:
                 continue
             rows.append(
                 {
+                    "category": (row.get("category") or "").strip(),
                     "item": (row.get("item") or kw).strip(),
                     "keyword": kw,
                     "unit_cost": _int(row.get("unit_cost")),
@@ -48,6 +49,24 @@ def read_keywords(path: str | Path) -> list[dict]:
                 }
             )
     return rows
+
+
+def filter_items(items: list[dict], categories: str | None, limit: int | None) -> list[dict]:
+    """500행짜리 후보 풀을 쪼개서 돌리기 위한 필터."""
+    if categories:
+        wanted = {c.strip() for c in categories.split(",") if c.strip()}
+        items = [i for i in items if i.get("category") in wanted]
+    if limit and limit > 0:
+        items = items[:limit]
+    return items
+
+
+def estimate_cost(n: int) -> str:
+    """호출 수와 대략적인 소요 시간. 큰 배치를 돌리기 전에 보여준다."""
+    shop, ad, trend = n, -(-n // 5), -(-n // 5)
+    seconds = round(shop * 0.25 + ad * 0.6 + trend * 0.5)
+    return (f"검색 API {shop + trend}회 · 검색광고 API {ad}회 "
+            f"· 예상 소요 {seconds // 60}분 {seconds % 60}초")
 
 
 def _trend_window() -> tuple[str, str]:
@@ -88,9 +107,11 @@ def scan(args) -> int:
         return 2
 
     items = read_keywords(args.keywords)
+    items = filter_items(items, getattr(args, "category", None), getattr(args, "limit", None))
     if not items:
-        print("키워드 파일이 비어 있습니다.", file=sys.stderr)
+        print("조회할 키워드가 없습니다. 파일이 비었거나 --category 가 맞지 않습니다.", file=sys.stderr)
         return 2
+    print(f"후보 {len(items)}개 — {estimate_cost(len(items))}\n")
 
     client = NaverClient(cfg)
     keywords = [i["keyword"] for i in items]
@@ -155,7 +176,8 @@ def scan(args) -> int:
             notes = f"{it['note']} · {notes}"
 
         rows.append({
-            "verdict": sc.verdict, "score": sc.total, "item": it["item"], "keyword": kw,
+            "verdict": sc.verdict, "score": sc.total, "category": it["category"],
+            "item": it["item"], "keyword": kw,
             "products": prod, "volume": vol,
             "competition": round(comp, 3) if comp is not None else None,
             "yoy": round(stats.yoy, 3) if stats.yoy is not None else None,
@@ -233,6 +255,8 @@ def main(argv=None) -> int:
     s.add_argument("--keywords", default="keywords.csv")
     s.add_argument("--out", default="out")
     s.add_argument("--config", default="config.toml")
+    s.add_argument("--category", help="쉼표로 구분한 카테고리만 조회 (예: 라켓구기,캠핑아웃도어)")
+    s.add_argument("--limit", type=int, help="앞에서 N개만 조회")
     s.set_defaults(func=scan)
 
     d = sub.add_parser("diff", help="지난 실행과 비교해 변화만 보고한다")
