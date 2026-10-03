@@ -292,9 +292,10 @@ footer b { color: var(--ink-2); font-weight: 600; }
   </section>
 
   <section class="pane" id="pane-refs" role="tabpanel" aria-labelledby="tab-refs" hidden>
-    <p class="note">강의에 나온 채널과 챌린지·사회실험 채널을 지켜봅니다. <b>배수</b>는 그 채널 최근 영상 중 <b>같은 형식</b>(쇼츠는 쇼츠끼리, 롱폼은 롱폼끼리)의 조회수 중앙값과 비교한 값입니다. 따라 하지 말고 왜 터졌는지 적어 두세요.</p>
+    <p class="note">강의에 나온 채널과 국내외 챌린지·사회실험 채널을 지켜봅니다. <b>배수</b>는 그 채널 최근 영상 중 <b>같은 형식</b>(쇼츠는 쇼츠끼리, 롱폼은 롱폼끼리)의 조회수 중앙값과 비교한 값입니다. 따라 하지 말고 왜 터졌는지 적어 두세요.</p>
     <div class="chips" id="r-groups"></div>
     <div class="controls">
+      <div class="seg" role="group" aria-label="국내·해외" id="r-market"></div>
       <div class="seg" role="group" aria-label="배수 기준" id="r-hot"></div>
       <div class="seg" role="group" aria-label="영상 길이" id="r-fmt"></div>
       <label class="field">기간 <select id="r-days">
@@ -359,7 +360,7 @@ footer b { color: var(--ink-2); font-weight: 600; }
     kcat: "", kscope: "all", kfmt: "all", ksort: "spread",
     smin: 2, sfmt: "all",
     ftype: "all", fq: "", fsort: "subs",
-    rgroup: "all", rhot: "hot", rfmt: "all", rdays: "90", rsort: "x",
+    rgroup: "all", rmarket: "all", rhot: "hot", rfmt: "all", rdays: "90", rsort: "x",
   };
   try { Object.assign(S, JSON.parse(localStorage.getItem(PREF_KEY) || "{}")); } catch (e) { /* 저장소 없음 */ }
   const save = () => { try { localStorage.setItem(PREF_KEY, JSON.stringify(S)); } catch (e) { /* 무시 */ } };
@@ -653,10 +654,11 @@ footer b { color: var(--ink-2); font-weight: 600; }
 
   // ── 레퍼런스 채널
   const talk = (r) => (r.m || 0) / Math.max(r.v, 1) * 1000;
+  const marketOk = (ch) => S.rmarket === "all" || (S.rmarket === "kr") === (ch.market === "KR");
   function refRows() {
     const out = [];
     for (const ch of R.channels) {
-      if (S.rgroup !== "all" && ch.group !== S.rgroup) continue;
+      if ((S.rgroup !== "all" && ch.group !== S.rgroup) || !marketOk(ch)) continue;
       for (const r of ch.recent || []) out.push({ ch, r });
     }
     return out;
@@ -722,11 +724,14 @@ footer b { color: var(--ink-2); font-weight: 600; }
       $("r-grid").innerHTML = `<div class="empty">레퍼런스 데이터(data/refs.json)를 불러오지 못했습니다.</div>`;
       return;
     }
-    const counts = { all: R.channels.length };
-    for (const ch of R.channels) counts[ch.group] = (counts[ch.group] || 0) + 1;
+    const inMarket = R.channels.filter(marketOk);
+    const counts = { all: inMarket.length };
+    for (const ch of inMarket) counts[ch.group] = (counts[ch.group] || 0) + 1;
     if (S.rgroup !== "all" && !counts[S.rgroup]) S.rgroup = "all";
     $("r-groups").innerHTML = [["all", "전체"], ...Object.entries(RGROUP)].filter(([k]) => counts[k])
       .map(([k, label]) => `<button type="button" class="chip" data-g="${esc(k)}" aria-pressed="${k === S.rgroup}" title="${esc((R.groups || {})[k] || "")}">${esc(label)}<span class="n">${counts[k]}</span></button>`).join("");
+    const krN = R.channels.filter((ch) => ch.market === "KR").length;
+    seg($("r-market"), [["all", "전체"], ["kr", `국내 ${krN}`], ["intl", `해외 ${R.channels.length - krN}`]], S.rmarket, (v) => { S.rmarket = v; update(); });
     seg($("r-hot"), [["hot", `평소의 ${HOT_X}배 이상`], ["all", "모든 최근 영상"]], S.rhot, (v) => { S.rhot = v; update(); });
     seg($("r-fmt"), [["all", "전체"], ["short", "쇼츠"], ["long", "롱폼"]], S.rfmt, (v) => { S.rfmt = v; update(); });
     $("r-sort").value = S.rsort;
@@ -744,7 +749,7 @@ footer b { color: var(--ink-2); font-weight: 600; }
     const chN = new Set(rows.map(({ ch }) => ch.id)).size;
     $("r-summary").innerHTML = `<span><b>${rows.length}개</b> 영상 · 채널 ${chN}곳</span><span>기간 내 영상 ${all.length}개 중 ${HOT_X}배 이상 ${hotN}개</span>`;
     $("r-grid").innerHTML = rows.length ? rows.map(refCard).join("") : `<div class="empty">조건에 맞는 영상이 없습니다. 필터를 바꿔 보세요.</div>`;
-    const chans = R.channels.filter((ch) => S.rgroup === "all" || ch.group === S.rgroup);
+    const chans = inMarket.filter((ch) => S.rgroup === "all" || ch.group === S.rgroup);
     $("r-list").innerHTML = chans.map(refChannelRow).join("");
   }
 
