@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """해외 트렌드 관측소 데이터 수집기.
 
-YouTube Data API v3로 국가별 인기 급상승·쇼츠·카테고리 차트와 국내 농업 채널
-현황을 모아 trends/data/latest.json, trends/data/farm.json 으로 저장한다.
+YouTube Data API v3로 국가별 인기 급상승·쇼츠·카테고리 차트, 국내 농업 채널,
+기획 레퍼런스 채널 현황을 모아 trends/data/ 의 latest.json, farm.json, refs.json 으로
+저장한다.
 표준 라이브러리만 사용한다.
 
     YOUTUBE_API_KEY=... python trends/collect.py
@@ -12,6 +13,7 @@ YouTube Data API v3로 국가별 인기 급상승·쇼츠·카테고리 차트�
     쇼츠 검색   12개국 × search 100              = 1,200
     농업 채널   70채널 × (업로드 목록 1 + 영상 1)  ≈   140
     채널 발굴   키워드 8개 × search 100           =   800
+    레퍼런스    16채널 × (업로드 목록 1 + 영상 1)  ≈    35
 """
 from __future__ import annotations
 
@@ -82,6 +84,7 @@ FARM_KEYWORDS = [
 SHORT_MAX_SEC = 180  # 2024-10 이후 쇼츠 최대 길이
 SHORTS_WINDOW_H = 48
 FARM_RECENT = 15
+REF_RECENT = 30
 DISCOVER_MIN_SUBS = 1000
 
 
@@ -290,13 +293,31 @@ def recent_uploads(channel_id: str, limit: int = FARM_RECENT) -> list[tuple[str,
     return [(i, vids[i]) for i in ids if i in vids]
 
 
-def with_outliers(rows: list[tuple[str, dict]]) -> tuple[int, list[dict]]:
-    """채널 최근 업로드의 중앙값 대비 배수(x)를 붙인다. x가 클수록 채널 평소보다 터진 영상."""
+def is_short(v: dict) -> bool:
+    return 0 < v["d"] <= SHORT_MAX_SEC
+
+
+def with_outliers(rows: list[tuple[str, dict]], by_format: bool = False) -> tuple[int, list[dict]]:
+    """채널 최근 업로드의 중앙값 대비 배수(x)를 붙인다. x가 클수록 채널 평소보다 터진 영상.
+
+    by_format이면 쇼츠는 쇼츠끼리, 롱폼은 롱폼끼리 중앙값을 따로 잡는다. 한 형식이
+    3개 미만이면 비교할 기준이 없으므로 x를 None으로 둔다.
+    """
     base = int(median(v["v"] for _, v in rows)) if rows else 0
-    out = [
-        {"id": vid, "t": v["t"], "p": v["p"], "d": v["d"], "v": v["v"], "x": round(v["v"] / max(base, 1), 1)}
-        for vid, v in rows
-    ]
+    bases = {}
+    if by_format:
+        for fmt in (True, False):
+            views = [v["v"] for _, v in rows if is_short(v) == fmt]
+            if len(views) >= 3:
+                bases[fmt] = int(median(views))
+    out = []
+    for vid, v in rows:
+        ref = bases.get(is_short(v)) if by_format else base
+        x = round(v["v"] / max(ref, 1), 1) if ref is not None else None
+        row = {"id": vid, "t": v["t"], "p": v["p"], "d": v["d"], "v": v["v"], "x": x}
+        if "m" in v:
+            row["m"] = v["m"]
+        out.append(row)
     return base, out
 
 
@@ -322,20 +343,41 @@ def discover_farm(known: set[str]) -> list[dict]:
     return sorted(picked, key=lambda c: -c["subs"])
 
 
-def collect_farm(curated: list[dict], discover: bool) -> dict:
+def watch_channels(curated: list[dict], limit: int, by_format: bool = False) -> list[dict]:
+    """목록의 채널 통계와 최근 업로드(배수 포함)를 채운다."""
     info = channels(c["id"] for c in curated)
     out = []
     for c in curated:
         ch = {**c, **info.get(c["id"], {})}
-        rows = optional(recent_uploads, c["id"])
+        rows = optional(recent_uploads, c["id"], limit)
         if rows:
-            ch["median"], ch["recent"] = with_outliers(rows)
+            ch["median"], ch["recent"] = with_outliers(rows, by_format)
         out.append(ch)
+    return out
+
+
+def collect_farm(curated: list[dict], discover: bool) -> dict:
+    out = watch_channels(curated, FARM_RECENT)
     log(f"농업 채널 {len(out)}개 갱신")
     found = discover_farm({c["id"] for c in curated}) if discover else []
     if found:
         log(f"자동 발굴 후보 {len(found)}개")
     return build_farm(out, found, "YouTube Data API v3")
+
+
+def build_refs(channels_out: list[dict], groups: dict, source: str, generated_at: str | None = None) -> dict:
+    return {
+        "generatedAt": generated_at or now_iso(),
+        "source": source,
+        "groups": groups,
+        "channels": channels_out,
+    }
+
+
+def collect_refs(doc: dict) -> dict:
+    out = watch_channels(doc.get("channels", []), REF_RECENT, by_format=True)
+    log(f"레퍼런스 채널 {len(out)}개 갱신")
+    return build_refs(out, doc.get("groups", {}), "YouTube Data API v3")
 
 
 def load_json(path: Path) -> dict | None:
@@ -353,17 +395,19 @@ def write_json(path: Path, doc: dict) -> None:
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description="해외 트렌드 관측소 데이터 수집기")
     ap.add_argument("--prev", type=Path, default=DATA / "latest.json", help="NEW·순위 변동 비교용 이전 스냅샷")
-    ap.add_argument("--only", choices=["trends", "farm"], help="한쪽만 수집")
+    ap.add_argument("--only", choices=["trends", "farm", "refs"], help="하나만 수집")
     ap.add_argument("--no-discover", action="store_true", help="농업 채널 자동 발굴 생략 (search 쿼터 절약)")
     args = ap.parse_args(argv)
     if not os.environ.get("YOUTUBE_API_KEY"):
         sys.exit("YOUTUBE_API_KEY 환경변수가 필요합니다.")
     DATA.mkdir(exist_ok=True)
-    if args.only != "farm":
+    if args.only in (None, "trends"):
         write_json(DATA / "latest.json", collect_trends(load_json(args.prev)))
-    if args.only != "trends":
+    if args.only in (None, "farm"):
         curated = (load_json(HERE / "farm_channels.json") or {}).get("channels", [])
         write_json(DATA / "farm.json", collect_farm(curated, discover=not args.no_discover))
+    if args.only in (None, "refs"):
+        write_json(DATA / "refs.json", collect_refs(load_json(HERE / "ref_channels.json") or {}))
 
 
 if __name__ == "__main__":

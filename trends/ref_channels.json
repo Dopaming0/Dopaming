@@ -1,0 +1,27 @@
+{
+ "updated": "2026-10-03",
+ "groups": {
+   "솔파": "윤성원 PD의 스튜디오 솔파 채널",
+   "참여형": "일반인 참여형 게임·대화·실험 포맷",
+   "인터뷰": "질문 하나로 굴러가는 인터뷰·토크 포맷",
+   "챌린지": "제한을 걸고 끝까지 가는 챌린지·여정"
+ },
+ "channels": [
+  {"id": "UC6XZ4fmiUPQk6ws6fGs2rQg", "title": "Solfa", "group": "솔파", "market": "KR", "src": "13·15강", "note": "40 대 1 이상형 찾기, 절대 악플 달지 말 것. 2020년 이후 업로드가 없어 포맷 원형 아카이브로 봅니다"},
+  {"id": "UCpjm6R2yqu1GZjYtsIiXR5w", "title": "odg", "group": "솔파", "market": "KR", "src": "15강", "note": "아이들의 시선 포맷. 6살과 10살, 지코와 이별"},
+  {"id": "UCh21enuxt6axA0nkT6y4J2Q", "title": "HUP!", "group": "솔파", "market": "KR", "src": "14·15강", "note": "음악 몰입 포맷. 노래 바꿔부르기, 릴체리 × 서울대 영문과"},
+  {"id": "UC3QsCXXj8b3uu9Elki3TE3A", "title": "존이냐박이냐", "group": "솔파", "market": "KR", "src": "20-22강", "note": "존박 × 영어 숏폼. 존트럴파크, 알파메일의 유산소"},
+  {"id": "UCbaGn5VkOVlcRgIWAHcrJKA", "title": "Cut", "group": "참여형", "market": "US", "src": "첫 강의", "note": "100 People, Truth or Drink, Lineup. 같은 틀에 출연자만 바꾸는 포맷형"},
+  {"id": "UCJjSDX-jUChzOEyok9XYRJQ", "title": "Jubilee", "group": "참여형", "market": "US", "src": "첫 강의", "note": "Middle Ground, Surrounded, Odd One Out. 입장이 다른 사람을 한자리에"},
+  {"id": "UCQCKnN9inc30A9f7IYP5_QA", "title": "nectar", "group": "참여형", "market": "US", "src": "", "note": "Jubilee 연애 채널. 솔파 '40 대 1'을 사 간 20 vs 1"},
+  {"id": "UCzo3jVzn-Z9LrFVwAE7iDbw", "title": "Pop The Balloon", "group": "참여형", "market": "US", "src": "", "note": "1명을 여러 명이 평가하고, 관심 없으면 풍선을 터뜨리는 데이팅 게임"},
+  {"id": "UCqa2MPu8bLY1PwVFUpSyVhQ", "title": "HiHo Kids", "group": "참여형", "market": "US", "src": "", "note": "Cut 산하. ODG와 가장 가까운 Kids Meet, Kids Try"},
+  {"id": "UCOOKj-kWvrsK8CDfHZTw9lw", "title": "Pixid", "group": "참여형", "market": "KR", "src": "13강", "note": "50대 카톡방에 숨은 20대 찾기. 무리 속 한 명 찾기 포맷"},
+  {"id": "UCYLf5YEC59GX69au3yb1-KQ", "title": "SubwayTakes with Kareem Rahma", "group": "인터뷰", "market": "US", "src": "", "note": "뉴욕 지하철에서 자기 주장(take)을 펼치는 세로형 인터뷰"},
+  {"id": "UCIsbLox_y9dCIMLd8tdC6qg", "title": "Vanity Fair", "group": "인터뷰", "market": "US", "src": "첫 강의", "note": "Lie Detector Test 등 셀럽 인터뷰 시리즈"},
+  {"id": "UCX6OQ3DkcsbYNE6H8uQQuVA", "title": "MrBeast", "group": "챌린지", "market": "US", "src": "13강", "note": "10만까지 세기처럼 평범한 행동을 극단까지 끌고 가는 챌린지"},
+  {"id": "UCnmGIkw-KdI0W5siakKPKog", "title": "Ryan Trahan", "group": "챌린지", "market": "US", "src": "", "note": "1센트로 시작, 50개 주처럼 제한을 걸고 떠나는 여정 챌린지"},
+  {"id": "UCvK4bOhULCpmLabd2pDMtnA", "title": "Yes Theory", "group": "챌린지", "market": "US", "src": "", "note": "Seek Discomfort. 낯선 사람·장소에 부딪히는 사회실험 여행"},
+  {"id": "UCDogdKl7t7NHzQ95aEwkdMw", "title": "Sidemen", "group": "챌린지", "market": "GB", "src": "", "note": "영국 7인 크루의 숨바꼭질·생존·데이팅 게임"}
+ ]
+}

@@ -37,7 +37,7 @@ jobs:
       - name: Publish to trends-data branch
         run: |
           mkdir /tmp/td
-          cp trends/data/latest.json trends/data/farm.json /tmp/td/
+          cp trends/data/latest.json trends/data/farm.json trends/data/refs.json /tmp/td/
           cd /tmp/td
           git init -q -b trends-data
           git config user.name "github-actions[bot]"

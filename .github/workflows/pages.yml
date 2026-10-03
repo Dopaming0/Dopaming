@@ -30,8 +30,13 @@ jobs:
       - name: Overlay latest trend data
         run: |
           if git fetch --depth=1 origin trends-data 2>/dev/null; then
-            git show FETCH_HEAD:latest.json > trends/data/latest.json
-            git show FETCH_HEAD:farm.json > trends/data/farm.json
+            for f in latest.json farm.json refs.json; do
+              if git show "FETCH_HEAD:$f" > "/tmp/$f" 2>/dev/null; then
+                mv "/tmp/$f" "trends/data/$f"
+              else
+                echo "trends-data has no $f; keeping seed"
+              fi
+            done
           fi
       - uses: actions/configure-pages@v5
         with:
