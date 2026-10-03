@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>해외 트렌드 관측소</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=Song+Myung&display=swap">
+<style>
+/* Layout: 관측소 상황판 — 낙관 머리글, 고정 탭, 필터 줄, 카드 그리드. 여덟글자 본 사이트의 한지·먹·인주 톤을 업무용으로 절제 */
+:root {
+  --paper: #edefe9;
+  --sheet: #f9faf6;
+  --ink: #1a1d1b;
+  --ink-2: #555d58;
+  --ink-3: #7f8781;
+  --rule: #d3d8cf;
+  --seal: #b5341f;
+  --seal-ink: #ffffff;
+  --seal-soft: #f4ddd6;
+  --jade: #2c6b5e;
+  --jade-soft: #d6e7e1;
+  --gold: #7e6014;
+  --gold-soft: #eee3c6;
+  --hatch: #e2e6dd;
+  --font-display: "Gowun Batang", "Nanum Myeongjo", "AppleMyungjo", serif;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-seal: "Song Myung", "Gowun Batang", serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111412; --sheet: #191d1a; --ink: #e6eae3; --ink-2: #a7afa8; --ink-3: #78807a; --rule: #2b312d;
+    --seal: #e2664e; --seal-ink: #1a0d0a; --seal-soft: #3b1e18; --jade: #74bba9; --jade-soft: #173029;
+    --gold: #d6b45c; --gold-soft: #33290f; --hatch: #1f2420; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #111412; --sheet: #191d1a; --ink: #e6eae3; --ink-2: #a7afa8; --ink-3: #78807a; --rule: #2b312d;
+  --seal: #e2664e; --seal-ink: #1a0d0a; --seal-soft: #3b1e18; --jade: #74bba9; --jade-soft: #173029;
+  --gold: #d6b45c; --gold-soft: #33290f; --hatch: #1f2420; color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 14px/1.55 var(--font-body);
+  font-variant-numeric: tabular-nums;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+button, select, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--seal); outline-offset: 2px; }
+
+.wrap { max-width: 1280px; margin: 0 auto; padding-inline: 20px; }
+@media (max-width: 520px) { .wrap { padding-inline: 16px; } }
+
+/* 머리글 */
+.top { padding-block: 28px 18px; display: flex; gap: 16px; align-items: flex-start; }
+.seal {
+  flex: none; width: 46px; height: 46px; display: grid; place-items: center;
+  background: var(--seal); color: var(--seal-ink); border-radius: 6px;
+  font: 28px/1 var(--font-seal); transform: rotate(-4deg); margin-top: 2px;
+}
+.top h1 { margin: 0; font: 700 clamp(22px, 3.2vw, 30px)/1.2 var(--font-display); letter-spacing: -0.01em; text-wrap: balance; }
+.top .lede { margin: 6px 0 0; color: var(--ink-2); max-width: 64ch; }
+.meta { margin: 10px 0 0; display: flex; flex-wrap: wrap; gap: 6px 14px; color: var(--ink-3); font-size: 12.5px; }
+.meta b { color: var(--ink-2); font-weight: 500; }
+.pill-note { display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--gold-soft); color: var(--gold); font-weight: 600; font-size: 11.5px; }
+
+/* 탭 */
+.tabs {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--paper); border-bottom: 1px solid var(--rule);
+}
+.tabs .wrap { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+.tabs .wrap::-webkit-scrollbar { display: none; }
+.tab {
+  flex: none; border: 0; background: none; cursor: pointer;
+  padding: 12px 12px 10px; color: var(--ink-3); font-weight: 600; font-size: 14.5px;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.tab .n { font-weight: 500; font-size: 12px; margin-left: 4px; color: var(--ink-3); }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--seal); }
+.tab:hover { color: var(--ink); }
+
+main { padding-block: 20px 56px; }
+.pane { display: grid; gap: 16px; }
+.pane > * { min-width: 0; }
+.note { margin: 0; color: var(--ink-2); font-size: 13px; max-width: 80ch; }
+.note b { color: var(--ink); font-weight: 600; }
+
+/* 칩·컨트롤 */
+.regions { display: grid; gap: 10px; }
+.rgroup { display: flex; gap: 10px; align-items: baseline; }
+.rlabel { flex: none; width: 46px; font-size: 11.5px; letter-spacing: 0.06em; color: var(--ink-3); font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.chip {
+  border: 1px solid var(--rule); background: var(--sheet); border-radius: 999px;
+  padding: 5px 11px; cursor: pointer; font-size: 13px; white-space: nowrap; line-height: 1.3;
+}
+.chip .n { color: var(--ink-3); font-size: 11.5px; margin-left: 3px; }
+.chip:hover { border-color: var(--ink-3); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.chip[aria-pressed="true"] .n { color: inherit; opacity: 0.7; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; background: var(--sheet); }
+.seg button { border: 0; background: none; padding: 6px 12px; cursor: pointer; font-size: 13px; color: var(--ink-2); }
+.seg button + button { border-left: 1px solid var(--rule); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.field { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-3); }
+.field select, .field input {
+  border: 1px solid var(--rule); background: var(--sheet); border-radius: 8px;
+  padding: 6px 10px; font-size: 13px; color: var(--ink); max-width: 100%;
+}
+.field input { width: 220px; }
+.summary { margin: 0; font-size: 13px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.summary b { color: var(--ink); font-weight: 600; }
+
+/* 영상 카드 */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 248px), 1fr)); gap: 14px; }
+.vcard { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+.vcard:hover { border-color: var(--ink-3); }
+.thumb { position: relative; display: block; aspect-ratio: 16 / 9; background: var(--hatch); text-decoration: none; }
+.thumb img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; }
+.thumb .ph {
+  position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 12px;
+  color: var(--ink-3); font-size: 12px;
+  background: repeating-linear-gradient(135deg, var(--hatch) 0 8px, transparent 8px 16px);
+}
+.rank, .dur {
+  position: absolute; z-index: 2; font-size: 11.5px; font-weight: 600; line-height: 1; padding: 4px 6px; border-radius: 5px;
+  background: rgba(17, 20, 18, 0.82); color: #f3f5f0;
+}
+.rank { top: 8px; left: 8px; }
+.dur { bottom: 8px; right: 8px; }
+.vbody { padding: 10px 12px 12px; display: grid; gap: 7px; flex: 1; align-content: start; }
+.badges { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.badge { flex: none; white-space: nowrap; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 999px; line-height: 1.45; border: 1px solid transparent; }
+.badge.b-new { background: var(--jade-soft); color: var(--jade); }
+.badge.b-up { color: var(--jade); border-color: var(--jade-soft); }
+.badge.b-miss { background: var(--seal-soft); color: var(--seal); }
+.badge.b-gold { background: var(--gold-soft); color: var(--gold); }
+.badge.b-plain { color: var(--ink-2); border-color: var(--rule); }
+.vtitle { margin: 0; font-size: 14px; font-weight: 600; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.vtitle a { text-decoration: none; }
+.vtitle a:hover { text-decoration: underline; }
+.vch { margin: 0; color: var(--ink-3); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vstats { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; border-top: 1px solid var(--rule); padding-top: 8px; }
+.vstats div { min-width: 0; }
+.vstats dt { font-size: 10.5px; color: var(--ink-3); letter-spacing: 0.02em; }
+.vstats dd { margin: 0; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.vfoot { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-3); }
+.vfoot a { color: var(--ink-2); text-decoration: none; border-bottom: 1px solid var(--rule); }
+.vfoot a:hover { color: var(--ink); border-color: var(--ink-3); }
+.flags { letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.empty { padding: 32px 16px; text-align: center; color: var(--ink-3); border: 1px dashed var(--rule); border-radius: 10px; }
+
+/* 농업 채널 */
+.bench { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 18px; display: grid; gap: 14px; }
+.bench h2, .sec-h { margin: 0; font: 700 18px/1.35 var(--font-display); text-wrap: balance; }
+.bench .eyebrow { font-size: 11.5px; letter-spacing: 0.08em; color: var(--seal); font-weight: 600; }
+.bench .why { margin: 0; color: var(--ink-2); max-width: 70ch; }
+.bench .why b { color: var(--ink); }
+.bars { display: grid; gap: 8px; }
+.bar { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto; gap: 12px; align-items: center; font-size: 13px; }
+.bar a { text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar a:hover { text-decoration: underline; }
+.bar .track { height: 10px; background: var(--hatch); border-radius: 3px; overflow: hidden; }
+.bar .fill { height: 100%; background: var(--ink-3); border-radius: 3px; min-width: 2px; }
+.bar.is-max .fill { background: var(--seal); }
+.bar .val { white-space: nowrap; color: var(--ink-2); font-size: 12.5px; text-align: right; min-width: 116px; }
+.bar.is-max .val { color: var(--seal); font-weight: 600; }
+@media (max-width: 640px) {
+  .bar { grid-template-columns: minmax(0, 1fr) auto; }
+  .bar .track { grid-column: 1 / -1; grid-row: 2; }
+}
+.flist { display: grid; border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: var(--sheet); }
+.frow { display: grid; grid-template-columns: 44px minmax(0, 1.5fr) minmax(0, 1fr) minmax(300px, auto); gap: 14px; align-items: center; padding: 12px 16px; }
+.frow + .frow { border-top: 1px solid var(--rule); }
+.avatar { position: relative; width: 44px; height: 44px; border-radius: 50%; background: var(--hatch); overflow: hidden; display: grid; place-items: center; color: var(--ink-2); font-weight: 600; }
+.avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.fname { margin: 0; font-weight: 600; font-size: 14.5px; overflow-wrap: anywhere; }
+.fname a { text-decoration: none; }
+.fname a:hover { text-decoration: underline; }
+.fname .handle { font-weight: 400; color: var(--ink-3); font-size: 12px; margin-left: 6px; }
+.fnote { margin: 2px 0 0; color: var(--ink-2); font-size: 12.5px; }
+.ftags { display: flex; flex-wrap: wrap; gap: 4px; }
+.ftag { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--rule); color: var(--ink-2); }
+.ftag.t-재배 { background: var(--jade-soft); color: var(--jade); border-color: transparent; }
+.ftag.t-직판 { background: var(--gold-soft); color: var(--gold); border-color: transparent; }
+.ftag.t-유통 { background: var(--seal-soft); color: var(--seal); border-color: transparent; }
+.fcrop { margin: 4px 0 0; font-size: 12px; color: var(--ink-3); }
+.fnums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; text-align: right; }
+.fnums dt { font-size: 10.5px; color: var(--ink-3); }
+.fnums dd { margin: 0; font-weight: 600; font-size: 13px; white-space: nowrap; }
+@media (max-width: 900px) {
+  .frow { grid-template-columns: 44px minmax(0, 1fr); }
+  .frow > .fmeta, .frow > .fnums { grid-column: 2; }
+  .fnums { text-align: left; }
+}
+
+footer { border-top: 1px solid var(--rule); padding-block: 20px 36px; color: var(--ink-3); font-size: 12.5px; }
+footer p { margin: 0 0 6px; max-width: 90ch; }
+footer b { color: var(--ink-2); font-weight: 600; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .vcard, .chip, .tab { transition: border-color 0.15s, color 0.15s, background-color 0.15s; }
+}
+</style>
+</head>
+<body>
+<header class="wrap top">
+  <div class="seal" aria-hidden="true">觀</div>
+  <div>
+    <h1>해외 트렌드 관측소</h1>
+    <p class="lede">한국보다 유행이 먼저 도는 나라의 인기 급상승 영상을 모아, 아직 한국에 들어오지 않은 포맷을 먼저 찾습니다.</p>
+    <p class="meta" id="meta">데이터를 불러오는 중…</p>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="보기 전환">
+  <div class="wrap" role="tablist">
+    <button class="tab" role="tab" id="tab-country" aria-controls="pane-country" data-tab="country">국가별<span class="n" id="n-country"></span></button>
+    <button class="tab" role="tab" id="tab-category" aria-controls="pane-category" data-tab="category">카테고리별<span class="n" id="n-category"></span></button>
+    <button class="tab" role="tab" id="tab-signal" aria-controls="pane-signal" data-tab="signal">선행 신호<span class="n" id="n-signal"></span></button>
+    <button class="tab" role="tab" id="tab-farm" aria-controls="pane-farm" data-tab="farm">국내 농업 채널<span class="n" id="n-farm"></span></button>
+  </div>
+</nav>
+
+<main class="wrap">
+  <section class="pane" id="pane-country" role="tabpanel" aria-labelledby="tab-country" hidden>
+    <div class="regions" id="regions"></div>
+    <p class="note"><b>선행국</b>은 숏폼 포맷과 밈이 한국보다 먼저 퍼지는 시장입니다. <b>한국 미상륙</b> 표시는 같은 시점 한국 인기 차트에 없는 영상입니다.</p>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="영상 길이" id="c-fmt"></div>
+      <label class="field">카테고리 <select id="c-cat"></select></label>
+      <label class="field">정렬 <select id="c-sort">
+        <option value="rank">차트 순위</option>
+        <option value="vel">시간당 조회</option>
+        <option value="subs">구독자 대비 조회</option>
+        <option value="like">좋아요율</option>
+      </select></label>
+    </div>
+    <p class="summary" id="c-summary"></p>
+    <div class="grid" id="c-grid"></div>
+  </section>
+
+  <section class="pane" id="pane-category" role="tabpanel" aria-labelledby="tab-category" hidden>
+    <div class="chips" id="k-chips"></div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="국가 범위" id="k-scope"></div>
+      <div class="seg" role="group" aria-label="영상 길이" id="k-fmt"></div>
+      <label class="field">정렬 <select id="k-sort">
+        <option value="spread">확산 국가 수</option>
+        <option value="vel">시간당 조회</option>
+        <option value="views">조회수</option>
+      </select></label>
+    </div>
+    <p class="summary" id="k-summary"></p>
+    <div class="grid" id="k-grid"></div>
+  </section>
+
+  <section class="pane" id="pane-signal" role="tabpanel" aria-labelledby="tab-signal" hidden>
+    <p class="note">선행국 인기 차트에 올랐지만 <b>한국 차트에는 아직 없는</b> 영상입니다. 여러 선행국에 동시에 뜬 영상일수록 위에 놓입니다.</p>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="선행국 수" id="s-min"></div>
+      <div class="seg" role="group" aria-label="영상 길이" id="s-fmt"></div>
+    </div>
+    <p class="summary" id="s-summary"></p>
+    <div class="grid" id="s-grid"></div>
+  </section>
+
+  <section class="pane" id="pane-farm" role="tabpanel" aria-labelledby="tab-farm" hidden>
+    <div class="bench" id="f-bench" hidden></div>
+    <div class="controls">
+      <div class="chips" id="f-types"></div>
+    </div>
+    <div class="controls">
+      <label class="field">검색 <input id="f-q" type="search" placeholder="채널명·작물·지역"></label>
+      <label class="field">정렬 <select id="f-sort">
+        <option value="subs">구독자</option>
+        <option value="avg">영상당 평균 조회</option>
+        <option value="views">총 조회</option>
+        <option value="since">최근 개설</option>
+      </select></label>
+    </div>
+    <p class="summary" id="f-summary"></p>
+    <div class="flist" id="f-list"></div>
+    <div id="f-disc"></div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p><b>인기 급상승</b>은 YouTube Data API의 국가별 mostPopular 차트입니다. <b>시간당 조회</b>는 조회수를 업로드 후 경과 시간(수집 시각 기준)으로 나눈 값, <b>구독자 대비</b>는 조회수 ÷ 채널 구독자 수입니다.</p>
+  <p><b>농업 채널 배수</b>는 영상 조회수 ÷ 그 채널 최근 업로드 영상 조회수의 중앙값입니다. 3배 이상이면 채널 평소보다 터진 영상으로 봅니다.</p>
+  <p id="foot-src"></p>
+</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  const TAGS = { "재배": "직접 재배", "직판": "직판", "유통": "유통·판매", "정보": "정보·교육", "브이로그": "브이로그", "기관": "기관" };
+  const GROUPS = [["lead", "선행국"], ["global", "글로벌"], ["base", "기준"]];
+  const FMT = [["all", "전체"], ["short", "3분 이하"], ["long", "롱폼"]];
+  const SHORT_MAX = 180;
+  const HOT_X = 3;
+  const PREF_KEY = "trends.prefs.v1";
+
+  const S = {
+    tab: "country", region: "US", fmt: "all", cat: "", sort: "rank",
+    kcat: "", kscope: "all", kfmt: "all", ksort: "spread",
+    smin: 2, sfmt: "all",
+    ftype: "all", fq: "", fsort: "subs",
+  };
+  try { Object.assign(S, JSON.parse(localStorage.getItem(PREF_KEY) || "{}")); } catch (e) { /* 저장소 없음 */ }
+  const save = () => { try { localStorage.setItem(PREF_KEY, JSON.stringify(S)); } catch (e) { /* 무시 */ } };
+
+  let T = null, F = null, REF = Date.now();
+  const REG = {}, POOL = {}, RANK = {}, PREV = {}, WHERE = new Map();
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const flag = (cc) => String.fromCodePoint(...[...cc].map((c) => 127397 + c.charCodeAt(0)));
+
+  function trimNum(x) {
+    if (x >= 100) return String(Math.round(x));
+    return String(Math.round(x * 10) / 10);
+  }
+  function fmtNum(n) {
+    if (n == null || Number.isNaN(n)) return "–";
+    if (n >= 1e8) return trimNum(n / 1e8) + "억";
+    if (n >= 1e4) return trimNum(n / 1e4) + "만";
+    return Math.round(n).toLocaleString("ko-KR");
+  }
+  function fmtDur(sec) {
+    if (!sec) return "LIVE";
+    const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    const pad = (x) => String(x).padStart(2, "0");
+    return h ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`;
+  }
+  const hoursOld = (p) => Math.max((REF - Date.parse(p)) / 36e5, 1);
+  function fmtAge(p) {
+    const h = hoursOld(p);
+    if (h < 48) return Math.round(h) + "시간 전";
+    return Math.round(h / 24) + "일 전";
+  }
+  const vel = (v) => v.v / hoursOld(v.p);
+  const fmtOk = (v, f) => f === "all" || (f === "short" ? v.d > 0 && v.d <= SHORT_MAX : !(v.d > 0 && v.d <= SHORT_MAX));
+  const leadN = (id) => (WHERE.get(id) || []).filter((c) => REG[c] && REG[c].group === "lead").length;
+  const inKR = (id) => (WHERE.get(id) || []).includes("KR");
+  const hasHangul = (s) => /[가-힣]/.test(s);
+  const avatarUrl = (t) => !t ? "" : t.startsWith("http") ? t : `https://yt3.ggpht.com/${t}=s88-c-k-c0x00ffffff-no-rj`;
+
+  async function getJSON(url) {
+    const res = await fetch(url, { cache: "no-cache" });
+    if (!res.ok) throw new Error(`${url} ${res.status}`);
+    return res.json();
+  }
+
+  function indexTrends() {
+    REF = Date.parse(T.generatedAt) || Date.now();
+    for (const r of T.regions) {
+      REG[r.code] = r;
+      const c = T.charts[r.code] || {};
+      const seen = new Set(), pool = [];
+      const push = (id) => { if (!seen.has(id) && T.videos[id]) { seen.add(id); pool.push(id); } };
+      (c.all || []).forEach(push);
+      (c.shorts || []).forEach(push);
+      Object.values(c.cat || {}).forEach((l) => l.forEach(push));
+      POOL[r.code] = pool;
+      RANK[r.code] = new Map((c.all || []).map((id, i) => [id, i + 1]));
+      const p = T.prev && T.prev[r.code];
+      PREV[r.code] = p && p.length ? new Map(p.map((id, i) => [id, i + 1])) : null;
+      for (const id of pool) {
+        if (!WHERE.has(id)) WHERE.set(id, []);
+        WHERE.get(id).push(r.code);
+      }
+    }
+    if (!REG[S.region]) S.region = T.regions[0].code;
+  }
+
+  function seg(el, items, current, onPick) {
+    el.innerHTML = items.map(([val, label]) =>
+      `<button type="button" data-v="${esc(val)}" aria-pressed="${String(val) === String(current)}">${esc(label)}</button>`).join("");
+    el.onclick = (e) => {
+      const b = e.target.closest("button[data-v]");
+      if (b) onPick(b.dataset.v);
+    };
+  }
+
+  function card(id, region) {
+    const v = T.videos[id];
+    const where = WHERE.get(id) || [];
+    const rank = region ? RANK[region].get(id) : null;
+    const badges = [];
+    if (region && rank && PREV[region]) {
+      const pr = PREV[region].get(id);
+      if (!pr) badges.push(["b-new", "NEW"]);
+      else if (pr > rank) badges.push(["b-up", "▲" + (pr - rank)]);
+    }
+    if (region !== "KR" && !where.includes("KR")) badges.push(["b-miss", "한국 미상륙"]);
+    if (where.length > 1) badges.push(["b-plain", where.length + "개국"]);
+    if (v.s && v.v / v.s >= 1) badges.push(["b-gold", "구독자의 " + trimNum(v.v / v.s) + "배"]);
+    const cat = T.categories[v.cat] || "기타";
+    const url = `https://www.youtube.com/watch?v=${encodeURIComponent(id)}`;
+    const tr = hasHangul(v.t) ? "" :
+      `<a href="https://translate.google.com/?sl=auto&amp;tl=ko&amp;op=translate&amp;text=${encodeURIComponent(v.t)}" target="_blank" rel="noopener">제목 번역</a>`;
+    const likeRate = v.v ? (v.l / v.v) * 100 : 0;
+    return `<article class="vcard">
+      <a class="thumb" href="${url}" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://i.ytimg.com/vi/${esc(id)}/mqdefault.jpg" alt="">
+        <span class="ph">${esc(cat)}</span>
+        ${rank ? `<span class="rank">${rank}위</span>` : ""}
+        <span class="dur">${fmtDur(v.d)}</span>
+      </a>
+      <div class="vbody">
+        ${badges.length ? `<div class="badges">${badges.map(([k, t]) => `<span class="badge ${k}">${esc(t)}</span>`).join("")}</div>` : ""}
+        <h3 class="vtitle"><a href="${url}" target="_blank" rel="noopener">${esc(v.t)}</a></h3>
+        <p class="vch">${esc(v.c)} · ${esc(cat)}</p>
+        <dl class="vstats">
+          <div><dt>조회</dt><dd>${fmtNum(v.v)}</dd></div>
+          <div><dt>시간당</dt><dd>${fmtNum(vel(v))}</dd></div>
+          <div><dt>업로드</dt><dd>${fmtAge(v.p)}</dd></div>
+          <div><dt>좋아요율</dt><dd>${likeRate ? likeRate.toFixed(1) + "%" : "–"}</dd></div>
+        </dl>
+        <div class="vfoot"><span class="flags" title="${esc(where.map((c) => REG[c].name).join(", "))}">${where.map(flag).join("")}</span>${tr}</div>
+      </div>
+    </article>`;
+  }
+
+  function grid(el, ids, region) {
+    el.innerHTML = ids.length ? ids.map((id) => card(id, region)).join("") :
+      `<div class="empty">조건에 맞는 영상이 없습니다. 필터를 바꿔 보세요.</div>`;
+  }
+
+  function catOptions(ids) {
+    const counts = {};
+    for (const id of ids) { const c = T.videos[id].cat; counts[c] = (counts[c] || 0) + 1; }
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  }
+
+  // ── 국가별
+  function renderCountry() {
+    $("regions").innerHTML = GROUPS.map(([g, label]) => {
+      const rs = T.regions.filter((r) => r.group === g);
+      if (!rs.length) return "";
+      return `<div class="rgroup"><span class="rlabel">${label}</span><div class="chips">${rs.map((r) =>
+        `<button type="button" class="chip" data-r="${r.code}" aria-pressed="${r.code === S.region}">${flag(r.code)} ${esc(r.name)}<span class="n">${POOL[r.code].length}</span></button>`).join("")}</div></div>`;
+    }).join("");
+    seg($("c-fmt"), FMT, S.fmt, (v) => { S.fmt = v; update(); });
+    const pool = POOL[S.region];
+    const cats = catOptions(pool);
+    if (S.cat && !cats.some(([c]) => c === S.cat)) S.cat = "";
+    $("c-cat").innerHTML = `<option value="">전체 (${pool.length})</option>` +
+      cats.map(([c, n]) => `<option value="${esc(c)}"${c === S.cat ? " selected" : ""}>${esc(T.categories[c] || "기타")} (${n})</option>`).join("");
+    $("c-sort").value = S.sort;
+
+    let ids = pool.filter((id) => fmtOk(T.videos[id], S.fmt) && (!S.cat || T.videos[id].cat === S.cat));
+    const rk = RANK[S.region];
+    const sorters = {
+      rank: (a, b) => (rk.get(a) || 999) - (rk.get(b) || 999),
+      vel: (a, b) => vel(T.videos[b]) - vel(T.videos[a]),
+      subs: (a, b) => ((T.videos[b].v / (T.videos[b].s || Infinity)) - (T.videos[a].v / (T.videos[a].s || Infinity))),
+      like: (a, b) => (T.videos[b].l / (T.videos[b].v || 1)) - (T.videos[a].l / (T.videos[a].v || 1)),
+    };
+    ids = ids.slice().sort(sorters[S.sort] || sorters.rank);
+    const r = REG[S.region];
+    const shortN = pool.filter((id) => fmtOk(T.videos[id], "short")).length;
+    const missN = S.region === "KR" ? null : pool.filter((id) => !inKR(id)).length;
+    const avgH = pool.reduce((s, id) => s + hoursOld(T.videos[id].p), 0) / (pool.length || 1);
+    $("c-summary").innerHTML = `<span><b>${flag(r.code)} ${esc(r.name)}</b> 차트 ${pool.length}개</span><span>3분 이하 ${shortN}</span>` +
+      (missN == null ? "" : `<span>한국 미상륙 ${missN}</span>`) +
+      `<span>업로드 후 평균 ${Math.round(avgH)}시간</span>` + (ids.length !== pool.length ? `<span>표시 ${ids.length}</span>` : "");
+    grid($("c-grid"), ids, S.region);
+  }
+
+  // ── 카테고리별
+  function scopeOk(id) {
+    if (S.kscope === "lead") return leadN(id) > 0;
+    if (S.kscope === "nokr") return !inKR(id);
+    return true;
+  }
+  function renderCategory() {
+    const scoped = [...WHERE.keys()].filter(scopeOk);
+    const cats = catOptions(scoped);
+    if (S.kcat && !cats.some(([c]) => c === S.kcat)) S.kcat = "";
+    $("k-chips").innerHTML = `<button type="button" class="chip" data-k="" aria-pressed="${!S.kcat}">전체<span class="n">${scoped.length}</span></button>` +
+      cats.map(([c, n]) => `<button type="button" class="chip" data-k="${esc(c)}" aria-pressed="${c === S.kcat}">${esc(T.categories[c] || "기타")}<span class="n">${n}</span></button>`).join("");
+    seg($("k-scope"), [["all", "전체 국가"], ["lead", "선행국"], ["nokr", "한국 제외"]], S.kscope, (v) => { S.kscope = v; update(); });
+    seg($("k-fmt"), FMT, S.kfmt, (v) => { S.kfmt = v; update(); });
+    $("k-sort").value = S.ksort;
+    let ids = scoped.filter((id) => (!S.kcat || T.videos[id].cat === S.kcat) && fmtOk(T.videos[id], S.kfmt));
+    const spread = (id) => (WHERE.get(id) || []).length;
+    const sorters = {
+      spread: (a, b) => spread(b) - spread(a) || vel(T.videos[b]) - vel(T.videos[a]),
+      vel: (a, b) => vel(T.videos[b]) - vel(T.videos[a]),
+      views: (a, b) => T.videos[b].v - T.videos[a].v,
+    };
+    ids.sort(sorters[S.ksort] || sorters.spread);
+    const multi = ids.filter((id) => spread(id) > 1).length;
+    $("k-summary").innerHTML = `<span><b>${esc(S.kcat ? T.categories[S.kcat] || "기타" : "전체 카테고리")}</b> ${ids.length}개</span><span>2개국 이상 동시 ${multi}</span>`;
+    grid($("k-grid"), ids, null);
+  }
+
+  // ── 선행 신호
+  function signalIds(min) {
+    return [...WHERE.keys()].filter((id) => !inKR(id) && leadN(id) >= min);
+  }
+  function renderSignal() {
+    seg($("s-min"), [[1, "선행국 1곳 이상"], [2, "2곳 이상"], [3, "3곳 이상"]], S.smin, (v) => { S.smin = Number(v); update(); });
+    seg($("s-fmt"), FMT, S.sfmt, (v) => { S.sfmt = v; update(); });
+    const ids = signalIds(S.smin).filter((id) => fmtOk(T.videos[id], S.sfmt))
+      .sort((a, b) => leadN(b) - leadN(a) || vel(T.videos[b]) - vel(T.videos[a]));
+    const byCat = catOptions(ids).slice(0, 3).map(([c, n]) => `${esc(T.categories[c] || "기타")} ${n}`).join(" · ");
+    $("s-summary").innerHTML = `<span><b>${ids.length}개</b> 영상이 선행국 ${S.smin}곳 이상에서 뜨고 한국에는 아직 없습니다</span>` + (byCat ? `<span>많은 카테고리: ${byCat}</span>` : "");
+    grid($("s-grid"), ids, null);
+  }
+
+  // ── 국내 농업 채널
+  function farmBench() {
+    const el = $("f-bench");
+    const hot = [];
+    for (const ch of F.channels) for (const r of ch.recent || []) if (r.x >= HOT_X) hot.push({ ch, r });
+    if (!hot.length) { el.hidden = true; return; }
+    hot.sort((a, b) => b.r.x - a.r.x);
+    const lead = hot[0].ch;
+    const rows = (lead.recent || []).slice().sort((a, b) => Date.parse(a.p) - Date.parse(b.p));
+    const maxX = Math.max(...rows.map((r) => r.x), 1);
+    const bars = rows.map((r) => `<div class="bar${r.x === maxX ? " is-max" : ""}">
+        <a href="https://www.youtube.com/watch?v=${encodeURIComponent(r.id)}" target="_blank" rel="noopener" title="${esc(r.t)}">${esc(r.t)}</a>
+        <div class="track"><div class="fill" style="width:${Math.max((r.x / maxX) * 100, 0.6).toFixed(1)}%"></div></div>
+        <span class="val">${trimNum(r.x)}배 · ${fmtNum(r.v)}회</span>
+      </div>`).join("");
+    const others = hot.filter((h) => h.ch !== lead).slice(0, 8).map((h) =>
+      `<div class="bar"><a href="https://www.youtube.com/watch?v=${encodeURIComponent(h.r.id)}" target="_blank" rel="noopener">${esc(h.ch.title)} · ${esc(h.r.t)}</a><div class="track"><div class="fill" style="width:${Math.min((h.r.x / maxX) * 100, 100).toFixed(1)}%"></div></div><span class="val">${trimNum(h.r.x)}배 · ${fmtNum(h.r.v)}회</span></div>`).join("");
+    const top = hot[0].r;
+    el.hidden = false;
+    el.innerHTML = `<div><div class="eyebrow">벤치마크 · 채널 평소보다 터진 영상</div>
+        <h2>${esc(lead.title)}</h2></div>
+      <p class="why">‘${esc(top.t)}’이 이 채널 최근 영상 조회수 중앙값(${fmtNum(lead.median)}회)의 <b>${trimNum(top.x)}배</b>를 기록했습니다.
+        구독자 ${fmtNum(lead.subs)}명, 개설 ${esc(lead.since || "")}, 영상 ${fmtNum(lead.videos)}개.</p>
+      <div class="bars">${bars}</div>
+      ${others ? `<h3 class="sec-h">다른 채널의 터진 영상</h3><div class="bars">${others}</div>` : ""}`;
+  }
+
+  function farmMatch(ch) {
+    if (S.ftype !== "all" && !(ch.tags || []).includes(S.ftype)) return false;
+    if (!S.fq) return true;
+    const q = S.fq.trim().toLowerCase();
+    return [ch.title, ch.handle, ch.crops, ch.region, ch.note].some((s) => String(s || "").toLowerCase().includes(q));
+  }
+
+  function farmRow(ch) {
+    const avg = ch.videos ? ch.views / ch.videos : null;
+    const initial = esc((ch.title || "?").trim().charAt(0));
+    const handle = ch.handle ? `<span class="handle">${esc(ch.handle)}</span>` : "";
+    return `<div class="frow">
+      <div class="avatar">${ch.thumb ? `<img loading="lazy" src="${esc(avatarUrl(ch.thumb))}" alt="">` : ""}<span class="ph">${initial}</span></div>
+      <div class="fmain">
+        <p class="fname"><a href="https://www.youtube.com/channel/${encodeURIComponent(ch.id)}" target="_blank" rel="noopener">${esc(ch.title)}</a>${handle}</p>
+        <p class="fnote">${esc(ch.note || "")}</p>
+      </div>
+      <div class="fmeta">
+        <div class="ftags">${(ch.tags || []).map((t) => `<span class="ftag t-${esc(t)}">${esc(TAGS[t] || t)}</span>`).join("")}</div>
+        <p class="fcrop">${esc([ch.crops, ch.region].filter(Boolean).join(" · "))}</p>
+      </div>
+      <dl class="fnums">
+        <div><dt>구독자</dt><dd>${fmtNum(ch.subs)}</dd></div>
+        <div><dt>총 조회</dt><dd>${fmtNum(ch.views)}</dd></div>
+        <div><dt>영상</dt><dd>${fmtNum(ch.videos)}</dd></div>
+        <div><dt>영상당 평균</dt><dd>${fmtNum(avg)}</dd></div>
+      </dl>
+    </div>`;
+  }
+
+  function renderFarm() {
+    if (!F) {
+      $("f-list").innerHTML = `<div class="empty">농업 채널 데이터(data/farm.json)를 불러오지 못했습니다.</div>`;
+      return;
+    }
+    farmBench();
+    const counts = { all: F.channels.length };
+    for (const ch of F.channels) for (const t of ch.tags || []) counts[t] = (counts[t] || 0) + 1;
+    $("f-types").innerHTML = [["all", "전체"], ...Object.entries(TAGS)].filter(([k]) => counts[k])
+      .map(([k, label]) => `<button type="button" class="chip" data-f="${esc(k)}" aria-pressed="${k === S.ftype}">${esc(label)}<span class="n">${counts[k]}</span></button>`).join("");
+    if ($("f-q").value !== S.fq) $("f-q").value = S.fq;
+    $("f-sort").value = S.fsort;
+    const sorters = {
+      subs: (a, b) => (b.subs || 0) - (a.subs || 0),
+      avg: (a, b) => (b.views / (b.videos || 1)) - (a.views / (a.videos || 1)),
+      views: (a, b) => (b.views || 0) - (a.views || 0),
+      since: (a, b) => String(b.since || "").localeCompare(String(a.since || "")),
+    };
+    const list = F.channels.filter(farmMatch).sort(sorters[S.fsort] || sorters.subs);
+    const subsSum = list.reduce((s, c) => s + (c.subs || 0), 0);
+    $("f-summary").innerHTML = `<span><b>${list.length}개</b> 채널</span><span>구독자 합계 ${fmtNum(subsSum)}</span>` +
+      `<span>직접 재배 ${list.filter((c) => (c.tags || []).includes("재배")).length} · 판매·유통 ${list.filter((c) => (c.tags || []).some((t) => t === "직판" || t === "유통")).length}</span>`;
+    $("f-list").innerHTML = list.length ? list.map(farmRow).join("") : `<div class="empty">검색 결과가 없습니다.</div>`;
+    const disc = F.discovered || [];
+    $("f-disc").innerHTML = disc.length ? `<h3 class="sec-h">자동 발굴 후보 ${disc.length}개</h3>
+      <p class="note">검색어로 새로 찾은 채널입니다. 직접 확인한 뒤 farm_channels.json에 추가하면 정식 목록에 들어갑니다.</p>
+      <div class="flist">${disc.map((c) => farmRow({ ...c, tags: [], note: "검색어: " + c.kw })).join("")}</div>` : "";
+  }
+
+  // ── 공통
+  function setTab(tab, push) {
+    if (!["country", "category", "signal", "farm"].includes(tab)) tab = "country";
+    S.tab = tab;
+    for (const b of document.querySelectorAll(".tab")) b.setAttribute("aria-selected", String(b.dataset.tab === tab));
+    for (const p of document.querySelectorAll(".pane")) p.hidden = p.id !== "pane-" + tab;
+    if (push && location.hash !== "#" + tab) history.replaceState(null, "", "#" + tab);
+    update();
+  }
+
+  function update() {
+    save();
+    if (!T) return;
+    if (S.tab === "country") renderCountry();
+    else if (S.tab === "category") renderCategory();
+    else if (S.tab === "signal") renderSignal();
+    else renderFarm();
+  }
+
+  function renderMeta() {
+    const when = new Date(REF).toLocaleString("ko-KR", { timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false });
+    const seed = /시드/.test(T.source);
+    $("meta").innerHTML = `<span>기준 <b>${esc(when)} KST</b></span><span>${T.regions.length}개국 · 영상 ${fmtNum(Object.keys(T.videos).length)}개</span>` +
+      (F ? `<span>농업 채널 ${F.channels.length}개</span>` : "") +
+      (seed ? `<span class="pill-note">시드 데이터 · API 키 연결 후 매일 자동 갱신</span>` : "");
+    $("foot-src").innerHTML = `출처: <b>${esc(T.source)}</b>` + (F ? ` / 농업 채널: <b>${esc(F.source)}</b>` : "");
+    $("n-country").textContent = T.regions.length;
+    $("n-category").textContent = Object.keys(T.categories).filter((c) => [...WHERE.keys()].some((id) => T.videos[id].cat === c)).length;
+    $("n-signal").textContent = signalIds(2).length;
+    $("n-farm").textContent = F ? F.channels.length : "";
+  }
+
+  // 이벤트 (한 번만 연결)
+  document.querySelector(".tabs").addEventListener("click", (e) => {
+    const b = e.target.closest(".tab");
+    if (b) setTab(b.dataset.tab, true);
+  });
+  $("regions").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-r]");
+    if (b) { S.region = b.dataset.r; S.cat = ""; update(); }
+  });
+  $("c-cat").addEventListener("change", (e) => { S.cat = e.target.value; update(); });
+  $("c-sort").addEventListener("change", (e) => { S.sort = e.target.value; update(); });
+  $("k-chips").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-k]");
+    if (b) { S.kcat = b.dataset.k; update(); }
+  });
+  $("k-sort").addEventListener("change", (e) => { S.ksort = e.target.value; update(); });
+  $("f-types").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-f]");
+    if (b) { S.ftype = b.dataset.f; update(); }
+  });
+  $("f-q").addEventListener("input", (e) => { S.fq = e.target.value; update(); });
+  $("f-sort").addEventListener("change", (e) => { S.fsort = e.target.value; update(); });
+  document.addEventListener("error", (e) => {
+    const img = e.target;
+    if (img && img.tagName === "IMG") {
+      img.remove();
+    }
+  }, true);
+  window.addEventListener("hashchange", () => setTab(location.hash.slice(1), false));
+
+  async function boot() {
+    const hashTab = location.hash.slice(1);
+    setTab(hashTab || S.tab, false);
+    try {
+      const [t, f] = await Promise.all([getJSON("data/latest.json"), getJSON("data/farm.json").catch(() => null)]);
+      T = t; F = f;
+      indexTrends();
+      renderMeta();
+      update();
+    } catch (err) {
+      $("meta").textContent = "데이터를 불러오지 못했습니다. trends/data/latest.json 이 있는지, 페이지를 http(s)로 열었는지 확인하세요.";
+      console.error(err);
+    }
+  }
+  boot();
+})();
+</script>
+</body>
+</html>

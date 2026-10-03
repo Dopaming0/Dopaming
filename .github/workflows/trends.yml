@@ -1,0 +1,49 @@
+name: Collect YouTube Trends
+
+on:
+  schedule:
+    - cron: "47 20 * * *" # 매일 05:47 KST
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: trends-collect
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Restore previous snapshot
+        run: |
+          if git fetch --depth=1 origin trends-data; then
+            git show FETCH_HEAD:latest.json > /tmp/prev.json || true
+          fi
+
+      - name: Collect
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: python trends/collect.py --prev /tmp/prev.json
+
+      # 데이터는 main 히스토리를 키우지 않도록 별도 브랜치에 한 커밋으로만 보관한다.
+      - name: Publish to trends-data branch
+        run: |
+          mkdir /tmp/td
+          cp trends/data/latest.json trends/data/farm.json /tmp/td/
+          cd /tmp/td
+          git init -q -b trends-data
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -qm "data: $(date -u +%FT%TZ)"
+          git push -qf "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" trends-data
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
