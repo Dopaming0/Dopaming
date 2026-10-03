@@ -162,7 +162,7 @@ main { padding-block: 20px 56px; }
 .flags { letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .empty { padding: 32px 16px; text-align: center; color: var(--ink-3); border: 1px dashed var(--rule); border-radius: 10px; }
 
-/* 농업 채널 */
+/* 농산물 채널 */
 .bench { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 18px; display: grid; gap: 14px; }
 .bench h2, .sec-h { margin: 0; font: 700 18px/1.35 var(--font-display); text-wrap: balance; }
 .bench .eyebrow { font-size: 11.5px; letter-spacing: 0.08em; color: var(--seal); font-weight: 600; }
@@ -196,6 +196,10 @@ main { padding-block: 20px 56px; }
 .ftag.t-재배 { background: var(--jade-soft); color: var(--jade); border-color: transparent; }
 .ftag.t-직판 { background: var(--gold-soft); color: var(--gold); border-color: transparent; }
 .ftag.t-유통 { background: var(--seal-soft); color: var(--seal); border-color: transparent; }
+.ftag.t-시장 { background: var(--seal-soft); color: var(--seal); border-color: transparent; }
+.ftag.t-리뷰 { background: var(--gold-soft); color: var(--gold); border-color: transparent; }
+.ftag.ig { border-style: dashed; }
+.seedmark { color: var(--ink-3); font-weight: 400; font-size: 11px; margin-left: 2px; }
 .fcrop { margin: 4px 0 0; font-size: 12px; color: var(--ink-3); }
 .fnums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; text-align: right; }
 .fnums dt { font-size: 10.5px; color: var(--ink-3); }
@@ -244,7 +248,7 @@ footer b { color: var(--ink-2); font-weight: 600; }
     <button class="tab" role="tab" id="tab-category" aria-controls="pane-category" data-tab="category">카테고리별<span class="n" id="n-category"></span></button>
     <button class="tab" role="tab" id="tab-signal" aria-controls="pane-signal" data-tab="signal">선행 신호<span class="n" id="n-signal"></span></button>
     <button class="tab" role="tab" id="tab-refs" aria-controls="pane-refs" data-tab="refs">레퍼런스 채널<span class="n" id="n-refs"></span></button>
-    <button class="tab" role="tab" id="tab-farm" aria-controls="pane-farm" data-tab="farm">국내 농업 채널<span class="n" id="n-farm"></span></button>
+    <button class="tab" role="tab" id="tab-farm" aria-controls="pane-farm" data-tab="farm">국내 농산물<span class="n" id="n-farm"></span></button>
   </div>
 </nav>
 
@@ -317,18 +321,15 @@ footer b { color: var(--ink-2); font-weight: 600; }
   </section>
 
   <section class="pane" id="pane-farm" role="tabpanel" aria-labelledby="tab-farm" hidden>
+    <div class="controls"><div class="seg" role="group" aria-label="플랫폼" id="f-plat"></div></div>
+    <p class="note" id="f-ignote" hidden></p>
     <div class="bench" id="f-bench" hidden></div>
     <div class="controls">
       <div class="chips" id="f-types"></div>
     </div>
     <div class="controls">
-      <label class="field">검색 <input id="f-q" type="search" placeholder="채널명·작물·지역"></label>
-      <label class="field">정렬 <select id="f-sort">
-        <option value="subs">구독자</option>
-        <option value="avg">영상당 평균 조회</option>
-        <option value="views">총 조회</option>
-        <option value="since">최근 개설</option>
-      </select></label>
+      <label class="field">검색 <input id="f-q" type="search" placeholder="이름·작물·지역"></label>
+      <label class="field">정렬 <select id="f-sort"></select></label>
     </div>
     <p class="summary" id="f-summary"></p>
     <div class="flist" id="f-list"></div>
@@ -339,7 +340,8 @@ footer b { color: var(--ink-2); font-weight: 600; }
 <footer class="wrap">
   <p><b>인기 급상승</b>은 YouTube Data API의 국가별 mostPopular 차트입니다. <b>시간당 조회</b>는 조회수를 업로드 후 경과 시간(수집 시각 기준)으로 나눈 값, <b>구독자 대비</b>는 조회수 ÷ 채널 구독자 수입니다.</p>
   <p><b>레퍼런스 배수</b>는 영상 조회수 ÷ 그 채널 최근 30개 업로드 중 같은 형식 영상의 조회수 중앙값입니다. 한 형식이 3개 미만이면 비교하지 않습니다.</p>
-  <p><b>농업 채널 배수</b>는 영상 조회수 ÷ 그 채널 최근 업로드 영상 조회수의 중앙값입니다. 3배 이상이면 채널 평소보다 터진 영상으로 봅니다.</p>
+  <p><b>인스타그램 배수</b>는 게시물 반응(좋아요 + 댓글) ÷ 그 계정 최근 15개 게시물 반응의 중앙값입니다. 인스타그램은 남의 계정 릴스 조회수를 API로 주지 않아 반응으로 비교합니다.</p>
+  <p><b>농산물 유튜브 배수</b>는 영상 조회수 ÷ 그 채널 최근 업로드 영상 조회수의 중앙값입니다. 3배 이상이면 채널 평소보다 터진 영상으로 봅니다.</p>
   <p id="foot-src"></p>
 </footer>
 
@@ -348,7 +350,7 @@ footer b { color: var(--ink-2); font-weight: 600; }
   "use strict";
 
   const RGROUP = { "솔파": "솔파 스튜디오", "참여형": "참여형 포맷", "인터뷰": "인터뷰·토크", "챌린지": "챌린지" };
-  const TAGS = { "재배": "직접 재배", "직판": "직판", "유통": "유통·판매", "정보": "정보·교육", "브이로그": "브이로그", "기관": "기관" };
+  const TAGS = { "재배": "직접 재배", "직판": "직판", "유통": "유통·판매", "시장": "도매시장", "리뷰": "리뷰·큐레이션", "정보": "정보·교육", "미디어": "미디어", "브이로그": "브이로그", "기관": "기관" };
   const GROUPS = [["lead", "선행국"], ["global", "글로벌"], ["base", "기준"]];
   const FMT = [["all", "전체"], ["short", "3분 이하"], ["long", "롱폼"]];
   const SHORT_MAX = 180;
@@ -359,7 +361,7 @@ footer b { color: var(--ink-2); font-weight: 600; }
     tab: "country", region: "US", fmt: "all", cat: "", sort: "rank",
     kcat: "", kscope: "all", kfmt: "all", ksort: "spread",
     smin: 2, sfmt: "all",
-    ftype: "all", fq: "", fsort: "subs",
+    fplat: "yt", ftype: "all", fq: "", fsort: "subs", fsortig: "followers",
     rgroup: "all", rmarket: "all", rhot: "hot", rfmt: "all", rdays: "90", rsort: "x",
   };
   try { Object.assign(S, JSON.parse(localStorage.getItem(PREF_KEY) || "{}")); } catch (e) { /* 저장소 없음 */ }
@@ -566,7 +568,54 @@ footer b { color: var(--ink-2); font-weight: 600; }
     grid($("s-grid"), ids, null);
   }
 
-  // ── 국내 농업 채널
+  // ── 국내 농산물 (유튜브 + 인스타그램)
+  const IG = () => (F && F.instagram && F.instagram.accounts) || [];
+  const igFollowers = (a) => a.followers ?? (a.seed ? a.seed.followers : null);
+  const igEng = (a) => {
+    const r = a.recent || [];
+    return r.length ? r.reduce((s, p) => s + (p.l || 0) + (p.m || 0), 0) / r.length : null;
+  };
+  const igTop = (a) => Math.max(0, ...(a.recent || []).map((p) => p.x || 0));
+  const IG_TYPE = { REELS: "릴스", FEED: "피드", IMAGE: "사진", CAROUSEL_ALBUM: "슬라이드", VIDEO: "영상" };
+  function farmBenchIG() {
+    const el = $("f-bench");
+    const hot = [];
+    for (const a of IG()) for (const p of a.recent || []) if (p.x >= HOT_X) hot.push({ a, p });
+    if (!hot.length) { el.hidden = true; return; }
+    hot.sort((x, y) => y.p.x - x.p.x);
+    const maxX = Math.max(hot[0].p.x, 1);
+    const bars = hot.slice(0, 12).map(({ a, p }, i) => `<div class="bar${i === 0 ? " is-max" : ""}">
+        <a href="${esc(p.url)}" target="_blank" rel="noopener" title="${esc(p.t)}">@${esc(a.handle)} · ${esc(p.t || IG_TYPE[p.type] || "게시물")}</a>
+        <div class="track"><div class="fill" style="width:${Math.max((p.x / maxX) * 100, 0.6).toFixed(1)}%"></div></div>
+        <span class="val">${trimNum(p.x)}배 · ♥ ${fmtNum(p.l)} · 댓글 ${fmtNum(p.m)}</span>
+      </div>`).join("");
+    el.hidden = false;
+    el.innerHTML = `<div><div class="eyebrow">벤치마크 · 계정 평소보다 반응이 터진 게시물</div><h2>인스타그램 농산물 계정</h2></div>
+      <p class="why">게시물 반응(좋아요 + 댓글)을 그 계정 최근 게시물의 중앙값과 비교했습니다. 맨 위는 @${esc(hot[0].a.handle)}의 ${esc(IG_TYPE[hot[0].p.type] || "게시물")}로 평소의 <b>${trimNum(hot[0].p.x)}배</b>입니다.</p>
+      <div class="bars">${bars}</div>`;
+  }
+  function igRow(a) {
+    const fol = igFollowers(a);
+    const seedOnly = a.followers == null && a.seed;
+    const eng = igEng(a), top = igTop(a);
+    const initial = esc((a.name || a.handle || "?").trim().charAt(0));
+    return `<div class="frow">
+      <div class="avatar">${a.pic ? `<img loading="lazy" src="${esc(a.pic)}" alt="">` : ""}<span class="ph">${initial}</span></div>
+      <div class="fmain">
+        <p class="fname"><a href="https://www.instagram.com/${encodeURIComponent(a.handle)}/" target="_blank" rel="noopener">${esc(a.name || a.handle)}</a><span class="handle">@${esc(a.handle)}</span></p>
+        <p class="fnote">${esc(a.note || "")}${a.error ? ` <span class="seedmark">· API로 조회 불가(개인 계정이거나 아이디 변경)</span>` : ""}</p>
+      </div>
+      <div class="fmeta">
+        <div class="ftags"><span class="ftag ig">인스타그램</span>${(a.tags || []).map((t) => `<span class="ftag t-${esc(t)}">${esc(TAGS[t] || t)}</span>`).join("")}</div>
+      </div>
+      <dl class="fnums">
+        <div><dt>팔로워</dt><dd>${fmtNum(fol)}${seedOnly ? `<span class="seedmark" title="${esc(a.seed.at)} 웹 검색 기준">*</span>` : ""}</dd></div>
+        <div><dt>게시물</dt><dd>${fmtNum(a.posts)}</dd></div>
+        <div><dt>평균 반응</dt><dd>${fmtNum(eng)}</dd></div>
+        <div><dt>최고 배수</dt><dd>${top ? trimNum(top) + "배" : "–"}</dd></div>
+      </dl>
+    </div>`;
+  }
   function farmBench() {
     const el = $("f-bench");
     const hot = [];
@@ -597,7 +646,7 @@ footer b { color: var(--ink-2); font-weight: 600; }
     if (S.ftype !== "all" && !(ch.tags || []).includes(S.ftype)) return false;
     if (!S.fq) return true;
     const q = S.fq.trim().toLowerCase();
-    return [ch.title, ch.handle, ch.crops, ch.region, ch.note].some((s) => String(s || "").toLowerCase().includes(q));
+    return [ch.title, ch.name, ch.handle, ch.crops, ch.region, ch.note].some((s) => String(s || "").toLowerCase().includes(q));
   }
 
   function farmRow(ch) {
@@ -623,18 +672,49 @@ footer b { color: var(--ink-2); font-weight: 600; }
     </div>`;
   }
 
+  const SORTS = {
+    yt: [["subs", "구독자"], ["avg", "영상당 평균 조회"], ["views", "총 조회"], ["since", "최근 개설"]],
+    ig: [["followers", "팔로워"], ["eng", "평균 반응"], ["top", "최고 배수"], ["posts", "게시물 수"]],
+  };
   function renderFarm() {
     if (!F) {
-      $("f-list").innerHTML = `<div class="empty">농업 채널 데이터(data/farm.json)를 불러오지 못했습니다.</div>`;
+      $("f-list").innerHTML = `<div class="empty">농산물 채널 데이터(data/farm.json)를 불러오지 못했습니다.</div>`;
       return;
     }
-    farmBench();
-    const counts = { all: F.channels.length };
-    for (const ch of F.channels) for (const t of ch.tags || []) counts[t] = (counts[t] || 0) + 1;
+    const igList = IG();
+    if (S.fplat === "ig" && !igList.length) S.fplat = "yt";
+    seg($("f-plat"), [["yt", `유튜브 ${F.channels.length}`], ["ig", `인스타그램 ${igList.length}`]], S.fplat, (v) => { S.fplat = v; S.ftype = "all"; update(); });
+    const ig = S.fplat === "ig";
+    const pool = ig ? igList : F.channels;
+    const counts = { all: pool.length };
+    for (const ch of pool) for (const t of ch.tags || []) counts[t] = (counts[t] || 0) + 1;
+    if (S.ftype !== "all" && !counts[S.ftype]) S.ftype = "all";
     $("f-types").innerHTML = [["all", "전체"], ...Object.entries(TAGS)].filter(([k]) => counts[k])
       .map(([k, label]) => `<button type="button" class="chip" data-f="${esc(k)}" aria-pressed="${k === S.ftype}">${esc(label)}<span class="n">${counts[k]}</span></button>`).join("");
     if ($("f-q").value !== S.fq) $("f-q").value = S.fq;
-    $("f-sort").value = S.fsort;
+    const sortKey = ig ? "fsortig" : "fsort";
+    $("f-sort").innerHTML = SORTS[ig ? "ig" : "yt"].map(([v, l]) => `<option value="${v}">${l}</option>`).join("");
+    $("f-sort").value = S[sortKey];
+    const note = $("f-ignote");
+    note.hidden = !ig || (F.instagram && F.instagram.api);
+    note.innerHTML = `인스타그램 계정 목록입니다. <b>팔로워 *</b>는 ${esc((igList.find((a) => a.seed) || { seed: { at: "" } }).seed.at)} 웹 검색 기준이고, Meta API를 연결하면 팔로워·게시물·게시물별 반응이 매일 채워집니다.`;
+    if (ig) {
+      farmBenchIG();
+      const sorters = {
+        followers: (a, b) => (igFollowers(b) || 0) - (igFollowers(a) || 0),
+        eng: (a, b) => (igEng(b) || 0) - (igEng(a) || 0),
+        top: (a, b) => igTop(b) - igTop(a),
+        posts: (a, b) => (b.posts || 0) - (a.posts || 0),
+      };
+      const list = igList.filter(farmMatch).sort(sorters[S.fsortig] || sorters.followers);
+      const folSum = list.reduce((s, a) => s + (igFollowers(a) || 0), 0);
+      $("f-summary").innerHTML = `<span><b>${list.length}개</b> 계정</span><span>팔로워 합계 ${fmtNum(folSum)}</span>` +
+        `<span>판매·유통 ${list.filter((a) => (a.tags || []).some((t) => t === "직판" || t === "유통")).length} · 직접 재배 ${list.filter((a) => (a.tags || []).includes("재배")).length}</span>`;
+      $("f-list").innerHTML = list.length ? list.map(igRow).join("") : `<div class="empty">검색 결과가 없습니다.</div>`;
+      $("f-disc").innerHTML = "";
+      return;
+    }
+    farmBench();
     const sorters = {
       subs: (a, b) => (b.subs || 0) - (a.subs || 0),
       avg: (a, b) => (b.views / (b.videos || 1)) - (a.views / (a.videos || 1)),
@@ -644,7 +724,7 @@ footer b { color: var(--ink-2); font-weight: 600; }
     const list = F.channels.filter(farmMatch).sort(sorters[S.fsort] || sorters.subs);
     const subsSum = list.reduce((s, c) => s + (c.subs || 0), 0);
     $("f-summary").innerHTML = `<span><b>${list.length}개</b> 채널</span><span>구독자 합계 ${fmtNum(subsSum)}</span>` +
-      `<span>직접 재배 ${list.filter((c) => (c.tags || []).includes("재배")).length} · 판매·유통 ${list.filter((c) => (c.tags || []).some((t) => t === "직판" || t === "유통")).length}</span>`;
+      `<span>직접 재배 ${list.filter((c) => (c.tags || []).includes("재배")).length} · 판매·유통·시장 ${list.filter((c) => (c.tags || []).some((t) => t === "직판" || t === "유통" || t === "시장")).length}</span>`;
     $("f-list").innerHTML = list.length ? list.map(farmRow).join("") : `<div class="empty">검색 결과가 없습니다.</div>`;
     const disc = F.discovered || [];
     $("f-disc").innerHTML = disc.length ? `<h3 class="sec-h">자동 발굴 후보 ${disc.length}개</h3>
@@ -798,14 +878,14 @@ footer b { color: var(--ink-2); font-weight: 600; }
     const seed = /시드/.test(T.source);
     $("meta").innerHTML = `<span>기준 <b>${esc(when)} KST</b></span><span>${T.regions.length}개국 · 영상 ${fmtNum(Object.keys(T.videos).length)}개</span>` +
       (R ? `<span>레퍼런스 채널 ${R.channels.length}개</span>` : "") +
-      (F ? `<span>농업 채널 ${F.channels.length}개</span>` : "") +
+      (F ? `<span>농산물 유튜브 ${F.channels.length} · 인스타 ${IG().length}</span>` : "") +
       (seed ? `<span class="pill-note">시드 데이터 · API 키 연결 후 매일 자동 갱신</span>` : "");
-    $("foot-src").innerHTML = `출처: <b>${esc(T.source)}</b>` + (R ? ` / 레퍼런스: <b>${esc(R.source)}</b>` : "") + (F ? ` / 농업 채널: <b>${esc(F.source)}</b>` : "");
+    $("foot-src").innerHTML = `출처: <b>${esc(T.source)}</b>` + (R ? ` / 레퍼런스: <b>${esc(R.source)}</b>` : "") + (F ? ` / 농산물: <b>${esc(F.source)}</b>${F.instagram && F.instagram.api ? " + Instagram Graph API" : ""}` : "");
     $("n-country").textContent = T.regions.length;
     $("n-category").textContent = Object.keys(T.categories).filter((c) => [...WHERE.keys()].some((id) => T.videos[id].cat === c)).length;
     $("n-signal").textContent = signalIds(2).length;
     $("n-refs").textContent = R ? R.channels.length : "";
-    $("n-farm").textContent = F ? F.channels.length : "";
+    $("n-farm").textContent = F ? F.channels.length + IG().length : "";
   }
 
   // 이벤트 (한 번만 연결)
@@ -829,7 +909,7 @@ footer b { color: var(--ink-2); font-weight: 600; }
     if (b) { S.ftype = b.dataset.f; update(); }
   });
   $("f-q").addEventListener("input", (e) => { S.fq = e.target.value; update(); });
-  $("f-sort").addEventListener("change", (e) => { S.fsort = e.target.value; update(); });
+  $("f-sort").addEventListener("change", (e) => { S[S.fplat === "ig" ? "fsortig" : "fsort"] = e.target.value; update(); });
   $("r-groups").addEventListener("click", (e) => {
     const b = e.target.closest("[data-g]");
     if (b) { S.rgroup = b.dataset.g; update(); }

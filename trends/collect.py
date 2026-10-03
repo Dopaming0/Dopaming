@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """해외 트렌드 관측소 데이터 수집기.
 
-YouTube Data API v3로 국가별 인기 급상승·쇼츠·카테고리 차트, 국내 농업 채널,
+YouTube Data API v3로 국가별 인기 급상승·쇼츠·카테고리 차트, 국내 농산물 채널,
 기획 레퍼런스 채널 현황을 모아 trends/data/ 의 latest.json, farm.json, refs.json 으로
-저장한다.
+저장한다. IG_USER_ID·IG_ACCESS_TOKEN이 있으면 Instagram Graph API의 비즈니스
+디스커버리로 농산물 인스타그램 계정도 함께 채운다.
 표준 라이브러리만 사용한다.
 
     YOUTUBE_API_KEY=... python trends/collect.py
@@ -31,6 +32,7 @@ from pathlib import Path
 from statistics import median
 
 API = "https://www.googleapis.com/youtube/v3/"
+IG_API = "https://graph.facebook.com/v21.0/"
 HERE = Path(__file__).resolve().parent
 DATA = HERE / "data"
 
@@ -85,6 +87,7 @@ SHORT_MAX_SEC = 180  # 2024-10 이후 쇼츠 최대 길이
 SHORTS_WINDOW_H = 48
 FARM_RECENT = 15
 REF_RECENT = 30
+IG_RECENT = 15
 DISCOVER_MIN_SUBS = 1000
 
 
@@ -92,9 +95,10 @@ class ApiError(Exception):
     def __init__(self, status: int, body: str):
         try:
             err = json.loads(body)["error"]
-            self.reason = err["errors"][0].get("reason", "")
+            # YouTube: errors[0].reason / Graph API: code·error_subcode
+            self.reason = (err.get("errors") or [{}])[0].get("reason", "") or str(err.get("code", ""))
             message = err.get("message", "")
-        except (ValueError, KeyError, IndexError):
+        except (ValueError, KeyError, IndexError, TypeError, AttributeError):
             self.reason, message = "", body[:200]
         super().__init__(f"HTTP {status} {self.reason}: {message}")
 
@@ -108,7 +112,10 @@ def log(msg: str) -> None:
 
 def api(endpoint: str, **params) -> dict:
     params["key"] = os.environ["YOUTUBE_API_KEY"]
-    url = API + endpoint + "?" + urllib.parse.urlencode(params)
+    return fetch_json(API + endpoint + "?" + urllib.parse.urlencode(params))
+
+
+def fetch_json(url: str) -> dict:
     for attempt in range(3):
         try:
             with urllib.request.urlopen(url, timeout=30) as res:
@@ -321,13 +328,73 @@ def with_outliers(rows: list[tuple[str, dict]], by_format: bool = False) -> tupl
     return base, out
 
 
-def build_farm(channels_out: list[dict], discovered: list[dict], source: str, generated_at: str | None = None) -> dict:
-    return {
+def build_farm(channels_out: list[dict], discovered: list[dict], source: str, generated_at: str | None = None,
+               instagram: dict | None = None) -> dict:
+    doc = {
         "generatedAt": generated_at or now_iso(),
         "source": source,
         "channels": channels_out,
         "discovered": discovered,
     }
+    if instagram is not None:
+        doc["instagram"] = instagram
+    return doc
+
+
+def ig_account(user_id: str, token: str, handle: str) -> dict:
+    """비즈니스 디스커버리로 다른 비즈니스·크리에이터 계정의 공개 지표를 읽는다.
+
+    릴스 조회수는 이 API로 받을 수 없어서, 게시물 반응(좋아요 + 댓글)을 계정 최근
+    게시물의 중앙값과 비교한다. 좋아요 수를 숨긴 게시물은 댓글만 센다.
+    """
+    fields = (
+        f"business_discovery.username({handle})"
+        "{username,name,followers_count,media_count,profile_picture_url,"
+        f"media.limit({IG_RECENT}){{caption,media_type,media_product_type,like_count,comments_count,timestamp,permalink}}}}"
+    )
+    url = IG_API + user_id + "?" + urllib.parse.urlencode({"fields": fields, "access_token": token})
+    bd = fetch_json(url)["business_discovery"]
+    posts = []
+    for m in bd.get("media", {}).get("data", []):
+        caption = (m.get("caption") or "").strip().splitlines()
+        posts.append({
+            "id": m["id"],
+            "t": caption[0][:100] if caption else "",
+            "p": (m.get("timestamp") or "").replace("+0000", "Z"),
+            "type": m.get("media_product_type") or m.get("media_type") or "",
+            "l": m.get("like_count"),
+            "m": m.get("comments_count", 0),
+            "url": m.get("permalink", ""),
+        })
+    eng = [(p["l"] or 0) + (p["m"] or 0) for p in posts]
+    base = int(median(eng)) if eng else 0
+    for p, e in zip(posts, eng):
+        p["x"] = round(e / max(base, 1), 1)
+    return {
+        "name": bd.get("name") or handle,
+        "followers": bd.get("followers_count"),
+        "posts": bd.get("media_count"),
+        "pic": bd.get("profile_picture_url", ""),
+        "median": base,
+        "recent": posts,
+    }
+
+
+def collect_instagram(curated: list[dict]) -> dict:
+    user_id, token = os.environ.get("IG_USER_ID"), os.environ.get("IG_ACCESS_TOKEN")
+    out = []
+    for a in curated:
+        acc = dict(a)
+        if user_id and token:
+            try:
+                acc.update(ig_account(user_id, token, a["handle"]))
+            except (ApiError, urllib.error.URLError, KeyError) as e:
+                acc["error"] = str(e)[:160]
+                log(f"  instagram @{a['handle']}: {acc['error']}")
+        out.append(acc)
+    if user_id and token:
+        log(f"인스타그램 계정 {sum(1 for a in out if 'error' not in a)}/{len(out)}개 갱신")
+    return {"api": bool(user_id and token), "accounts": out}
 
 
 def discover_farm(known: set[str]) -> list[dict]:
@@ -362,7 +429,8 @@ def collect_farm(curated: list[dict], discover: bool) -> dict:
     found = discover_farm({c["id"] for c in curated}) if discover else []
     if found:
         log(f"자동 발굴 후보 {len(found)}개")
-    return build_farm(out, found, "YouTube Data API v3")
+    accounts = (load_json(HERE / "farm_instagram.json") or {}).get("accounts", [])
+    return build_farm(out, found, "YouTube Data API v3", instagram=collect_instagram(accounts))
 
 
 def build_refs(channels_out: list[dict], groups: dict, source: str, generated_at: str | None = None) -> dict:
