@@ -4,9 +4,15 @@ on:
   schedule:
     - cron: "47 20 * * *" # 매일 05:47 KST
   workflow_dispatch:
+    inputs:
+      digest:
+        description: "주간 인사이트 요약을 지금 새로 만들기"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
+  issues: write # 주간 인사이트 이슈 댓글
 
 concurrency:
   group: trends-collect
@@ -27,10 +33,16 @@ jobs:
         run: |
           mkdir -p /tmp/prev
           if git fetch --depth=1 origin trends-data; then
-            for f in latest farm refs; do
+            for f in latest farm refs mine digest; do
               git show "FETCH_HEAD:$f.json" > "/tmp/prev/$f.json" 2>/dev/null || rm -f "/tmp/prev/$f.json"
             done
           fi
+
+      # 지난 요약을 이어받아, 6일이 지났을 때만 새로 만든다
+      - name: Carry over last digest
+        run: |
+          rm -f trends/data/digest.json   # 저장소의 시드 요약은 이어받지 않는다(첫 실행에 바로 새로 만든다)
+          if [ -f /tmp/prev/digest.json ]; then cp /tmp/prev/digest.json trends/data/digest.json; fi
 
       - name: Collect
         env:
@@ -40,11 +52,23 @@ jobs:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
         run: python trends/collect.py --prev-dir /tmp/prev
 
+      - name: Weekly digest
+        env:
+          # 선택: 있으면 Claude 요약이 붙는다. 없으면 통계만 남긴다
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DIGEST_MODEL: ${{ vars.DIGEST_MODEL }}
+          DIGEST_ISSUE: ${{ vars.DIGEST_ISSUE }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY" ]; then pip install --quiet anthropic; fi
+          python trends/digest.py ${{ inputs.digest && '--force' || '' }} || echo "digest skipped"
+
       # 데이터는 main 히스토리를 키우지 않도록 별도 브랜치에 한 커밋으로만 보관한다.
       - name: Publish to trends-data branch
         run: |
           mkdir /tmp/td
           cp trends/data/latest.json trends/data/farm.json trends/data/refs.json /tmp/td/
+          for f in mine digest; do if [ -f "trends/data/$f.json" ]; then cp "trends/data/$f.json" /tmp/td/; fi; done
           cd /tmp/td
           git init -q -b trends-data
           git config user.name "github-actions[bot]"

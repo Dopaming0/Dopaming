@@ -30,7 +30,7 @@ jobs:
       - name: Overlay latest trend data
         run: |
           if git fetch --depth=1 origin trends-data 2>/dev/null; then
-            for f in latest.json farm.json refs.json; do
+            for f in latest.json farm.json refs.json mine.json digest.json; do
               if git show "FETCH_HEAD:$f" > "/tmp/$f" 2>/dev/null; then
                 mv "/tmp/$f" "trends/data/$f"
               else

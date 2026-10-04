@@ -87,6 +87,7 @@ SHORT_MAX_SEC = 180  # 2024-10 이후 쇼츠 최대 길이
 SHORTS_WINDOW_H = 48
 FARM_RECENT = 15
 REF_RECENT = 30
+MINE_RECENT = 50  # 내 채널은 최근 50개까지 본다
 IG_RECENT = 15
 DISCOVER_MIN_SUBS = 1000
 
@@ -466,6 +467,16 @@ def add_velocity(doc: dict, prev: dict | None) -> dict:
     return doc
 
 
+def collect_mine(doc: dict) -> dict | None:
+    """my_channels.json의 내 채널: 최근 업로드와 배수(형식별). 벤치마크와 같은 기준으로 내 영상을 본다."""
+    chans = doc.get("channels", [])
+    if not chans:
+        return None
+    out = watch_channels(chans, MINE_RECENT, by_format=True)
+    log(f"내 채널 {len(out)}개 갱신")
+    return {"generatedAt": now_iso(), "source": "YouTube Data API v3", "channels": out}
+
+
 def load_json(path: Path) -> dict | None:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -483,7 +494,7 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--prev-dir", type=Path, default=DATA,
                     help="이전 스냅샷(latest·farm·refs.json) 폴더. NEW·순위 변동과 시간당 조회 증가 계산에 쓴다")
     ap.add_argument("--prev", type=Path, help="이전 latest.json만 따로 지정 (--prev-dir보다 우선)")
-    ap.add_argument("--only", choices=["trends", "farm", "refs"], help="하나만 수집")
+    ap.add_argument("--only", choices=["trends", "farm", "refs", "mine"], help="하나만 수집")
     ap.add_argument("--no-discover", action="store_true", help="농업 채널 자동 발굴 생략 (search 쿼터 절약)")
     args = ap.parse_args(argv)
     if not os.environ.get("YOUTUBE_API_KEY"):
@@ -499,6 +510,11 @@ def main(argv: list[str] | None = None) -> None:
     if args.only in (None, "refs"):
         before = prev("refs.json")
         write_json(DATA / "refs.json", add_velocity(collect_refs(load_json(HERE / "ref_channels.json") or {}), before))
+    if args.only in (None, "mine"):
+        before = prev("mine.json")
+        mine = collect_mine(load_json(HERE / "my_channels.json") or {})
+        if mine:
+            write_json(DATA / "mine.json", add_velocity(mine, before))
 
 
 if __name__ == "__main__":
