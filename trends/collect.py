@@ -448,6 +448,24 @@ def collect_refs(doc: dict) -> dict:
     return build_refs(out, doc.get("groups", {}), "YouTube Data API v3")
 
 
+def add_velocity(doc: dict, prev: dict | None) -> dict:
+    """이전 스냅샷과 비교해 영상마다 시간당 조회 증가(vph)를 붙인다. 지금 오르는 중인 영상을 찾는 값."""
+    try:
+        hours = (datetime.fromisoformat(doc["generatedAt"].replace("Z", "+00:00"))
+                 - datetime.fromisoformat(prev["generatedAt"].replace("Z", "+00:00"))).total_seconds() / 3600
+    except (TypeError, KeyError, ValueError):
+        return doc
+    if hours < 1:
+        return doc
+    before = {r["id"]: r.get("v") for ch in prev.get("channels", []) for r in ch.get("recent", [])}
+    for ch in doc.get("channels", []):
+        for r in ch.get("recent", []):
+            v0 = before.get(r["id"])
+            if v0 is not None and r.get("v") is not None:
+                r["vph"] = round(max(r["v"] - v0, 0) / hours, 1)
+    return doc
+
+
 def load_json(path: Path) -> dict | None:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -462,20 +480,25 @@ def write_json(path: Path, doc: dict) -> None:
 
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description="해외 트렌드 관측소 데이터 수집기")
-    ap.add_argument("--prev", type=Path, default=DATA / "latest.json", help="NEW·순위 변동 비교용 이전 스냅샷")
+    ap.add_argument("--prev-dir", type=Path, default=DATA,
+                    help="이전 스냅샷(latest·farm·refs.json) 폴더. NEW·순위 변동과 시간당 조회 증가 계산에 쓴다")
+    ap.add_argument("--prev", type=Path, help="이전 latest.json만 따로 지정 (--prev-dir보다 우선)")
     ap.add_argument("--only", choices=["trends", "farm", "refs"], help="하나만 수집")
     ap.add_argument("--no-discover", action="store_true", help="농업 채널 자동 발굴 생략 (search 쿼터 절약)")
     args = ap.parse_args(argv)
     if not os.environ.get("YOUTUBE_API_KEY"):
         sys.exit("YOUTUBE_API_KEY 환경변수가 필요합니다.")
     DATA.mkdir(exist_ok=True)
+    prev = lambda name: load_json(args.prev_dir / name)  # noqa: E731 — 덮어쓰기 전에 읽는다
     if args.only in (None, "trends"):
-        write_json(DATA / "latest.json", collect_trends(load_json(args.prev)))
+        write_json(DATA / "latest.json", collect_trends(load_json(args.prev) if args.prev else prev("latest.json")))
     if args.only in (None, "farm"):
         curated = (load_json(HERE / "farm_channels.json") or {}).get("channels", [])
-        write_json(DATA / "farm.json", collect_farm(curated, discover=not args.no_discover))
+        before = prev("farm.json")
+        write_json(DATA / "farm.json", add_velocity(collect_farm(curated, discover=not args.no_discover), before))
     if args.only in (None, "refs"):
-        write_json(DATA / "refs.json", collect_refs(load_json(HERE / "ref_channels.json") or {}))
+        before = prev("refs.json")
+        write_json(DATA / "refs.json", add_velocity(collect_refs(load_json(HERE / "ref_channels.json") or {}), before))
 
 
 if __name__ == "__main__":

@@ -22,10 +22,14 @@ jobs:
         with:
           python-version: "3.12"
 
+      # 어제 스냅샷: NEW·순위 변동(latest)과 영상별 시간당 조회 증가(farm·refs) 계산용
       - name: Restore previous snapshot
         run: |
+          mkdir -p /tmp/prev
           if git fetch --depth=1 origin trends-data; then
-            git show FETCH_HEAD:latest.json > /tmp/prev.json || true
+            for f in latest farm refs; do
+              git show "FETCH_HEAD:$f.json" > "/tmp/prev/$f.json" 2>/dev/null || rm -f "/tmp/prev/$f.json"
+            done
           fi
 
       - name: Collect
@@ -34,7 +38,7 @@ jobs:
           # 선택: 있으면 농산물 인스타그램 계정 지표도 채운다
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
-        run: python trends/collect.py --prev /tmp/prev.json
+        run: python trends/collect.py --prev-dir /tmp/prev
 
       # 데이터는 main 히스토리를 키우지 않도록 별도 브랜치에 한 커밋으로만 보관한다.
       - name: Publish to trends-data branch

@@ -224,6 +224,73 @@ main { padding-block: 20px 56px; }
   max-width: calc(100vw - 32px);
 }
 
+/* 인사이트 */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 12px; }
+.tile { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 14px 16px; min-width: 0; }
+.tile .lbl { font-size: 12px; color: var(--ink-3); }
+.tile .num { font-size: 24px; font-weight: 700; line-height: 1.25; margin-top: 4px; overflow-wrap: anywhere; }
+.tile .sub { font-size: 12px; color: var(--ink-2); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile .sub a, .reads a, .lex a { text-decoration: none; border-bottom: 1px solid var(--rule); }
+.ibox { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 18px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.ibox h2 { margin: 0; font: 700 17px/1.35 var(--font-display); text-wrap: balance; }
+.ibox .eyebrow { font-size: 11.5px; letter-spacing: 0.06em; color: var(--seal); font-weight: 600; }
+.icols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 16px; align-items: start; }
+.muted { color: var(--ink-3); }
+.small { font-size: 12px; margin: 0; }
+.reads { margin: 0; padding-left: 22px; display: grid; gap: 9px; }
+.reads li::marker { color: var(--seal); font-weight: 700; }
+.lrow > summary, div.lrow { display: grid; grid-template-columns: minmax(64px, 8.5em) minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 13px; padding: 5px 0; }
+.lrow > summary { cursor: pointer; list-style: none; }
+.lrow > summary::-webkit-details-marker { display: none; }
+.lrow > summary:hover .lname { text-decoration: underline; }
+.lrow[open] > summary .lname { font-weight: 600; }
+.lname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ltrack { position: relative; height: 10px; background: var(--hatch); border-radius: 0 4px 4px 0; }
+.lfill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 4px 4px 0; background: var(--ink-3); }
+.lrow.up .lfill { background: var(--seal); }
+.lrow.thin .lfill { opacity: 0.45; }
+.lbase { position: absolute; top: -4px; bottom: -4px; width: 2px; margin-left: -1px; background: var(--ink); border-radius: 1px; }
+.lval { font-size: 12.5px; color: var(--ink-2); white-space: nowrap; text-align: right; min-width: 9em; }
+.lval b { color: var(--ink); }
+.lrow.up .lval b { color: var(--seal); }
+.lex { padding: 2px 0 8px; font-size: 12.5px; }
+.lex p { margin: 0 0 4px; }
+.lex ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
+.tcols { display: grid; gap: 10px; }
+.kws { display: flex; flex-wrap: wrap; gap: 6px; }
+.kw { display: inline-flex; gap: 6px; align-items: baseline; border: 1px solid var(--rule); border-radius: 999px; padding: 4px 10px; font-size: 13px; text-decoration: none; background: var(--paper); }
+.kw b { color: var(--seal); font-weight: 600; }
+.kw .muted { font-size: 11.5px; }
+.kw:hover { border-color: var(--ink-3); }
+.sub-h { margin: 4px 0 0; font-size: 13px; font-weight: 700; color: var(--ink-2); }
+.btn { border: 1px solid var(--ink); background: var(--ink); color: var(--paper); border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.btn.ghost { background: none; color: var(--ink); border-color: var(--rule); }
+.btn:hover { opacity: 0.88; }
+.ai-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.ai-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 18px; align-items: start; }
+.ai-grid section { display: grid; gap: 8px; min-width: 0; }
+.pats, .avoid { margin: 0; padding-left: 20px; display: grid; gap: 10px; }
+.ideas { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.ideas li { border: 1px solid var(--rule); border-radius: 10px; padding: 10px 12px; display: grid; gap: 4px; justify-items: start; background: var(--paper); }
+.iline { margin: 0; font-weight: 600; }
+.formula { font-weight: 500; color: var(--seal); }
+.ithumb { margin: 0; font-size: 12.5px; color: var(--gold); font-weight: 600; }
+.ifor { margin: 4px 0 0; font-size: 12px; font-weight: 700; color: var(--ink-3); letter-spacing: 0.04em; }
+.evi { margin: 4px 0 0; padding-left: 16px; font-size: 12px; color: var(--ink-2); }
+@media (max-width: 560px) {
+  .lrow > summary, div.lrow { grid-template-columns: minmax(0, 1fr) auto; row-gap: 4px; }
+  .ltrack { grid-column: 1 / -1; grid-row: 2; }
+  .lval { min-width: 0; }
+}
+
+/* 모아보기 */
+.star { border: 0; background: none; cursor: pointer; font-size: 17px; line-height: 1; color: var(--ink-3); padding: 2px; }
+.star[aria-pressed="true"] { color: var(--gold); }
+.star:hover { color: var(--ink); }
+.vact { display: inline-flex; align-items: center; gap: 10px; }
+.srow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 16px; }
+.srow + .srow { border-top: 1px solid var(--rule); }
+
 footer { border-top: 1px solid var(--rule); padding-block: 20px 36px; color: var(--ink-3); font-size: 12.5px; }
 footer p { margin: 0 0 6px; max-width: 90ch; }
 footer b { color: var(--ink-2); font-weight: 600; }
@@ -245,15 +312,39 @@ footer b { color: var(--ink-2); font-weight: 600; }
 
 <nav class="tabs" aria-label="보기 전환">
   <div class="wrap" role="tablist">
+    <button class="tab" role="tab" id="tab-insight" aria-controls="pane-insight" data-tab="insight">인사이트<span class="n" id="n-insight"></span></button>
     <button class="tab" role="tab" id="tab-country" aria-controls="pane-country" data-tab="country">국가별<span class="n" id="n-country"></span></button>
     <button class="tab" role="tab" id="tab-category" aria-controls="pane-category" data-tab="category">카테고리별<span class="n" id="n-category"></span></button>
     <button class="tab" role="tab" id="tab-signal" aria-controls="pane-signal" data-tab="signal">선행 신호<span class="n" id="n-signal"></span></button>
     <button class="tab" role="tab" id="tab-refs" aria-controls="pane-refs" data-tab="refs">레퍼런스 채널<span class="n" id="n-refs"></span></button>
     <button class="tab" role="tab" id="tab-farm" aria-controls="pane-farm" data-tab="farm">국내 농산물<span class="n" id="n-farm"></span></button>
+    <button class="tab" role="tab" id="tab-saved" aria-controls="pane-saved" data-tab="saved">모아보기<span class="n" id="n-saved"></span></button>
   </div>
 </nav>
 
 <main class="wrap">
+  <section class="pane" id="pane-insight" role="tabpanel" aria-labelledby="tab-insight" hidden>
+    <p class="note">레퍼런스·농산물 채널의 최근 영상에서 <b>평소의 3배 이상 터진 영상</b>이 어떤 제목·길이·시간·단어에 몰리는지 비교합니다. 제목 공식은 <b>같은 채널 안에서</b> 패턴이 있는 영상과 없는 영상을 비교해, 채널마다 다른 제목 습관이 섞이지 않게 했습니다.</p>
+    <div class="chips" id="i-scope"></div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="국내·해외" id="i-market"></div>
+      <div class="seg" role="group" aria-label="영상 길이" id="i-fmt"></div>
+      <button type="button" class="copy" id="i-copy">인사이트 복사</button>
+    </div>
+    <div class="tiles" id="i-tiles"></div>
+    <div class="ibox" id="i-reads"></div>
+    <div class="ibox" id="i-ai" hidden></div>
+    <div class="icols">
+      <div class="ibox" id="i-hooks"></div>
+      <div class="ibox" id="i-words"></div>
+    </div>
+    <div class="icols">
+      <div class="ibox" id="i-format"></div>
+      <div class="ibox" id="i-time"></div>
+    </div>
+    <div class="ibox" id="i-rising"></div>
+  </section>
+
   <section class="pane" id="pane-country" role="tabpanel" aria-labelledby="tab-country" hidden>
     <div class="regions" id="regions"></div>
     <p class="note"><b>선행국</b>은 숏폼 포맷과 밈이 한국보다 먼저 퍼지는 시장입니다. <b>한국 미상륙</b> 표시는 같은 시점 한국 인기 차트에 없는 영상입니다.</p>
@@ -336,10 +427,17 @@ footer b { color: var(--ink-2); font-weight: 600; }
     <div class="flist" id="f-list"></div>
     <div id="f-disc"></div>
   </section>
+
+  <section class="pane" id="pane-saved" role="tabpanel" aria-labelledby="tab-saved" hidden>
+    <p class="note">카드의 <b>☆</b>를 눌러 모은 영상입니다. 이 브라우저에만 저장됩니다. 마크다운으로 복사해 기획 노트에 붙여 넣으세요.</p>
+    <div class="controls" id="v-actions" hidden><button type="button" class="btn" id="v-copy">마크다운 복사</button><button type="button" class="btn ghost" id="v-clear">모두 지우기</button></div>
+    <div class="flist" id="v-list"></div>
+  </section>
 </main>
 
 <footer class="wrap">
   <p><b>인기 급상승</b>은 YouTube Data API의 국가별 mostPopular 차트입니다. <b>시간당 조회</b>는 조회수를 업로드 후 경과 시간(수집 시각 기준)으로 나눈 값, <b>구독자 대비</b>는 조회수 ÷ 채널 구독자 수입니다.</p>
+  <p><b>인사이트</b>의 터질 확률은 평소의 3배 이상인 영상의 비율입니다. 제목 공식은 같은 채널 안에서 패턴이 있는 영상과 없는 영상을 비교하고, 양쪽 모두 8개 이상일 때만 보여 줍니다. 신뢰도는 두 비율 차이의 z 값(2 이상 높음, 1.3 이상 보통)입니다.</p>
   <p><b>레퍼런스 배수</b>는 영상 조회수 ÷ 그 채널 최근 30개 업로드 중 같은 형식 영상의 조회수 중앙값입니다. 한 형식이 3개 미만이면 비교하지 않습니다.</p>
   <p><b>인스타그램 배수</b>는 게시물 반응(좋아요 + 댓글) ÷ 그 계정 최근 15개 게시물 반응의 중앙값입니다. 인스타그램은 남의 계정 릴스 조회수를 API로 주지 않아 반응으로 비교합니다.</p>
   <p><b>농산물 유튜브 배수</b>는 영상 조회수 ÷ 그 채널 최근 업로드 영상 조회수의 중앙값입니다. 3배 이상이면 채널 평소보다 터진 영상으로 봅니다.</p>
@@ -359,11 +457,12 @@ footer b { color: var(--ink-2); font-weight: 600; }
   const PREF_KEY = "trends.prefs.v1";
 
   const S = {
-    tab: "country", region: "US", fmt: "all", cat: "", sort: "rank",
+    tab: "insight", region: "US", fmt: "all", cat: "", sort: "rank",
     kcat: "", kscope: "all", kfmt: "all", ksort: "spread",
     smin: 2, sfmt: "all",
     fplat: "yt", ftype: "all", fq: "", fsort: "subs", fsortig: "followers",
     rgroup: "all", rmarket: "all", rhot: "hot", rfmt: "all", rdays: "90", rsort: "x",
+    iscope: "all", imarket: "all", ifmt: "all",
   };
   try { Object.assign(S, JSON.parse(localStorage.getItem(PREF_KEY) || "{}")); } catch (e) { /* 저장소 없음 */ }
   const save = () => { try { localStorage.setItem(PREF_KEY, JSON.stringify(S)); } catch (e) { /* 무시 */ } };
@@ -476,7 +575,7 @@ footer b { color: var(--ink-2); font-weight: 600; }
           <div><dt>업로드</dt><dd>${fmtAge(v.p)}</dd></div>
           <div><dt>좋아요율</dt><dd>${likeRate ? likeRate.toFixed(1) + "%" : "–"}</dd></div>
         </dl>
-        <div class="vfoot"><span class="flags" title="${esc(where.map((c) => REG[c].name).join(", "))}">${where.map(flag).join("")}</span>${tr}</div>
+        <div class="vfoot"><span class="flags" title="${esc(where.map((c) => REG[c].name).join(", "))}">${where.map(flag).join("")}</span><span class="vact">${tr}${starBtn(id)}</span></div>
       </div>
     </article>`;
   }
@@ -773,7 +872,7 @@ footer b { color: var(--ink-2); font-weight: 600; }
           <div><dt>업로드</dt><dd>${fmtAge(r.p)}</dd></div>
           <div><dt>댓글/천회</dt><dd>${r.m == null ? "–" : trimNum(talk(r))}</dd></div>
         </dl>
-        <div class="vfoot"><button type="button" class="copy" data-memo="${esc(memoLine(ch, r))}">메모 복사</button>${tr}</div>
+        <div class="vfoot"><button type="button" class="copy" data-memo="${esc(memoLine(ch, r))}">메모 복사</button><span class="vact">${tr}${starBtn(r.id)}</span></div>
       </div>
     </article>`;
   }
@@ -854,9 +953,434 @@ footer b { color: var(--ink-2); font-weight: 600; }
     return ok;
   }
 
+  // ── 인사이트: 배수(x)가 있는 영상(레퍼런스·농산물)에서 제목·길이·시간·단어별 '터질 확률'을 비교한다
+  const MIN_N = 8;
+  // 정규식에 g 플래그를 붙이지 않는다(test가 lastIndex를 기억해 결과가 흔들린다)
+  const HOOKS = [
+    ["money", "돈·금액", /(\d[\d,.]*\s*(원|만\s?원|억|천만|만|조)(?![가-힣])|[$₩€£]\s?\d|\d\s?(k|K|M)\b|수익|매출|연봉|월급|시급|순수익|얼마|가격|\bMRR\b|\bARR\b|\/month|per month|a year|\/year|salary|make\?|earn)/i],
+    ["age", "나이·세대", /(\d{1,2}\s?(살|세)(?![가-힣])|\d{2}년생|\d{2}-year-old|\b\d{2}\s?yo\b|[1-9]0대|MZ|Gen ?Z|청년|대학생|고등학생|중학생|teen|student)/i],
+    ["number", "숫자", /\d/],
+    ["question", "질문형", /(\?|？|일까|할까|인가요|나요|까요|는가|왜\s|어떻게|무엇|얼마|\bhow\b|\bwhy\b|\bwhat\b|\bwho\b)/i],
+    ["versus", "대결·비교", /(\bvs\.?\b|대결|비교|차이|보다\s|이기|승자|\bbetter than\b)/i],
+    ["quote", "말 인용", /["“”]|'[^']{2,}'|‘[^’]{2,}’/],
+    ["first", "1인칭 경험", /((^|\s)(나|내가|저는|제가|저의|우리)\s|해봤|해 봤|가봤|가 봤|직접|\bI\b|\bI'm\b|\bI've\b|\bmy\b|\bwe\b)/i],
+    ["warn", "경고·부정", /(하지\s?마|절대|금지|최악|망한|망했|망하|실패|후회|위험|사기|조심|\bdon'?t\b|\bnever\b|\bstop\b|\bworst\b|\bmistake)/i],
+    ["extreme", "최초·극단", /(최초|최고|최대|역대|처음|1위|미친|레전드|충격|역대급|\bfirst\b|\bbiggest\b|\bbest\b|\binsane\b|\bcrazy\b)/i],
+    ["challenge", "기간·도전", /(\d+\s?(일|시간|분|주|개월|년)\s?(동안|만에|째|살기)|하루\s?(동안|만에)|24시간|도전|챌린지|\bchallenge\b|\d+\s?(days|hours)\b)/i],
+    ["reveal", "공개·진짜", /(공개|폭로|진짜|실제|솔직|정체|비밀|현실|\breveal|\breal\b|\btruth\b|\bsecret\b)/i],
+    ["emoji", "이모지", /\p{Extended_Pictographic}/u],
+  ];
+  const PARTICLE = /(에서는|에게서|으로는|이라는|라는|에서|에게|으로|하는|했던|하면|해서|까지|부터|처럼|보다|이랑|은|는|이|가|을|를|의|에|로|과|와|도|만|랑)$/;
+  const STOP = new Set("new feat ft ep vol part official mv live full ver video shorts short the and for with you your this that these how what why who are was were is in of to on my me it its at be by an or from can just not all out up do does did will have has had our we they them he she his her i".split(" "));
+  const DOW = ["일", "월", "화", "수", "목", "금", "토"];
+  const DOW_ORDER = ["월", "화", "수", "목", "금", "토", "일"];
+  const BANDS = ["새벽 0~6시", "오전 6~12시", "오후 12~18시", "저녁 18~24시"];
+  const DURS = ["1분 이하", "1~3분", "3~10분", "10~20분", "20분 이상"];
+  const pct = (r) => (r >= 0.1 ? Math.round(r * 100) : Math.round(r * 1000) / 10) + "%";
+  const josa = (w, a, b) => { const c = String(w).charCodeAt(String(w).length - 1); return c >= 0xac00 && c <= 0xd7a3 && (c - 0xac00) % 28 ? a : b; };
+  const durKey = (d) => !(d > 0) ? null : d <= 60 ? DURS[0] : d <= 180 ? DURS[1] : d <= 600 ? DURS[2] : d <= 1200 ? DURS[3] : DURS[4];
+  const kst = (p) => new Date(Date.parse(p) + 9 * 36e5);
+  const bandOf = (h) => BANDS[Math.min(Math.floor(h / 6), 3)];
+  const ytUrl = (id) => `https://www.youtube.com/watch?v=${encodeURIComponent(id)}`;
+
+  function wordsOf(title, own) {
+    const out = new Set();
+    for (let w of String(title).toLowerCase().replace(/#[^\s#]+/g, " ").split(/[^\p{L}\p{N}]+/u)) {
+      if (/[가-힣]/.test(w) && w.length > 2) w = w.replace(PARTICLE, "");
+      if (w.length < 2 || /^\d+$/.test(w) || STOP.has(w) || own.has(w)) continue;
+      out.add(w);
+    }
+    return out;
+  }
+  function bucket(rows, keyFn, order) {
+    const m = new Map();
+    for (const v of rows) {
+      const k = keyFn(v);
+      if (k == null) continue;
+      if (!m.has(k)) m.set(k, { key: k, n: 0, hot: 0 });
+      const b = m.get(k); b.n++; b.hot += v.hot ? 1 : 0;
+    }
+    return order.filter((k) => m.has(k)).map((k) => { const b = m.get(k); return { ...b, rate: b.hot / b.n }; });
+  }
+  // 두 비율 차이의 z 값으로 대략의 신뢰도를 붙인다(표본이 작으면 큰 차이도 '낮음')
+  function conf(n1, h1, n2, h2) {
+    const p = (h1 + h2) / (n1 + n2);
+    if (!n1 || !n2 || p <= 0 || p >= 1) return "낮음";
+    const z = Math.abs(h1 / n1 - h2 / n2) / Math.sqrt(p * (1 - p) * (1 / n1 + 1 / n2));
+    return z >= 2 ? "높음" : z >= 1.3 ? "보통" : "낮음";
+  }
+
+  let IROWS = null;
+  function insightRows() {
+    if (IROWS) return IROWS;
+    if (!R && !F) return [];
+    const out = [];
+    if (R) for (const ch of R.channels) for (const r of ch.recent || []) if (r.x != null) out.push({ ...r, ch: ch.title, cid: ch.id, grp: ch.group, mk: ch.market || "US", src: "ref", hot: r.x >= HOT_X });
+    if (F) for (const ch of F.channels) for (const r of ch.recent || []) if (r.x != null) out.push({ ...r, ch: ch.title, cid: ch.id, grp: "farm", mk: "KR", src: "farm", hot: r.x >= HOT_X });
+    return (IROWS = out);
+  }
+  const scopeLabel = (k) => k === "all" ? "전체" : k === "ref" ? "레퍼런스 전체" : k === "farm" ? "농산물" : RGROUP[k] || k;
+  const inScope = (v, k) => k === "all" || (k === "ref" ? v.src === "ref" : v.grp === k);
+  function scopedRows() {
+    return insightRows().filter((v) => inScope(v, S.iscope) &&
+      (S.imarket === "all" || (S.imarket === "kr") === (v.mk === "KR")) &&
+      (S.ifmt === "all" || (v.d > 0 && (S.ifmt === "short") === (v.d <= SHORT_MAX))));
+  }
+
+  function analyze(rows) {
+    const n = rows.length, hot = rows.filter((v) => v.hot).length;
+    const base = { n, hot, rate: n ? hot / n : 0 };
+    // 채널마다 제목 습관이 달라서 섞어 비교하면 왜곡된다. 같은 채널 안에서 패턴이 있는 영상과 없는 영상을 비교한다
+    const byCh = new Map();
+    for (const v of rows) { if (!byCh.has(v.cid)) byCh.set(v.cid, []); byCh.get(v.cid).push(v); }
+    const hooks = HOOKS.map(([key, label, re]) => {
+      let wn = 0, wh = 0, on = 0, oh = 0, chs = 0;
+      const ex = [];
+      for (const list of byCh.values()) {
+        const w = list.filter((v) => re.test(v.t));
+        if (!w.length || w.length === list.length) continue;
+        chs++; wn += w.length; wh += w.filter((v) => v.hot).length;
+        on += list.length - w.length; oh += list.filter((v) => v.hot && !re.test(v.t)).length;
+        ex.push(...w.filter((v) => v.hot));
+      }
+      const lift = ((wh + 0.5) / (wn + 1)) / ((oh + 0.5) / (on + 1));
+      return { key, label, n: wn, hot: wh, rate: wn ? wh / wn : 0, nOff: on, hotOff: oh, rateOff: on ? oh / on : 0, chs, lift,
+        ok: wn >= MIN_N && on >= MIN_N, conf: conf(wn, wh, on, oh), ex: ex.sort((a, b) => b.x - a.x).slice(0, 3) };
+    }).sort((a, b) => b.lift - a.lift);
+    const fmt = bucket(rows, (v) => durKey(v.d), DURS);
+    const dow = bucket(rows, (v) => DOW[kst(v.p).getUTCDay()], DOW_ORDER);
+    const hour = bucket(rows, (v) => bandOf(kst(v.p).getUTCHours()), BANDS);
+    // 단어: 채널 두 곳 이상에서 5번 넘게 나왔고 3번 이상 터진 단어만(시리즈명·고유명사 걸러내기)
+    const df = new Map();
+    for (const v of rows) {
+      const own = new Set(String(v.ch).toLowerCase().split(/[^\p{L}\p{N}]+/u));
+      for (const w of wordsOf(v.t, own)) {
+        if (!df.has(w)) df.set(w, { w, n: 0, hot: 0, chs: new Set(), best: null });
+        const d = df.get(w); d.n++; d.chs.add(v.cid);
+        if (v.hot) { d.hot++; if (!d.best || v.x > d.best.x) d.best = v; }
+      }
+    }
+    const words = [...df.values()].filter((d) => d.n >= 5 && d.hot >= 3 && d.chs.size >= 2)
+      .map((d) => ({ ...d, rate: d.hot / d.n, lift: base.rate ? d.hot / d.n / base.rate : 0 }))
+      .filter((d) => d.lift >= 1.2).sort((a, b) => b.lift - a.lift || b.n - a.n).slice(0, 12);
+    // 요즘 자주 터지는 채널: 최근 60일 터진 영상 수
+    const form = new Map();
+    for (const v of rows) {
+      if (!v.hot || hoursOld(v.p) > 60 * 24) continue;
+      if (!form.has(v.cid)) form.set(v.cid, { ch: v.ch, n: 0, top: v });
+      const f = form.get(v.cid); f.n++; if (v.x > f.top.x) f.top = v;
+    }
+    const chans = [...form.values()].filter((f) => f.n >= 2).sort((a, b) => b.n - a.n || b.top.x - a.top.x).slice(0, 6);
+    return { base, hooks, fmt, dow, hour, words, chans, chN: byCh.size };
+  }
+
+  function bestOf(list, base, minN) {
+    const ok = list.filter((b) => b.n >= minN);
+    if (ok.length < 2) return null;
+    const top = ok.reduce((a, b) => (b.rate > a.rate ? b : a));
+    return top.rate >= base.rate * 1.3 && top.hot >= 3 ? top : null;
+  }
+  // 숫자를 문장으로: 강한 신호만, 근거 개수와 함께
+  function readsOf(a) {
+    const out = [];
+    const strong = a.hooks.filter((h) => h.ok);
+    for (const h of strong.filter((x) => x.lift >= 1.3).slice(0, 2)) {
+      const ex = h.ex[0] ? ` 예: <a href="${ytUrl(h.ex[0].id)}" target="_blank" rel="noopener">‘${esc(h.ex[0].t)}’</a> (평소의 ${trimNum(h.ex[0].x)}배)` : "";
+      out.push(`제목에 <b>${esc(h.label)}</b>${josa(h.label, "이", "가")} 들어간 영상은 같은 채널 다른 영상보다 터질 확률이 <b>${trimNum(h.lift)}배</b>입니다 (${pct(h.rate)} vs ${pct(h.rateOff)}, 영상 ${h.n}개 · 신뢰도 ${h.conf}).${ex}`);
+    }
+    const weak = strong.filter((x) => x.lift <= 0.7);
+    if (weak.length) {
+      const h = weak[weak.length - 1];
+      out.push(`<b>${esc(h.label)}</b>${josa(h.label, "은", "는")} 오히려 덜 터졌습니다 (${pct(h.rate)} vs ${pct(h.rateOff)}). 이 범위에서는 차별점이 되지 않습니다.`);
+    }
+    const f = bestOf(a.fmt, a.base, MIN_N);
+    if (f) out.push(`길이는 <b>${esc(f.key)}</b> 영상이 가장 잘 터졌습니다 (${f.n}개 중 ${f.hot}개, ${pct(f.rate)} · 전체 ${pct(a.base.rate)}).`);
+    const t = bestOf([...a.dow.map((b) => ({ ...b, key: b.key + "요일" })), ...a.hour], a.base, 20);
+    if (t) out.push(`업로드는 <b>${esc(t.key)}</b>(한국 시간)에 올린 영상이 잘 터졌습니다 (${t.n}개 중 ${t.hot}개, ${pct(t.rate)}). 채널마다 올리는 시간이 정해져 있어 영향이 섞였을 수 있습니다.`);
+    if (a.words[0]) {
+      const w = a.words[0];
+      out.push(`단어로는 <b>‘${esc(w.w)}’</b>${josa(w.w, "이", "가")} 들어간 제목이 ${w.n}개 중 ${w.hot}개 터졌습니다 (전체의 ${trimNum(w.lift)}배).`);
+    }
+    if (a.chans[0]) out.push(`요즘 가장 자주 터지는 채널은 <b>${esc(a.chans[0].ch)}</b>입니다 (최근 60일 ${a.chans[0].n}개).`);
+    return out;
+  }
+
+  function rateRows(list, base, minN, scale) {
+    return list.map((b) => {
+      const thin = b.n < minN;
+      const tone = thin ? "thin" : b.rate >= base.rate * 1.2 ? "up" : b.rate <= base.rate * 0.8 ? "down" : "";
+      return `<div class="lrow ${tone}" title="${esc(`${b.key}: ${b.n}개 중 ${b.hot}개 터짐`)}">
+        <span class="lname">${esc(b.key)}</span>
+        <span class="ltrack"><span class="lfill" style="width:${Math.max((b.rate / scale) * 100, 0.8).toFixed(1)}%"></span><span class="lbase" style="left:${Math.min((base.rate / scale) * 100, 100).toFixed(1)}%"></span></span>
+        <span class="lval">${thin ? "표본 적음 · " : ""}<b>${pct(b.rate)}</b> · ${b.hot}/${b.n}</span>
+      </div>`;
+    }).join("");
+  }
+
+  function hookRows(a) {
+    const shown = a.hooks.filter((h) => h.ok);
+    const scale = Math.max(0.01, ...shown.map((h) => Math.max(h.rate, h.rateOff))) * 1.12;
+    const rows = shown.map((h) => {
+      const tone = h.lift >= 1.2 ? "up" : h.lift <= 0.83 ? "down" : "";
+      const ex = h.ex.length ? h.ex.map((v) => `<li><a href="${ytUrl(v.id)}" target="_blank" rel="noopener">${esc(v.t)}</a> <span class="muted">${esc(v.ch)} · 평소의 ${trimNum(v.x)}배</span></li>`).join("")
+        : `<li class="muted">이 패턴으로 터진 영상은 없습니다.</li>`;
+      return `<details class="lrow ${tone}">
+        <summary>
+          <span class="lname">${esc(h.label)}</span>
+          <span class="ltrack" title="${esc(`패턴 있음 ${pct(h.rate)} · 없음 ${pct(h.rateOff)}`)}"><span class="lfill" style="width:${Math.max((h.rate / scale) * 100, 0.8).toFixed(1)}%"></span><span class="lbase" style="left:${Math.min((h.rateOff / scale) * 100, 100).toFixed(1)}%"></span></span>
+          <span class="lval"><b>${trimNum(h.lift)}배</b> · ${pct(h.rate)} vs ${pct(h.rateOff)}</span>
+        </summary>
+        <div class="lex"><p class="muted">같은 채널 ${h.chs}곳에서 패턴 있는 영상 ${h.n}개(터짐 ${h.hot}) vs 없는 영상 ${h.nOff}개(터짐 ${h.hotOff}) · 신뢰도 ${h.conf}</p><ul>${ex}</ul></div>
+      </details>`;
+    }).join("");
+    const hidden = a.hooks.filter((h) => !h.ok);
+    return (rows || `<p class="muted">비교할 만큼 영상이 모인 패턴이 없습니다. 범위를 넓혀 보세요.</p>`) +
+      (hidden.length ? `<p class="muted small">표본이 ${MIN_N}개 미만이라 뺀 패턴: ${hidden.map((h) => `${esc(h.label)}(${h.n})`).join(", ")}</p>` : "");
+  }
+
+  function risingBox(rows) {
+    const withV = rows.filter((v) => v.vph != null);
+    const rising = withV.length > 0;
+    const list = rising ? withV.slice().sort((a, b) => b.vph - a.vph).slice(0, 10)
+      : rows.filter((v) => v.hot && hoursOld(v.p) <= 30 * 24).sort((a, b) => b.x - a.x).slice(0, 10);
+    if (!list.length) return `<div class="eyebrow">지금 뜨는 영상</div><p class="muted">최근 30일 안에 터진 영상이 없습니다.</p>`;
+    const val = (v) => rising ? v.vph : v.x;
+    const maxV = Math.max(...list.map(val), 1);
+    return `<div><div class="eyebrow">${rising ? "어제 수집 이후 시간당 조회 증가" : "최근 30일 · 평소의 3배 이상"}</div><h2>${rising ? "지금 오르는 중" : "최근 터진 영상"}</h2></div>
+      <div class="bars">${list.map((v, i) => `<div class="bar${i === 0 ? " is-max" : ""}">
+        <a href="${ytUrl(v.id)}" target="_blank" rel="noopener" title="${esc(v.t)}">${esc(v.ch)} · ${esc(v.t)}</a>
+        <div class="track"><div class="fill" style="width:${Math.max((val(v) / maxV) * 100, 0.6).toFixed(1)}%"></div></div>
+        <span class="val">${rising ? `+${fmtNum(v.vph)}/시간 · ` : ""}평소의 ${trimNum(v.x)}배 · ${fmtNum(v.v)}회</span>
+      </div>`).join("")}</div>`;
+  }
+
+  let LAST_INSIGHT = null;
+  function renderInsight() {
+    const all = insightRows();
+    if (!all.length) {
+      $("i-reads").innerHTML = `<div class="empty">레퍼런스·농산물 데이터(data/refs.json, data/farm.json)를 불러오지 못했습니다.</div>`;
+      return;
+    }
+    const counts = { all: all.length, ref: 0, farm: 0 };
+    for (const v of all) { counts[v.grp] = (counts[v.grp] || 0) + 1; if (v.src === "ref") counts.ref++; }
+    const keys = ["all", "ref", ...Object.keys(RGROUP), "farm"].filter((k) => counts[k]);
+    if (!keys.includes(S.iscope)) S.iscope = "all";
+    $("i-scope").innerHTML = keys.map((k) => `<button type="button" class="chip" data-i="${esc(k)}" aria-pressed="${k === S.iscope}">${esc(scopeLabel(k))}<span class="n">${counts[k]}</span></button>`).join("");
+    seg($("i-market"), [["all", "전체"], ["kr", "국내"], ["intl", "해외"]], S.imarket, (v) => { S.imarket = v; update(); });
+    seg($("i-fmt"), [["all", "전체 길이"], ["short", "쇼츠"], ["long", "롱폼"]], S.ifmt, (v) => { S.ifmt = v; update(); });
+
+    const rows = scopedRows();
+    const a = analyze(rows);
+    LAST_INSIGHT = { a, rows, label: scopeLabel(S.iscope) + (S.imarket === "all" ? "" : S.imarket === "kr" ? " · 국내" : " · 해외") + (S.ifmt === "all" ? "" : S.ifmt === "short" ? " · 쇼츠" : " · 롱폼") };
+    const top = rows.reduce((m, v) => (!m || v.x > m.x ? v : m), null);
+    const lead = a.hooks.find((h) => h.ok && h.lift >= 1.2);
+    $("i-tiles").innerHTML = `
+      <div class="tile"><div class="lbl">분석한 영상</div><div class="num">${fmtNum(a.base.n)}</div><div class="sub">채널 ${a.chN}곳의 최근 업로드</div></div>
+      <div class="tile"><div class="lbl">평소의 ${HOT_X}배 이상</div><div class="num">${pct(a.base.rate)}</div><div class="sub">${a.base.hot}개가 터짐</div></div>
+      <div class="tile"><div class="lbl">가장 강한 제목 패턴</div><div class="num">${lead ? esc(lead.label) : "–"}</div><div class="sub">${lead ? `같은 채널 대비 ${trimNum(lead.lift)}배` : "뚜렷한 패턴 없음"}</div></div>
+      <div class="tile"><div class="lbl">최고 배수</div><div class="num">${top ? trimNum(top.x) + "배" : "–"}</div><div class="sub">${top ? `<a href="${ytUrl(top.id)}" target="_blank" rel="noopener">${esc(top.ch)}</a>` : ""}</div></div>`;
+    const reads = readsOf(a);
+    $("i-reads").innerHTML = `<div><div class="eyebrow">데이터가 말하는 것 · ${esc(LAST_INSIGHT.label)}</div><h2>이번 범위에서 읽히는 신호</h2></div>` +
+      (reads.length ? `<ol class="reads">${reads.map((t) => `<li>${t}</li>`).join("")}</ol>` : `<p class="muted">영상이 적어 뚜렷한 신호가 없습니다. 범위를 넓혀 보세요.</p>`) +
+      `<p class="muted small">상관관계입니다. 기획 가설로 쓰고, 직접 만든 영상의 결과로 확인하세요.</p>`;
+    $("i-hooks").innerHTML = `<div><div class="eyebrow">제목 공식 · 같은 채널 안에서 비교</div><h2>어떤 제목이 더 터지나</h2></div>
+      <p class="muted small">막대는 패턴이 들어간 영상의 터질 확률, 세로선은 같은 채널에서 패턴이 없는 영상의 확률입니다. 줄을 누르면 예시가 열립니다.</p>${hookRows(a)}`;
+    $("i-words").innerHTML = `<div><div class="eyebrow">단어 · 채널 두 곳 이상에서 쓰인 단어</div><h2>터진 제목에 자주 나온 단어</h2></div>` +
+      (a.words.length ? `<div class="kws">${a.words.map((w) => `<a class="kw" href="${w.best ? ytUrl(w.best.id) : "#"}" target="_blank" rel="noopener" title="${esc(w.best ? w.best.t : "")}">${esc(w.w)} <b>${trimNum(w.lift)}배</b><span class="muted">${w.hot}/${w.n}</span></a>`).join("")}</div>`
+        : `<p class="muted">채널 두 곳 이상에서 반복해 터진 단어가 아직 없습니다.</p>`) +
+      (a.chans.length ? `<h3 class="sub-h">요즘 자주 터지는 채널 · 최근 60일</h3><div class="kws">${a.chans.map((c) => `<a class="kw" href="${ytUrl(c.top.id)}" target="_blank" rel="noopener" title="${esc(c.top.t)}">${esc(c.ch)} <b>${c.n}개</b><span class="muted">최고 ${trimNum(c.top.x)}배</span></a>`).join("")}</div>` : "");
+    const fScale = Math.max(0.01, ...a.fmt.map((b) => b.rate), a.base.rate) * 1.12;
+    $("i-format").innerHTML = `<div><div class="eyebrow">길이</div><h2>몇 분짜리가 터지나</h2></div>
+      <p class="muted small">세로선은 이 범위 전체의 터질 확률(${pct(a.base.rate)})입니다. 레퍼런스는 쇼츠·롱폼을 따로 비교한 배수라 형식끼리의 차이보다 같은 형식 안의 길이 차이를 보세요.</p>
+      ${a.fmt.length ? rateRows(a.fmt, a.base, MIN_N, fScale) : `<p class="muted">길이 정보가 있는 영상이 없습니다.</p>`}`;
+    const tScale = Math.max(0.01, ...a.dow.map((b) => b.rate), ...a.hour.map((b) => b.rate), a.base.rate) * 1.12;
+    $("i-time").innerHTML = `<div><div class="eyebrow">업로드 시간 · 한국 시간</div><h2>언제 올린 영상이 터지나</h2></div>
+      <div class="tcols"><div>${rateRows(a.dow.map((b) => ({ ...b, key: b.key + "요일" })), a.base, 20, tScale)}</div><div>${rateRows(a.hour, a.base, 20, tScale)}</div></div>`;
+    $("i-rising").innerHTML = risingBox(rows);
+    renderAI();
+  }
+
+  function insightMarkdown() {
+    if (!LAST_INSIGHT) return "";
+    const { a, label } = LAST_INSIGHT;
+    const when = new Date(REF).toISOString().slice(0, 10);
+    const lines = [`## 인사이트 — ${label} (${when})`, `- 영상 ${a.base.n}개 중 ${a.base.hot}개(${pct(a.base.rate)})가 평소의 ${HOT_X}배 이상`];
+    const hs = a.hooks.filter((h) => h.ok);
+    if (hs.length) lines.push(`- 제목 공식(같은 채널 비교): ${hs.map((h) => `${h.label} ${trimNum(h.lift)}배(${pct(h.rate)} vs ${pct(h.rateOff)}, n=${h.n})`).join(" · ")}`);
+    const f = a.fmt.filter((b) => b.n >= MIN_N);
+    if (f.length) lines.push(`- 길이: ${f.map((b) => `${b.key} ${pct(b.rate)}(${b.n})`).join(" · ")}`);
+    if (a.words.length) lines.push(`- 단어: ${a.words.map((w) => `${w.w} ${trimNum(w.lift)}배(${w.hot}/${w.n})`).join(" · ")}`);
+    for (const h of hs.filter((x) => x.lift >= 1.3).slice(0, 2)) for (const v of h.ex.slice(0, 2)) lines.push(`  - [${h.label}] [${v.t}](https://youtu.be/${v.id}) — ${v.ch} · ${trimNum(v.x)}배`);
+    if (AI.data && AI.key === aiKey()) {
+      lines.push("", "### Claude 분석");
+      for (const p of AI.data.patterns || []) lines.push(`- **${p.name}**: ${p.formula} — ${p.why}`);
+      for (const i of AI.data.ideas || []) lines.push(`- [${i.for}] ${i.line} (썸네일: ${i.thumb})`);
+    }
+    return lines.join("\n");
+  }
+
+  // ── Claude 분석: Claude 앱 안에서 열었을 때만 켜진다(sample 기능). 다른 곳에서는 숨긴다
+  const AI = { sample: null, off: true, ctl: null, timer: 0, started: 0, data: null, at: 0, key: "", err: "" };
+  const agoNow = (t) => { const m = Math.round((Date.now() - t) / 6e4); return m < 1 ? "방금" : m < 60 ? m + "분 전" : m < 1440 ? Math.round(m / 60) + "시간 전" : Math.round(m / 1440) + "일 전"; };
+  const AI_STORE = "trends.ai.v1";
+  const AI_HIDE = new Set(["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed"]);
+  const AI_ERR = {
+    rate_limited: "요청이 몰렸습니다. 잠시 뒤 다시 눌러 주세요.",
+    invalid_json: "답을 읽지 못했습니다. 다시 눌러 주세요.",
+    refused: "이 범위는 분석하지 못했습니다. 범위를 바꿔 보세요.",
+    prompt_too_large: "데이터가 너무 많습니다. 범위를 좁혀 주세요.",
+    session_expired: "Claude에 다시 로그인한 뒤 눌러 주세요.",
+    empty_completion: "빈 답이 왔습니다. 범위를 바꿔 다시 눌러 주세요.",
+  };
+  const aiKey = () => [S.iscope, S.imarket, S.ifmt, R ? R.generatedAt : "", F ? F.generatedAt : ""].join("|");
+  function aiLoad() {
+    try {
+      const all = JSON.parse(localStorage.getItem(AI_STORE) || "{}");
+      const hit = all[aiKey()];
+      return hit && Date.now() - hit.at < 7 * 864e5 ? hit : null;
+    } catch (e) { return null; }
+  }
+  function aiSave(data) {
+    try {
+      const all = JSON.parse(localStorage.getItem(AI_STORE) || "{}");
+      all[aiKey()] = { at: Date.now(), data };
+      const keep = Object.entries(all).sort((x, y) => y[1].at - x[1].at).slice(0, 12);
+      localStorage.setItem(AI_STORE, JSON.stringify(Object.fromEntries(keep)));
+    } catch (e) { /* 저장소 없음 */ }
+  }
+  function aiPrompt() {
+    const { a, rows, label } = LAST_INSIGHT;
+    const fmtOf = (v) => !(v.d > 0) ? "?" : v.d <= SHORT_MAX ? "쇼츠" : Math.round(v.d / 60) + "분";
+    const line = (v) => `${trimNum(v.x)}배 | ${fmtOf(v)} | ${v.ch} | ${String(v.t).slice(0, 110)}`;
+    const hot = rows.filter((v) => v.hot).sort((x, y) => y.x - x.x).slice(0, 40);
+    const cold = rows.filter((v) => !v.hot && v.v > 0).sort((x, y) => x.x - y.x).slice(0, 15);
+    const hooks = a.hooks.filter((h) => h.ok).map((h) => `- ${h.label}: 있으면 ${pct(h.rate)}, 없으면 ${pct(h.rateOff)} (${trimNum(h.lift)}배, 영상 ${h.n}개, 신뢰도 ${h.conf})`).join("\n");
+    const fmt = a.fmt.filter((b) => b.n >= MIN_N).map((b) => `${b.key} ${pct(b.rate)}(${b.n}개)`).join(", ");
+    return `너는 유튜브 콘텐츠 기획 PD다. 아래는 '${label}' 범위 채널들의 최근 영상 데이터다. "배수"는 영상 조회수 ÷ 같은 채널 최근 영상 조회수 중앙값이고, ${HOT_X}배 이상이면 '터진 영상'이다.
+
+[전체] 영상 ${a.base.n}개 중 ${a.base.hot}개(${pct(a.base.rate)})가 터짐
+[제목 패턴별 터질 확률 — 같은 채널 안에서 패턴이 있는 영상 vs 없는 영상]
+${hooks || "- 비교할 만큼 모인 패턴 없음"}
+[길이별 터질 확률] ${fmt || "길이 정보 부족"}
+
+[터진 영상 ${hot.length}개] 배수 | 길이 | 채널 | 제목
+${hot.map(line).join("\n")}
+
+[평소보다 덜 나온 영상 ${cold.length}개] 배수 | 길이 | 채널 | 제목
+${cold.map(line).join("\n")}
+
+할 일
+1. 터진 영상에 반복되는 '훅 공식'을 3~5개 뽑아라. 각 공식은 제목에 바로 쓰는 틀(예: "[나이]살 [의외의 직업]의 [숫자]")로 쓰고, 왜 먹히는지 시청자 심리로 한 줄, 근거가 된 제목 2~3개를 위 목록에서 그대로 옮겨라.
+2. 이 공식을 아래 세 채널 기획으로 옮긴 아이디어 6개를 "A가 B한다" 한 줄로 써라(채널마다 2개). 각 아이디어에 썸네일 문구(12자 이내)를 붙여라.
+   - 이팔청춘: 16~32세만 출연하는 인터뷰 채널. 출연자에게 실제 거래(돈·과일·시간)를 걸어 대화를 끌어낸다.
+   - 농산물: 과일 위탁·사입 판매를 하며 농장을 준비하는 사업가의 채널.
+   - 챌린지: 제한을 걸고 끝까지 가는 사회실험·도전.
+3. 이 데이터에서 피해야 할 것 2~3개.
+숫자는 상관관계일 뿐이니 과장하지 말고, 근거가 적은 건 적다고 말해라.
+
+JSON 하나로만 답하라. 형식:
+{"patterns":[{"name":"짧은 이름","formula":"제목 틀","why":"한 줄","evidence":["제목"]}],"ideas":[{"for":"이팔청춘","line":"A가 B한다","thumb":"썸네일 문구","why":"근거 한 줄"}],"avoid":["한 줄"]}`;
+  }
+  function aiClean(d) {
+    const str = (s) => String(s ?? "").trim();
+    const arr = (x) => (Array.isArray(x) ? x : []);
+    return {
+      patterns: arr(d && d.patterns).map((p) => ({ name: str(p.name), formula: str(p.formula), why: str(p.why), evidence: arr(p.evidence).map(str).filter(Boolean).slice(0, 3) })).filter((p) => p.name || p.formula).slice(0, 6),
+      ideas: arr(d && d.ideas).map((i) => ({ for: str(i.for) || "기타", line: str(i.line), thumb: str(i.thumb), why: str(i.why) })).filter((i) => i.line).slice(0, 9),
+      avoid: arr(d && d.avoid).map(str).filter(Boolean).slice(0, 4),
+    };
+  }
+  function renderAI() {
+    const box = $("i-ai");
+    if (AI.off || !LAST_INSIGHT) { box.hidden = true; return; }
+    box.hidden = false;
+    const key = aiKey();
+    if (AI.key !== key && !AI.ctl) {
+      const hit = aiLoad();
+      AI.key = key; AI.data = hit ? hit.data : null; AI.at = hit ? hit.at : 0; AI.err = "";
+    }
+    const running = !!AI.ctl;
+    const secs = running ? Math.round((Date.now() - AI.started) / 1000) : 0;
+    const status = running ? `Claude가 ${LAST_INSIGHT.a.base.hot}개 터진 영상을 읽는 중입니다… ${secs}초 (보통 30초~1분)`
+      : AI.err ? AI.err
+      : AI.data ? `${esc(LAST_INSIGHT.label)} 범위 · ${agoNow(AI.at)} 분석`
+      : `위 숫자와 터진 영상 제목을 Claude에게 보내 훅 공식과 이팔청춘·농산물·챌린지 기획 아이디어를 받습니다. 내 Claude 사용량이 쓰입니다.`;
+    const d = AI.data;
+    const group = (k) => (d ? d.ideas.filter((i) => i.for.includes(k)) : []);
+    const otherIdeas = d ? d.ideas.filter((i) => !["이팔청춘", "농산물", "챌린지"].some((k) => i.for.includes(k))) : [];
+    const ideaCard = (i) => `<li><p class="iline">${esc(i.line)}</p>${i.thumb ? `<p class="ithumb">썸네일 ‘${esc(i.thumb)}’</p>` : ""}${i.why ? `<p class="muted small">${esc(i.why)}</p>` : ""}
+      <button type="button" class="copy" data-memo="${esc(`- [${i.for}] ${i.line}${i.thumb ? ` (썸네일: ${i.thumb})` : ""}${i.why ? ` — ${i.why}` : ""}`)}">메모 복사</button></li>`;
+    $("i-ai").innerHTML = `<div class="ai-head"><div><div class="eyebrow">Claude 분석</div><h2>왜 터졌고, 우리 채널엔 어떻게 쓸까</h2></div>
+        <div class="ai-btns">${running ? `<button type="button" class="btn ghost" id="i-ai-stop">멈추기</button>` : `<button type="button" class="btn" id="i-ai-run">${d ? "다시 분석" : "분석하기"}</button>`}</div></div>
+      <p class="muted small" role="status">${status}</p>
+      ${d ? `<div class="ai-grid">
+        <section><h3 class="sub-h">훅 공식</h3><ol class="pats">${d.patterns.map((p) => `<li><p class="iline">${esc(p.name)}${p.formula ? ` — <span class="formula">${esc(p.formula)}</span>` : ""}</p>${p.why ? `<p class="muted small">${esc(p.why)}</p>` : ""}${p.evidence.length ? `<ul class="evi">${p.evidence.map((e) => `<li>${esc(e)}</li>`).join("")}</ul>` : ""}</li>`).join("")}</ol></section>
+        <section><h3 class="sub-h">기획 아이디어</h3>${["이팔청춘", "농산물", "챌린지"].map((k) => group(k).length ? `<p class="ifor">${k}</p><ul class="ideas">${group(k).map(ideaCard).join("")}</ul>` : "").join("")}${otherIdeas.length ? `<ul class="ideas">${otherIdeas.map(ideaCard).join("")}</ul>` : ""}
+          ${d.avoid.length ? `<h3 class="sub-h">피할 것</h3><ul class="avoid">${d.avoid.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}</section>
+      </div>` : ""}`;
+  }
+  async function runAI() {
+    if (AI.ctl || !AI.sample || !LAST_INSIGHT) return;
+    const key = aiKey();
+    AI.ctl = new AbortController(); AI.started = Date.now(); AI.err = "";
+    AI.timer = setInterval(() => { if (S.tab === "insight") renderAI(); }, 1000);
+    renderAI();
+    try {
+      const data = aiClean(await AI.sample.json(aiPrompt(), { signal: AI.ctl.signal, modelTier: "default", cache: { gcTime: 6 * 36e5 } }));
+      if (!data.patterns.length && !data.ideas.length) throw { code: "invalid_json" };
+      AI.key = key; AI.data = data; AI.at = Date.now();
+      aiSave(data);
+    } catch (e) {
+      const code = e && e.code;
+      if (AI_HIDE.has(code)) AI.off = true;
+      else if (code !== "cancelled") AI.err = AI_ERR[code] || "연결이 끊겼습니다. 다시 눌러 주세요.";
+    } finally {
+      clearInterval(AI.timer);
+      AI.ctl = null;
+      if (S.tab === "insight") renderAI();
+    }
+  }
+  if (window.claude && typeof window.claude.use === "function") {
+    window.claude.use("sample").then((s) => {
+      if (!s) return;
+      AI.sample = s; AI.off = false;
+      if (S.tab === "insight") renderAI();
+    }).catch(() => { /* 쓸 수 없는 환경 */ });
+  }
+
+  // ── 모아보기: 카드의 ☆로 모은 영상(이 브라우저에만 저장)
+  const SAVE_KEY = "trends.saved.v1";
+  let SAVED = [];
+  try { SAVED = JSON.parse(localStorage.getItem(SAVE_KEY) || "[]"); if (!Array.isArray(SAVED)) SAVED = []; } catch (e) { SAVED = []; }
+  const isSaved = (id) => SAVED.some((s) => s.id === id);
+  const persistSaved = () => { try { localStorage.setItem(SAVE_KEY, JSON.stringify(SAVED)); } catch (e) { /* 무시 */ } };
+  const starBtn = (id) => `<button type="button" class="star" data-save="${esc(id)}" aria-pressed="${isSaved(id)}" aria-label="모아보기에 저장" title="모아보기에 저장">${isSaved(id) ? "★" : "☆"}</button>`;
+  function lookup(id) {
+    if (T && T.videos[id]) { const v = T.videos[id]; return { id, t: v.t, ch: v.c, v: v.v, p: v.p, d: v.d, x: null, from: "트렌드" }; }
+    const r = insightRows().find((x) => x.id === id);
+    return r ? { id, t: r.t, ch: r.ch, v: r.v, p: r.p, d: r.d, x: r.x, from: r.src === "farm" ? "농산물" : "레퍼런스" } : null;
+  }
+  function toggleSave(id) {
+    if (isSaved(id)) SAVED = SAVED.filter((s) => s.id !== id);
+    else { const it = lookup(id); if (!it) return; SAVED.unshift({ ...it, at: Date.now() }); }
+    persistSaved();
+    for (const b of document.querySelectorAll(`[data-save="${CSS.escape(id)}"]`)) { b.setAttribute("aria-pressed", String(isSaved(id))); b.textContent = isSaved(id) ? "★" : "☆"; }
+    $("n-saved").textContent = SAVED.length || "";
+    if (S.tab === "saved") renderSaved();
+  }
+  const savedMarkdown = () => [`## 모아본 영상 (${SAVED.length})`, ...SAVED.map((s) => `- [${s.t}](https://youtu.be/${s.id}) — ${s.ch}${s.x != null ? ` · ${trimNum(s.x)}배` : ""} · 조회 ${fmtNum(s.v)} · 메모: `)].join("\n");
+  function renderSaved() {
+    $("v-actions").hidden = !SAVED.length;
+    $("v-list").innerHTML = SAVED.length ? SAVED.map((s) => `<div class="srow">
+        <div class="smain"><p class="fname"><a href="${ytUrl(s.id)}" target="_blank" rel="noopener">${esc(s.t)}</a></p>
+          <p class="fnote">${esc(s.from)} · ${esc(s.ch)}${s.x != null ? ` · 평소의 ${trimNum(s.x)}배` : ""} · 조회 ${fmtNum(s.v)}${s.p ? ` · ${fmtAge(s.p)} 업로드` : ""}</p></div>
+        ${starBtn(s.id)}
+      </div>`).join("") : `<div class="empty">아직 모은 영상이 없습니다. 카드 오른쪽 아래 ☆를 누르면 여기에 모입니다.</div>`;
+  }
+
   // ── 공통
   function setTab(tab, push) {
-    if (!["country", "category", "signal", "refs", "farm"].includes(tab)) tab = "country";
+    if (!["insight", "country", "category", "signal", "refs", "farm", "saved"].includes(tab)) tab = "insight";
     S.tab = tab;
     for (const b of document.querySelectorAll(".tab")) b.setAttribute("aria-selected", String(b.dataset.tab === tab));
     for (const p of document.querySelectorAll(".pane")) p.hidden = p.id !== "pane-" + tab;
@@ -867,10 +1391,12 @@ footer b { color: var(--ink-2); font-weight: 600; }
   function update() {
     save();
     if (!T) return;
-    if (S.tab === "country") renderCountry();
+    if (S.tab === "insight") renderInsight();
+    else if (S.tab === "country") renderCountry();
     else if (S.tab === "category") renderCategory();
     else if (S.tab === "signal") renderSignal();
     else if (S.tab === "refs") renderRefs();
+    else if (S.tab === "saved") renderSaved();
     else renderFarm();
   }
 
@@ -887,6 +1413,8 @@ footer b { color: var(--ink-2); font-weight: 600; }
     $("n-signal").textContent = signalIds(2).length;
     $("n-refs").textContent = R ? R.channels.length : "";
     $("n-farm").textContent = F ? F.channels.length + IG().length : "";
+    $("n-insight").textContent = insightRows().filter((v) => v.hot).length || "";
+    $("n-saved").textContent = SAVED.length || "";
   }
 
   // 이벤트 (한 번만 연결)
@@ -917,9 +1445,25 @@ footer b { color: var(--ink-2); font-weight: 600; }
   });
   $("r-sort").addEventListener("change", (e) => { S.rsort = e.target.value; update(); });
   $("r-days").addEventListener("change", (e) => { S.rdays = e.target.value; update(); });
-  $("r-grid").addEventListener("click", async (e) => {
+  document.addEventListener("click", async (e) => {
+    const star = e.target.closest("[data-save]");
+    if (star) { toggleSave(star.dataset.save); return; }
     const b = e.target.closest("[data-memo]");
-    if (b) toast(await copyText(b.dataset.memo) ? "링크와 메모 줄을 복사했습니다" : "복사하지 못했습니다");
+    if (b) toast(await copyText(b.dataset.memo) ? "메모 줄을 복사했습니다" : "복사하지 못했습니다");
+  });
+  $("i-scope").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-i]");
+    if (b) { S.iscope = b.dataset.i; update(); }
+  });
+  $("i-copy").addEventListener("click", async () => toast(await copyText(insightMarkdown()) ? "인사이트를 마크다운으로 복사했습니다" : "복사하지 못했습니다"));
+  $("i-ai").addEventListener("click", (e) => {
+    if (e.target.closest("#i-ai-run")) runAI();
+    else if (e.target.closest("#i-ai-stop") && AI.ctl) AI.ctl.abort();
+  });
+  $("v-copy").addEventListener("click", async () => toast(await copyText(savedMarkdown()) ? `${SAVED.length}개를 마크다운으로 복사했습니다` : "복사하지 못했습니다"));
+  $("v-clear").addEventListener("click", () => {
+    if (!SAVED.length || !confirm(`모은 영상 ${SAVED.length}개를 모두 지울까요?`)) return;
+    SAVED = []; persistSaved(); $("n-saved").textContent = ""; update();
   });
   document.addEventListener("error", (e) => {
     const img = e.target;
