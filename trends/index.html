@@ -216,6 +216,7 @@ main { padding-block: 20px 56px; }
 .ftag.g-솔파 { background: var(--seal-soft); color: var(--seal); border-color: transparent; }
 .ftag.g-참여형 { background: var(--jade-soft); color: var(--jade); border-color: transparent; }
 .ftag.g-챌린지 { background: var(--gold-soft); color: var(--gold); border-color: transparent; }
+.ftag.g-이팔청춘 { background: var(--ink); color: var(--sheet); border-color: transparent; }
 .ftag.src { border-style: dashed; }
 .toast {
   position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 20;
@@ -296,7 +297,7 @@ footer b { color: var(--ink-2); font-weight: 600; }
   </section>
 
   <section class="pane" id="pane-refs" role="tabpanel" aria-labelledby="tab-refs" hidden>
-    <p class="note">강의에 나온 채널과 국내외 챌린지·사회실험 채널을 지켜봅니다. <b>배수</b>는 그 채널 최근 영상 중 <b>같은 형식</b>(쇼츠는 쇼츠끼리, 롱폼은 롱폼끼리)의 조회수 중앙값과 비교한 값입니다. 따라 하지 말고 왜 터졌는지 적어 두세요.</p>
+    <p class="note">강의에 나온 채널, 국내외 챌린지·사회실험 채널, 10대~30대 초반만 나오는 <b>이팔청춘</b> 인터뷰 벤치마크를 지켜봅니다. <b>배수</b>는 그 채널 최근 영상 중 <b>같은 형식</b>(쇼츠는 쇼츠끼리, 롱폼은 롱폼끼리)의 조회수 중앙값과 비교한 값입니다. 따라 하지 말고 왜 터졌는지 적어 두세요.</p>
     <div class="chips" id="r-groups"></div>
     <div class="controls">
       <div class="seg" role="group" aria-label="국내·해외" id="r-market"></div>
@@ -349,7 +350,7 @@ footer b { color: var(--ink-2); font-weight: 600; }
 (() => {
   "use strict";
 
-  const RGROUP = { "솔파": "솔파 스튜디오", "참여형": "참여형 포맷", "인터뷰": "인터뷰·토크", "챌린지": "챌린지" };
+  const RGROUP = { "솔파": "솔파 스튜디오", "참여형": "참여형 포맷", "인터뷰": "인터뷰·토크", "챌린지": "챌린지", "이팔청춘": "이팔청춘" };
   const TAGS = { "재배": "직접 재배", "직판": "직판", "유통": "유통·판매", "시장": "도매시장", "리뷰": "리뷰·큐레이션", "정보": "정보·교육", "미디어": "미디어", "브이로그": "브이로그", "기관": "기관" };
   const GROUPS = [["lead", "선행국"], ["global", "글로벌"], ["base", "기준"]];
   const FMT = [["all", "전체"], ["short", "3분 이하"], ["long", "롱폼"]];
