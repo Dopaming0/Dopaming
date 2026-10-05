@@ -1,0 +1,94 @@
+name: Collect YouTube Trends
+
+on:
+  schedule:
+    - cron: "47 20 * * *" # 매일 05:47 KST
+  workflow_dispatch:
+    inputs:
+      digest:
+        description: "주간 인사이트 요약을 지금 새로 만들기"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  issues: write # 주간 인사이트 이슈 댓글
+
+concurrency:
+  group: trends-collect
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # 어제 스냅샷: NEW·순위 변동(latest)과 영상별 시간당 조회 증가(farm·refs) 계산용
+      - name: Restore previous snapshot
+        run: |
+          mkdir -p /tmp/prev
+          if git fetch --depth=1 origin trends-data; then
+            for f in latest farm refs mine digest summaries; do
+              git show "FETCH_HEAD:$f.json" > "/tmp/prev/$f.json" 2>/dev/null || rm -f "/tmp/prev/$f.json"
+            done
+          fi
+
+      # 지난 요약을 이어받아, 6일이 지났을 때만 새로 만든다
+      - name: Carry over last digest
+        run: |
+          rm -f trends/data/digest.json   # 저장소의 시드 요약은 이어받지 않는다(첫 실행에 바로 새로 만든다)
+          if [ -f /tmp/prev/digest.json ]; then cp /tmp/prev/digest.json trends/data/digest.json; fi
+
+      # 영상 요약은 쌓아 가며 새 영상만 요약한다(없으면 저장소의 시드 요약에서 시작)
+      - name: Carry over summaries
+        run: if [ -f /tmp/prev/summaries.json ]; then cp /tmp/prev/summaries.json trends/data/summaries.json; fi
+
+      - name: Collect
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          # 선택: 있으면 농산물 인스타그램 계정 지표도 채운다
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: python trends/collect.py --prev-dir /tmp/prev
+
+      # 선택: ANTHROPIC_API_KEY가 있으면 영상 요약과 주간 브리핑에 Claude를 쓴다. 없으면 두 단계 모두 통계·정리만 한다
+      - name: Install Claude SDK
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: if [ -n "$ANTHROPIC_API_KEY" ]; then pip install --quiet anthropic; fi
+
+      - name: Video summaries
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          SUMMARY_MODEL: ${{ vars.SUMMARY_MODEL }}
+        run: python trends/summarize.py || echo "summaries skipped"
+
+      - name: Weekly digest
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DIGEST_MODEL: ${{ vars.DIGEST_MODEL }}
+          DIGEST_ISSUE: ${{ vars.DIGEST_ISSUE }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python trends/digest.py ${{ inputs.digest && '--force' || '' }} || echo "digest skipped"
+
+      # 데이터는 main 히스토리를 키우지 않도록 별도 브랜치에 한 커밋으로만 보관한다.
+      - name: Publish to trends-data branch
+        run: |
+          mkdir /tmp/td
+          cp trends/data/latest.json trends/data/farm.json trends/data/refs.json /tmp/td/
+          for f in mine digest summaries; do if [ -f "trends/data/$f.json" ]; then cp "trends/data/$f.json" /tmp/td/; fi; done
+          cd /tmp/td
+          git init -q -b trends-data
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -qm "data: $(date -u +%FT%TZ)"
+          git push -qf "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" trends-data
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

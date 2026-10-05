@@ -3,6 +3,9 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  workflow_run:
+    workflows: ["Collect YouTube Trends"]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -16,12 +19,25 @@ concurrency:
 
 jobs:
   deploy:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # 수집기가 trends-data 브랜치에 올린 최신 데이터로 시드 JSON을 덮어쓴다 (없으면 시드 유지)
+      - name: Overlay latest trend data
+        run: |
+          if git fetch --depth=1 origin trends-data 2>/dev/null; then
+            for f in latest.json farm.json refs.json mine.json digest.json summaries.json; do
+              if git show "FETCH_HEAD:$f" > "/tmp/$f" 2>/dev/null; then
+                mv "/tmp/$f" "trends/data/$f"
+              else
+                echo "trends-data has no $f; keeping seed"
+              fi
+            done
+          fi
       - uses: actions/configure-pages@v5
         with:
           enablement: true
