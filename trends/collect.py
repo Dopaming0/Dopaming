@@ -24,6 +24,7 @@ import os
 import re
 import sys
 import time
+import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -107,6 +108,10 @@ class ApiError(Exception):
 _quota_out = False
 
 
+def nfc(s: str) -> str:
+    return unicodedata.normalize("NFC", s or "")
+
+
 def log(msg: str) -> None:
     print(msg, file=sys.stderr, flush=True)
 
@@ -176,8 +181,9 @@ def thumb_key(url: str) -> str:
 def norm_video(item: dict) -> dict:
     sn, st = item["snippet"], item.get("statistics", {})
     return {
-        "t": sn["title"],
-        "c": sn["channelTitle"].strip(),
+        # macOS에서 올린 제목은 한글이 자모로 풀려(NFD) 오기도 한다. 검색·한글 판별·제목 패턴이 깨지지 않게 합친다
+        "t": nfc(sn["title"]),
+        "c": nfc(sn["channelTitle"]).strip(),
         "ci": sn["channelId"],
         "p": sn["publishedAt"],
         "d": parse_duration(item.get("contentDetails", {}).get("duration", "")),
@@ -230,7 +236,7 @@ def channels(ids) -> dict[str, dict]:
         for it in res.get("items", []):
             sn, st = it["snippet"], it.get("statistics", {})
             out[it["id"]] = {
-                "title": sn["title"],
+                "title": nfc(sn["title"]),
                 "handle": sn.get("customUrl", ""),
                 "since": sn["publishedAt"][:10],
                 "thumb": thumb_key(sn.get("thumbnails", {}).get("default", {}).get("url", "")),
@@ -360,7 +366,7 @@ def ig_account(user_id: str, token: str, handle: str) -> dict:
         caption = (m.get("caption") or "").strip().splitlines()
         posts.append({
             "id": m["id"],
-            "t": caption[0][:100] if caption else "",
+            "t": nfc(caption[0][:100]) if caption else "",
             "p": (m.get("timestamp") or "").replace("+0000", "Z"),
             "type": m.get("media_product_type") or m.get("media_type") or "",
             "l": m.get("like_count"),

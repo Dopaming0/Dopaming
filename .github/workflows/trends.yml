@@ -33,7 +33,7 @@ jobs:
         run: |
           mkdir -p /tmp/prev
           if git fetch --depth=1 origin trends-data; then
-            for f in latest farm refs mine digest; do
+            for f in latest farm refs mine digest summaries; do
               git show "FETCH_HEAD:$f.json" > "/tmp/prev/$f.json" 2>/dev/null || rm -f "/tmp/prev/$f.json"
             done
           fi
@@ -44,6 +44,10 @@ jobs:
           rm -f trends/data/digest.json   # 저장소의 시드 요약은 이어받지 않는다(첫 실행에 바로 새로 만든다)
           if [ -f /tmp/prev/digest.json ]; then cp /tmp/prev/digest.json trends/data/digest.json; fi
 
+      # 영상 요약은 쌓아 가며 새 영상만 요약한다(없으면 저장소의 시드 요약에서 시작)
+      - name: Carry over summaries
+        run: if [ -f /tmp/prev/summaries.json ]; then cp /tmp/prev/summaries.json trends/data/summaries.json; fi
+
       - name: Collect
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
@@ -52,23 +56,33 @@ jobs:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
         run: python trends/collect.py --prev-dir /tmp/prev
 
+      # 선택: ANTHROPIC_API_KEY가 있으면 영상 요약과 주간 브리핑에 Claude를 쓴다. 없으면 두 단계 모두 통계·정리만 한다
+      - name: Install Claude SDK
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: if [ -n "$ANTHROPIC_API_KEY" ]; then pip install --quiet anthropic; fi
+
+      - name: Video summaries
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          SUMMARY_MODEL: ${{ vars.SUMMARY_MODEL }}
+        run: python trends/summarize.py || echo "summaries skipped"
+
       - name: Weekly digest
         env:
-          # 선택: 있으면 Claude 요약이 붙는다. 없으면 통계만 남긴다
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           DIGEST_MODEL: ${{ vars.DIGEST_MODEL }}
           DIGEST_ISSUE: ${{ vars.DIGEST_ISSUE }}
           GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          if [ -n "$ANTHROPIC_API_KEY" ]; then pip install --quiet anthropic; fi
-          python trends/digest.py ${{ inputs.digest && '--force' || '' }} || echo "digest skipped"
+        run: python trends/digest.py ${{ inputs.digest && '--force' || '' }} || echo "digest skipped"
 
       # 데이터는 main 히스토리를 키우지 않도록 별도 브랜치에 한 커밋으로만 보관한다.
       - name: Publish to trends-data branch
         run: |
           mkdir /tmp/td
           cp trends/data/latest.json trends/data/farm.json trends/data/refs.json /tmp/td/
-          for f in mine digest; do if [ -f "trends/data/$f.json" ]; then cp "trends/data/$f.json" /tmp/td/; fi; done
+          for f in mine digest summaries; do if [ -f "trends/data/$f.json" ]; then cp "trends/data/$f.json" /tmp/td/; fi; done
           cd /tmp/td
           git init -q -b trends-data
           git config user.name "github-actions[bot]"

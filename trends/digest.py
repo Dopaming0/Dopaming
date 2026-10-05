@@ -80,7 +80,7 @@ def in_scope(v: dict, key: str) -> bool:
     if key == "all":
         return True
     if key == "challenge":
-        return v["grp"] in ("챌린지", "참여형")
+        return v["grp"] in ("챌린지", "참여형", "솔파")
     return v["grp"] == key
 
 
@@ -189,14 +189,15 @@ SCHEMA = {
 }
 
 
-def prompt(stats: dict) -> str:
+def prompt(stats: dict, sums: dict | None = None) -> str:
     def vline(v: dict) -> str:
         fmt = "?" if not v.get("d") else "쇼츠" if v["d"] <= SHORT_MAX else f"{round(v['d'] / 60)}분"
         extra = f" | +{v['vph']:.0f}회/시간" if v.get("vph") else ""
-        return f"{v['x']}배 | {fmt} | {v['ch']} | {v['t'][:110]}{extra}"
+        s = (sums or {}).get(v.get("id"), {}).get("s")  # summarize.py가 만든 영상 요약
+        return f"{v['x']}배 | {fmt} | {v['ch']} | {v['t'][:110]}{extra}" + (f" | 요약: {s}" if s else "")
 
     parts = [f"[기간] {stats['week']['from']} ~ {stats['week']['to']} · 이번 주 업로드 {stats['week']['uploads']}개"]
-    parts.append("[이번 주 터진 영상] 배수 | 길이 | 채널 | 제목\n" + ("\n".join(vline(v) for v in stats["week"]["hot"]) or "없음"))
+    parts.append("[이번 주 터진 영상] 배수 | 길이 | 채널 | 제목 | 요약\n" + ("\n".join(vline(v) for v in stats["week"]["hot"]) or "없음"))
     if stats["week"]["rising"]:
         parts.append("[지금 오르는 중 · 어제 대비 시간당 조회 증가]\n" + "\n".join(vline(v) for v in stats["week"]["rising"]))
     for s in stats["scopes"]:
@@ -327,7 +328,7 @@ def main(argv: list[str] | None = None) -> int:
     doc = {"generatedAt": now.isoformat().replace("+00:00", "Z"), **compute(refs, farm, mine, now), "ai": None, "model": None}
     if os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN"):
         model = os.environ.get("DIGEST_MODEL") or DEFAULT_MODEL
-        doc["ai"] = call_claude(prompt(doc), model)
+        doc["ai"] = call_claude(prompt(doc, (load(DATA / "summaries.json") or {}).get("items")), model)
         doc["model"] = model if doc["ai"] else None
     else:
         log("ANTHROPIC_API_KEY가 없어 통계만 정리합니다")

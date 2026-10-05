@@ -4,18 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>해외 트렌드 관측소</title>
+<title>트렌드 관측소</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=Song+Myung&display=swap">
 <style>
-/* Layout: 관측소 상황판 — 낙관 머리글, 고정 탭, 필터 줄, 카드 그리드. 여덟글자 본 사이트의 한지·먹·인주 톤을 업무용으로 절제 */
+/* Layout: 기획 상황판 — 낙관 머리글, 고정 탭, 필터 한 줄, 요약이 붙은 카드. 여덟글자 본 사이트의 한지·먹·인주 톤을 업무용으로 절제 */
 :root {
   --paper: #edefe9;
   --sheet: #f9faf6;
   --ink: #1a1d1b;
-  --ink-2: #555d58;
-  --ink-3: #7f8781;
+  --ink-2: #4f5752;
+  --ink-3: #79817b;
   --rule: #d3d8cf;
   --seal: #b5341f;
   --seal-ink: #ffffff;
@@ -32,13 +32,13 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #111412; --sheet: #191d1a; --ink: #e6eae3; --ink-2: #a7afa8; --ink-3: #78807a; --rule: #2b312d;
+    --paper: #111412; --sheet: #191d1a; --ink: #e6eae3; --ink-2: #b0b8b1; --ink-3: #7f8781; --rule: #2b312d;
     --seal: #e2664e; --seal-ink: #1a0d0a; --seal-soft: #3b1e18; --jade: #74bba9; --jade-soft: #173029;
     --gold: #d6b45c; --gold-soft: #33290f; --hatch: #1f2420; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --paper: #111412; --sheet: #191d1a; --ink: #e6eae3; --ink-2: #a7afa8; --ink-3: #78807a; --rule: #2b312d;
+  --paper: #111412; --sheet: #191d1a; --ink: #e6eae3; --ink-2: #b0b8b1; --ink-3: #7f8781; --rule: #2b312d;
   --seal: #e2664e; --seal-ink: #1a0d0a; --seal-soft: #3b1e18; --jade: #74bba9; --jade-soft: #173029;
   --gold: #d6b45c; --gold-soft: #33290f; --hatch: #1f2420; color-scheme: dark;
 }
@@ -46,204 +46,140 @@
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
-body {
-  margin: 0;
-  background: var(--paper);
-  color: var(--ink);
-  font: 14px/1.55 var(--font-body);
-  font-variant-numeric: tabular-nums;
-}
+body { margin: 0; background: var(--paper); color: var(--ink); font: 14px/1.55 var(--font-body); font-variant-numeric: tabular-nums; }
 img { max-width: 100%; display: block; }
 a { color: inherit; }
-button, select, input { font: inherit; color: inherit; }
+button, select, input, textarea { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--seal); outline-offset: 2px; }
 
 .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 20px; }
 @media (max-width: 520px) { .wrap { padding-inline: 16px; } }
 
 /* 머리글 */
-.top { padding-block: 28px 18px; display: flex; gap: 16px; align-items: flex-start; }
-.seal {
-  flex: none; width: 46px; height: 46px; display: grid; place-items: center;
-  background: var(--seal); color: var(--seal-ink); border-radius: 6px;
-  font: 28px/1 var(--font-seal); transform: rotate(-4deg); margin-top: 2px;
-}
-.top h1 { margin: 0; font: 700 clamp(22px, 3.2vw, 30px)/1.2 var(--font-display); letter-spacing: -0.01em; text-wrap: balance; }
-.top .lede { margin: 6px 0 0; color: var(--ink-2); max-width: 64ch; }
-.meta { margin: 10px 0 0; display: flex; flex-wrap: wrap; gap: 6px 14px; color: var(--ink-3); font-size: 12.5px; }
-.meta b { color: var(--ink-2); font-weight: 500; }
-.pill-note { display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--gold-soft); color: var(--gold); font-weight: 600; font-size: 11.5px; }
+.top { padding-block: 24px 14px; display: flex; gap: 14px; align-items: center; }
+.seal { flex: none; width: 42px; height: 42px; display: grid; place-items: center; background: var(--seal); color: var(--seal-ink); border-radius: 6px; font: 26px/1 var(--font-seal); transform: rotate(-4deg); }
+.top h1 { margin: 0; font: 700 clamp(21px, 3vw, 28px)/1.2 var(--font-display); letter-spacing: -0.01em; }
+.meta { margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 4px 12px; color: var(--ink-3); font-size: 12.5px; }
+.pill { display: inline-block; padding: 0 8px; border-radius: 999px; background: var(--gold-soft); color: var(--gold); font-weight: 600; font-size: 11.5px; line-height: 1.7; }
 
 /* 탭 */
-.tabs {
-  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
-  background: var(--paper); border-bottom: 1px solid var(--rule);
-}
+.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); }
 .tabs .wrap { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
 .tabs .wrap::-webkit-scrollbar { display: none; }
-.tab {
-  flex: none; border: 0; background: none; cursor: pointer;
-  padding: 12px 12px 10px; color: var(--ink-3); font-weight: 600; font-size: 14.5px;
-  border-bottom: 2px solid transparent; margin-bottom: -1px;
-}
-.tab .n { font-weight: 500; font-size: 12px; margin-left: 4px; color: var(--ink-3); }
+.tab { flex: none; border: 0; background: none; cursor: pointer; padding: 12px 12px 10px; color: var(--ink-3); font-weight: 600; font-size: 15px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tab .n { font-weight: 500; font-size: 12px; margin-left: 4px; }
 .tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--seal); }
 .tab:hover { color: var(--ink); }
+.tab .sm { display: none; }
 
-main { padding-block: 20px 56px; }
+main { padding-block: 18px 56px; }
 .pane { display: grid; gap: 16px; }
 .pane > * { min-width: 0; }
 .note { margin: 0; color: var(--ink-2); font-size: 13px; max-width: 80ch; }
 .note b { color: var(--ink); font-weight: 600; }
+.muted { color: var(--ink-3); }
+.small { font-size: 12px; margin: 0; }
+
+/* 블록 머리 */
+.block { display: grid; gap: 12px; }
+.bhead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.bhead h2, .sec-h { margin: 0; font: 700 18px/1.35 var(--font-display); text-wrap: balance; }
+.bhead .sub { margin: 2px 0 0; font-size: 12.5px; color: var(--ink-3); }
+.go { flex: none; border: 0; background: none; padding: 0; cursor: pointer; color: var(--seal); font-weight: 600; font-size: 13px; white-space: nowrap; }
+.go:hover { text-decoration: underline; }
 
 /* 칩·컨트롤 */
-.regions { display: grid; gap: 10px; }
-.rgroup { display: flex; gap: 10px; align-items: baseline; }
-.rlabel { flex: none; width: 46px; font-size: 11.5px; letter-spacing: 0.06em; color: var(--ink-3); font-weight: 600; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
-.chip {
-  border: 1px solid var(--rule); background: var(--sheet); border-radius: 999px;
-  padding: 5px 11px; cursor: pointer; font-size: 13px; white-space: nowrap; line-height: 1.3;
-}
-.chip .n { color: var(--ink-3); font-size: 11.5px; margin-left: 3px; }
+.chip { border: 1px solid var(--rule); background: var(--sheet); border-radius: 999px; padding: 6px 12px; cursor: pointer; font-size: 13.5px; white-space: nowrap; line-height: 1.3; }
 .chip:hover { border-color: var(--ink-3); }
 .chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-.chip[aria-pressed="true"] .n { color: inherit; opacity: 0.7; }
-.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
 .seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; background: var(--sheet); }
-.seg button { border: 0; background: none; padding: 6px 12px; cursor: pointer; font-size: 13px; color: var(--ink-2); }
+.seg button { border: 0; background: none; padding: 6px 12px; cursor: pointer; font-size: 13px; color: var(--ink-2); white-space: nowrap; }
 .seg button + button { border-left: 1px solid var(--rule); }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.seg.big button { padding: 8px 16px; font-size: 14px; font-weight: 600; }
 .field { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-3); }
-.field select, .field input {
-  border: 1px solid var(--rule); background: var(--sheet); border-radius: 8px;
-  padding: 6px 10px; font-size: 13px; color: var(--ink); max-width: 100%;
-}
-.field input { width: 220px; }
-.summary { margin: 0; font-size: 13px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.field select, .search input { border: 1px solid var(--rule); background: var(--sheet); border-radius: 8px; padding: 6px 10px; font-size: 13px; color: var(--ink); max-width: 100%; }
+.search { flex: 1 1 220px; max-width: 360px; }
+.search input { width: 100%; padding: 7px 12px; font-size: 14px; }
+.check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-2); cursor: pointer; }
+.check input { width: 16px; height: 16px; accent-color: var(--seal); margin: 0; }
+.summary { margin: 0; font-size: 13px; color: var(--ink-3); }
 .summary b { color: var(--ink); font-weight: 600; }
 
 /* 영상 카드 */
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 248px), 1fr)); gap: 14px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 14px; }
 .vcard { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
 .vcard:hover { border-color: var(--ink-3); }
 .thumb { position: relative; display: block; aspect-ratio: 16 / 9; background: var(--hatch); text-decoration: none; }
 .thumb img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; }
-.thumb .ph {
-  position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 12px;
-  color: var(--ink-3); font-size: 12px;
-  background: repeating-linear-gradient(135deg, var(--hatch) 0 8px, transparent 8px 16px);
-}
-.rank, .dur {
-  position: absolute; z-index: 2; font-size: 11.5px; font-weight: 600; line-height: 1; padding: 4px 6px; border-radius: 5px;
-  background: rgba(17, 20, 18, 0.82); color: #f3f5f0;
-}
-.rank { top: 8px; left: 8px; }
-.dur { bottom: 8px; right: 8px; }
-.vbody { padding: 10px 12px 12px; display: grid; gap: 7px; flex: 1; align-content: start; }
-.badges { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.thumb .ph { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 12px; color: var(--ink-3); font-size: 12px; background: repeating-linear-gradient(135deg, var(--hatch) 0 8px, transparent 8px 16px); }
+.on { position: absolute; z-index: 2; font-size: 12px; font-weight: 700; line-height: 1; padding: 5px 7px; border-radius: 5px; background: rgba(17, 20, 18, 0.84); color: #f3f5f0; white-space: nowrap; }
+.on.tl { top: 8px; left: 8px; }
+.on.br { bottom: 8px; right: 8px; font-weight: 600; }
+.on.hot { background: var(--seal); color: var(--seal-ink); }
+.vbody { padding: 10px 12px 10px; display: grid; gap: 6px; flex: 1; align-content: start; }
+.badges { display: flex; flex-wrap: wrap; gap: 4px; }
 .badge { flex: none; white-space: nowrap; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 999px; line-height: 1.45; border: 1px solid transparent; }
-.badge.b-new { background: var(--jade-soft); color: var(--jade); }
-.badge.b-up { color: var(--jade); border-color: var(--jade-soft); }
 .badge.b-miss { background: var(--seal-soft); color: var(--seal); }
 .badge.b-gold { background: var(--gold-soft); color: var(--gold); }
 .badge.b-plain { color: var(--ink-2); border-color: var(--rule); }
-.vtitle { margin: 0; font-size: 14px; font-weight: 600; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.badge.v-try { background: var(--seal-soft); color: var(--seal); }
+.badge.v-keep { background: var(--jade-soft); color: var(--jade); }
+.badge.v-cut { background: var(--gold-soft); color: var(--gold); }
+.badge.v-hint { color: var(--seal); border-color: var(--seal-soft); }
+.vtitle { margin: 0; font-size: 14.5px; font-weight: 600; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
 .vtitle a { text-decoration: none; }
 .vtitle a:hover { text-decoration: underline; }
-.vch { margin: 0; color: var(--ink-3); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.vstats { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; border-top: 1px solid var(--rule); padding-top: 8px; }
-.vstats div { min-width: 0; }
-.vstats dt { font-size: 10.5px; color: var(--ink-3); letter-spacing: 0.02em; }
-.vstats dd { margin: 0; font-size: 13px; font-weight: 600; white-space: nowrap; }
-.vfoot { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-3); }
-.vfoot a { color: var(--ink-2); text-decoration: none; border-bottom: 1px solid var(--rule); }
-.vfoot a:hover { color: var(--ink); border-color: var(--ink-3); }
-.flags { letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.empty { padding: 32px 16px; text-align: center; color: var(--ink-3); border: 1px dashed var(--rule); border-radius: 10px; }
+.vorig { margin: -2px 0 0; font-size: 11.5px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vsum { margin: 0; font-size: 13px; line-height: 1.55; color: var(--ink-2); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.vsum.open { -webkit-line-clamp: unset; display: block; }
+.guess { font-size: 10.5px; font-weight: 600; color: var(--ink-3); border: 1px solid var(--rule); border-radius: 4px; padding: 0 4px; margin-left: 2px; vertical-align: 1px; }
+.vmeta { margin: 0; color: var(--ink-3); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vmeta b { color: var(--ink-2); font-weight: 600; }
+.vfoot { display: flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 4px; }
+.vfoot .sp { flex: 1; }
+.act { border: 1px solid var(--rule); background: none; border-radius: 6px; padding: 3px 9px; font-size: 12px; color: var(--ink-2); cursor: pointer; white-space: nowrap; text-decoration: none; line-height: 1.5; }
+.act:hover { color: var(--ink); border-color: var(--ink-3); }
+.act.ai { color: var(--seal); border-color: var(--seal-soft); }
+.star { border: 0; background: none; cursor: pointer; font-size: 19px; line-height: 1; color: var(--ink-3); padding: 2px 2px; }
+.star[aria-pressed="true"] { color: var(--gold); }
+.star:hover { color: var(--ink); }
+.empty { padding: 28px 16px; text-align: center; color: var(--ink-3); border: 1px dashed var(--rule); border-radius: 10px; }
+.more { justify-self: center; border: 1px solid var(--rule); background: var(--sheet); border-radius: 999px; padding: 8px 22px; cursor: pointer; font-weight: 600; font-size: 13.5px; }
+.more:hover { border-color: var(--ink-3); }
 
-/* 농산물 채널 */
-.bench { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 18px; display: grid; gap: 14px; }
-.bench h2, .sec-h { margin: 0; font: 700 18px/1.35 var(--font-display); text-wrap: balance; }
-.bench .eyebrow { font-size: 11.5px; letter-spacing: 0.08em; color: var(--seal); font-weight: 600; }
-.bench .why { margin: 0; color: var(--ink-2); max-width: 70ch; }
-.bench .why b { color: var(--ink); }
-.bars { display: grid; gap: 8px; }
-.bar { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto; gap: 12px; align-items: center; font-size: 13px; }
-.bar a { text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.bar a:hover { text-decoration: underline; }
-.bar .track { height: 10px; background: var(--hatch); border-radius: 3px; overflow: hidden; }
-.bar .fill { height: 100%; background: var(--ink-3); border-radius: 3px; min-width: 2px; }
-.bar.is-max .fill { background: var(--seal); }
-.bar .val { white-space: nowrap; color: var(--ink-2); font-size: 12.5px; text-align: right; min-width: 116px; }
-.bar.is-max .val { color: var(--seal); font-weight: 600; }
-@media (max-width: 640px) {
-  .bar { grid-template-columns: minmax(0, 1fr) auto; }
-  .bar .track { grid-column: 1 / -1; grid-row: 2; }
-}
-.flist { display: grid; border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: var(--sheet); }
-.frow { display: grid; grid-template-columns: 44px minmax(0, 1.5fr) minmax(0, 1fr) minmax(300px, auto); gap: 14px; align-items: center; padding: 12px 16px; }
-.frow + .frow { border-top: 1px solid var(--rule); }
-.avatar { position: relative; width: 44px; height: 44px; border-radius: 50%; background: var(--hatch); overflow: hidden; display: grid; place-items: center; color: var(--ink-2); font-weight: 600; }
-.avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.fname { margin: 0; font-weight: 600; font-size: 14.5px; overflow-wrap: anywhere; }
-.fname a { text-decoration: none; }
-.fname a:hover { text-decoration: underline; }
-.fname .handle { font-weight: 400; color: var(--ink-3); font-size: 12px; margin-left: 6px; }
-.fnote { margin: 2px 0 0; color: var(--ink-2); font-size: 12.5px; }
-.ftags { display: flex; flex-wrap: wrap; gap: 4px; }
-.ftag { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--rule); color: var(--ink-2); }
-.ftag.t-재배 { background: var(--jade-soft); color: var(--jade); border-color: transparent; }
-.ftag.t-직판 { background: var(--gold-soft); color: var(--gold); border-color: transparent; }
-.ftag.t-유통 { background: var(--seal-soft); color: var(--seal); border-color: transparent; }
-.ftag.t-시장 { background: var(--seal-soft); color: var(--seal); border-color: transparent; }
-.ftag.t-리뷰 { background: var(--gold-soft); color: var(--gold); border-color: transparent; }
-.ftag.ig { border-style: dashed; }
-.seedmark { color: var(--ink-3); font-weight: 400; font-size: 11px; margin-left: 2px; }
-.fcrop { margin: 4px 0 0; font-size: 12px; color: var(--ink-3); }
-.fnums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; text-align: right; }
-.fnums dt { font-size: 10.5px; color: var(--ink-3); }
-.fnums dd { margin: 0; font-weight: 600; font-size: 13px; white-space: nowrap; }
-@media (max-width: 900px) {
-  .frow { grid-template-columns: 44px minmax(0, 1fr); }
-  .frow > .fmeta, .frow > .fnums { grid-column: 2; }
-  .fnums { text-align: left; }
-}
-
-/* 레퍼런스 채널 */
-.copy { border: 1px solid var(--rule); background: none; border-radius: 6px; padding: 2px 8px; font-size: 12px; color: var(--ink-2); cursor: pointer; white-space: nowrap; }
-.copy:hover { color: var(--ink); border-color: var(--ink-3); }
-.ftag.g-솔파 { background: var(--seal-soft); color: var(--seal); border-color: transparent; }
-.ftag.g-참여형 { background: var(--jade-soft); color: var(--jade); border-color: transparent; }
-.ftag.g-챌린지 { background: var(--gold-soft); color: var(--gold); border-color: transparent; }
-.ftag.g-이팔청춘 { background: var(--ink); color: var(--sheet); border-color: transparent; }
-.ftag.src { border-style: dashed; }
-.toast {
-  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 20;
-  background: var(--ink); color: var(--paper); padding: 8px 14px; border-radius: 8px; font-size: 13px;
-  max-width: calc(100vw - 32px);
-}
-
-/* 인사이트 */
-.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 12px; }
-.tile { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 14px 16px; min-width: 0; }
-.tile .lbl { font-size: 12px; color: var(--ink-3); }
-.tile .num { font-size: 24px; font-weight: 700; line-height: 1.25; margin-top: 4px; overflow-wrap: anywhere; }
-.tile .sub { font-size: 12px; color: var(--ink-2); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tile .sub a, .reads a, .lex a { text-decoration: none; border-bottom: 1px solid var(--rule); }
-.ibox { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 18px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+/* 상자 */
+.ibox { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 16px 18px; display: grid; gap: 12px; align-content: start; min-width: 0; }
 .ibox h2 { margin: 0; font: 700 17px/1.35 var(--font-display); text-wrap: balance; }
-.ibox .eyebrow { font-size: 11.5px; letter-spacing: 0.06em; color: var(--seal); font-weight: 600; }
-.icols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 16px; align-items: start; }
-.muted { color: var(--ink-3); }
-.small { font-size: 12px; margin: 0; }
+.eyebrow { font-size: 11.5px; letter-spacing: 0.06em; color: var(--seal); font-weight: 600; }
+.icols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; align-items: start; }
 .reads { margin: 0; padding-left: 22px; display: grid; gap: 9px; }
 .reads li::marker { color: var(--seal); font-weight: 700; }
+.reads a, .lex a, .kw, .tchk a { text-decoration: none; }
+.reads a { border-bottom: 1px solid var(--rule); }
+.btn { border: 1px solid var(--ink); background: var(--ink); color: var(--paper); border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.btn.ghost { background: none; color: var(--ink); border-color: var(--rule); text-decoration: none; }
+.btn:hover { opacity: 0.88; }
+.head2 { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.sub-h { margin: 4px 0 0; font-size: 13px; font-weight: 700; color: var(--ink-2); }
+.ai-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 18px; align-items: start; }
+.ai-grid section { display: grid; gap: 8px; min-width: 0; }
+.pats, .avoid { margin: 0; padding-left: 20px; display: grid; gap: 10px; }
+.ideas { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.ideas li { border: 1px solid var(--rule); border-radius: 10px; padding: 10px 12px; display: grid; gap: 4px; justify-items: start; background: var(--paper); }
+.iline { margin: 0; font-weight: 600; }
+.formula { font-weight: 500; color: var(--seal); }
+.ithumb { margin: 0; font-size: 12.5px; color: var(--gold); font-weight: 600; }
+.ifor { margin: 4px 0 0; font-size: 12px; font-weight: 700; color: var(--ink-3); letter-spacing: 0.04em; }
+.evi { margin: 4px 0 0; padding-left: 16px; font-size: 12px; color: var(--ink-2); }
+
+/* 인사이트 막대 */
 .lrow > summary, div.lrow { display: grid; grid-template-columns: minmax(64px, 8.5em) minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 13px; padding: 5px 0; }
 .lrow > summary { cursor: pointer; list-style: none; }
 .lrow > summary::-webkit-details-marker { display: none; }
 .lrow > summary:hover .lname { text-decoration: underline; }
-.lrow[open] > summary .lname { font-weight: 600; }
 .lname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ltrack { position: relative; height: 10px; background: var(--hatch); border-radius: 0 4px 4px 0; }
 .lfill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 4px 4px 0; background: var(--ink-3); }
@@ -256,56 +192,117 @@ main { padding-block: 20px 56px; }
 .lex { padding: 2px 0 8px; font-size: 12.5px; }
 .lex p { margin: 0 0 4px; }
 .lex ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
-.tcols { display: grid; gap: 10px; }
+.tips { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.tips li { display: grid; grid-template-columns: 4.5em minmax(0, 1fr); gap: 10px; font-size: 13.5px; }
+.tips .k { color: var(--ink-3); font-size: 12.5px; padding-top: 1px; }
 .kws { display: flex; flex-wrap: wrap; gap: 6px; }
-.kw { display: inline-flex; gap: 6px; align-items: baseline; border: 1px solid var(--rule); border-radius: 999px; padding: 4px 10px; font-size: 13px; text-decoration: none; background: var(--paper); }
+.kw { display: inline-flex; gap: 6px; align-items: baseline; border: 1px solid var(--rule); border-radius: 999px; padding: 4px 10px; font-size: 13px; background: var(--paper); }
 .kw b { color: var(--seal); font-weight: 600; }
 .kw .muted { font-size: 11.5px; }
 .kw:hover { border-color: var(--ink-3); }
-.sub-h { margin: 4px 0 0; font-size: 13px; font-weight: 700; color: var(--ink-2); }
-.btn { border: 1px solid var(--ink); background: var(--ink); color: var(--paper); border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
-.btn.ghost { background: none; color: var(--ink); border-color: var(--rule); }
-.btn:hover { opacity: 0.88; }
-.ai-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
-.ai-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 18px; align-items: start; }
-.ai-grid section { display: grid; gap: 8px; min-width: 0; }
-.pats, .avoid { margin: 0; padding-left: 20px; display: grid; gap: 10px; }
-.ideas { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
-.ideas li { border: 1px solid var(--rule); border-radius: 10px; padding: 10px 12px; display: grid; gap: 4px; justify-items: start; background: var(--paper); }
-.iline { margin: 0; font-weight: 600; }
-.formula { font-weight: 500; color: var(--seal); }
-.ithumb { margin: 0; font-size: 12.5px; color: var(--gold); font-weight: 600; }
-.ifor { margin: 4px 0 0; font-size: 12px; font-weight: 700; color: var(--ink-3); letter-spacing: 0.04em; }
-.evi { margin: 4px 0 0; padding-left: 16px; font-size: 12px; color: var(--ink-2); }
 @media (max-width: 560px) {
   .lrow > summary, div.lrow { grid-template-columns: minmax(0, 1fr) auto; row-gap: 4px; }
   .ltrack { grid-column: 1 / -1; grid-row: 2; }
   .lval { min-width: 0; }
 }
+details.more-d > summary { cursor: pointer; color: var(--ink-2); font-size: 13px; font-weight: 600; list-style: none; }
+details.more-d > summary::-webkit-details-marker { display: none; }
+details.more-d > summary::before { content: "▸ "; color: var(--ink-3); }
+details.more-d[open] > summary::before { content: "▾ "; }
+details.more-d > div { margin-top: 10px; display: grid; gap: 10px; }
 
-/* 모아보기 */
-.star { border: 0; background: none; cursor: pointer; font-size: 17px; line-height: 1; color: var(--ink-3); padding: 2px; }
-.star[aria-pressed="true"] { color: var(--gold); }
-.star:hover { color: var(--ink); }
-.vact { display: inline-flex; align-items: center; gap: 10px; }
-.srow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 16px; }
-.srow + .srow { border-top: 1px solid var(--rule); }
+/* 제목 점검기 */
+.tchk input { width: 100%; border: 1px solid var(--rule); background: var(--paper); border-radius: 10px; padding: 10px 12px; font-size: 15px; }
+.tchk .res { display: grid; gap: 8px; font-size: 13.5px; }
+.tchk .res p { margin: 0; }
+.tag { display: inline-flex; gap: 5px; align-items: baseline; border-radius: 999px; padding: 3px 10px; font-size: 13px; border: 1px solid var(--rule); margin: 0 4px 4px 0; }
+.tag.up { background: var(--seal-soft); color: var(--seal); border-color: transparent; }
+.tag.down { background: var(--gold-soft); color: var(--gold); border-color: transparent; }
+.tag b { font-weight: 700; }
+
+/* 채널 목록 */
+.flist { display: grid; border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: var(--sheet); }
+.frow { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 14px; }
+.frow + .frow { border-top: 1px solid var(--rule); }
+.avatar { position: relative; width: 40px; height: 40px; border-radius: 50%; background: var(--hatch); overflow: hidden; display: grid; place-items: center; color: var(--ink-2); font-weight: 600; }
+.avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.fname { margin: 0; font-weight: 600; font-size: 14px; overflow-wrap: anywhere; }
+.fname a { text-decoration: none; }
+.fname a:hover { text-decoration: underline; }
+.fname .handle { font-weight: 400; color: var(--ink-3); font-size: 12px; margin-left: 6px; }
+.fnote { margin: 2px 0 0; color: var(--ink-2); font-size: 12.5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.fnum { text-align: right; font-size: 12.5px; color: var(--ink-3); white-space: nowrap; }
+.fnum b { color: var(--ink); font-weight: 600; font-size: 13.5px; }
+@media (max-width: 560px) { .frow { grid-template-columns: 40px minmax(0, 1fr); } .fnum { grid-column: 2; text-align: left; } }
+.drawer { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; }
+.drawer > summary { cursor: pointer; padding: 12px 16px; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 10px; }
+.drawer > summary::-webkit-details-marker { display: none; }
+.drawer > summary::after { content: "펼치기"; color: var(--ink-3); font-weight: 500; font-size: 12.5px; }
+.drawer[open] > summary::after { content: "접기"; }
+.drawer > .in { padding: 0 12px 12px; display: grid; gap: 12px; }
+.drawer .flist { border-radius: 10px; }
 
 /* 내 채널 */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 12px; }
+.tile { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 14px 16px; min-width: 0; }
+.tile .lbl { font-size: 12px; color: var(--ink-3); }
+.tile .num { font-size: 24px; font-weight: 700; line-height: 1.25; margin-top: 4px; overflow-wrap: anywhere; }
+.tile .sub { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
 .mtable { display: grid; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
 .mrow { display: grid; grid-template-columns: minmax(80px, 1.2fr) minmax(0, 1fr) minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 12px; font-size: 13px; }
 .mrow + .mrow { border-top: 1px solid var(--rule); }
 .mrow.head { background: var(--paper); color: var(--ink-3); font-size: 11.5px; font-weight: 600; }
-.badge.v-try { background: var(--seal-soft); color: var(--seal); }
-.badge.v-keep { background: var(--jade-soft); color: var(--jade); }
-.badge.v-cut { background: var(--gold-soft); color: var(--gold); }
-.badge.v-hint { color: var(--seal); border-color: var(--seal-soft); }
 .steps { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
 .steps code { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 1px 5px; font-size: 12px; overflow-wrap: anywhere; }
 
-footer { border-top: 1px solid var(--rule); padding-block: 20px 36px; color: var(--ink-3); font-size: 12.5px; }
-footer p { margin: 0 0 6px; max-width: 90ch; }
+/* 저장 목록 */
+.srow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; align-items: start; padding: 12px 16px; }
+.srow + .srow { border-top: 1px solid var(--rule); }
+.srow .vsum { -webkit-line-clamp: 2; }
+.memo { width: 100%; border: 1px solid var(--rule); background: var(--paper); border-radius: 8px; padding: 6px 10px; font-size: 13px; resize: vertical; min-height: 34px; }
+.ftags { display: flex; flex-wrap: wrap; gap: 4px; }
+.ftag { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--rule); color: var(--ink-2); }
+
+/* Claude 아이디어 시트 */
+dialog.sheet { border: 1px solid var(--rule); border-radius: 14px; padding: 0; width: min(560px, calc(100vw - 24px)); max-height: min(80vh, 760px); background: var(--sheet); color: var(--ink); }
+dialog.sheet::backdrop { background: rgba(10, 12, 11, 0.5); }
+.sheet .in { padding: 18px; display: grid; gap: 12px; }
+.sheet h2 { margin: 0; font: 700 17px/1.35 var(--font-display); }
+.sheet .out { white-space: pre-wrap; font-size: 14px; line-height: 1.65; margin: 0; overflow-wrap: anywhere; }
+
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 20; background: var(--ink); color: var(--paper); padding: 8px 14px; border-radius: 8px; font-size: 13px; max-width: calc(100vw - 32px); }
+
+footer { border-top: 1px solid var(--rule); padding-block: 18px 36px; color: var(--ink-3); font-size: 12.5px; display: grid; gap: 10px; }
+footer p { margin: 0; max-width: 90ch; }
 footer b { color: var(--ink-2); font-weight: 600; }
+footer details > div { display: grid; gap: 6px; margin-top: 8px; }
+
+/* 폰: 카드는 썸네일 옆에 제목, 아래에 요약. 탭은 엄지가 닿는 아래쪽 막대로 */
+@media (max-width: 560px) {
+  .grid { gap: 10px; }
+  .vcard { display: grid; grid-template-columns: 124px minmax(0, 1fr); column-gap: 10px; row-gap: 6px; padding: 10px; align-items: start; }
+  .vcard .thumb { grid-column: 1; grid-row: span 3; border-radius: 6px; overflow: hidden; }
+  .vcard .vbody { display: contents; }
+  .vcard .badges, .vcard .vtitle, .vcard .vorig { grid-column: 2; }
+  .vcard .vtitle { -webkit-line-clamp: 3; font-size: 14px; }
+  .vcard .vsum, .vcard .vmeta, .vcard .vfoot { grid-column: 1 / -1; }
+  .vcard .vfoot { padding-top: 0; }
+  .on { font-size: 10.5px; padding: 3px 5px; }
+  .on.tl { top: 4px; left: 4px; }
+  .on.br { bottom: 4px; right: 4px; }
+  .thumb .ph { font-size: 10.5px; padding: 6px; }
+  .tabs { position: fixed; top: auto; bottom: 0; left: 0; right: 0; border-bottom: 0; border-top: 1px solid var(--rule); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .tabs .wrap { padding-inline: 0; gap: 0; overflow: visible; }
+  .tab { flex: 1 1 0; min-width: 0; padding: 11px 2px 12px; font-size: 12.5px; border-bottom: 0; border-top: 2px solid transparent; margin: -1px 0 0; white-space: nowrap; }
+  .tab[aria-selected="true"] { border-top-color: var(--seal); }
+  .tab .n { margin-left: 2px; font-size: 11px; }
+  .tab .lg { display: none; }
+  .tab .sm { display: inline; }
+  main { padding-bottom: 88px; }
+  footer { padding-bottom: 96px; }
+  .toast { bottom: 76px; }
+  .bhead { flex-wrap: wrap; }
+}
 
 @media (prefers-reduced-motion: no-preference) {
   .vcard, .chip, .tab { transition: border-color 0.15s, color 0.15s, background-color 0.15s; }
@@ -316,205 +313,195 @@ footer b { color: var(--ink-2); font-weight: 600; }
 <header class="wrap top">
   <div class="seal" aria-hidden="true">觀</div>
   <div>
-    <h1>해외 트렌드 관측소</h1>
-    <p class="lede">한국보다 유행이 먼저 도는 나라의 인기 급상승 영상을 모아, 아직 한국에 들어오지 않은 포맷을 먼저 찾습니다.</p>
+    <h1>트렌드 관측소</h1>
     <p class="meta" id="meta">데이터를 불러오는 중…</p>
   </div>
 </header>
 
 <nav class="tabs" aria-label="보기 전환">
   <div class="wrap" role="tablist">
-    <button class="tab" role="tab" id="tab-insight" aria-controls="pane-insight" data-tab="insight">인사이트<span class="n" id="n-insight"></span></button>
-    <button class="tab" role="tab" id="tab-mine" aria-controls="pane-mine" data-tab="mine">내 채널<span class="n" id="n-mine"></span></button>
-    <button class="tab" role="tab" id="tab-country" aria-controls="pane-country" data-tab="country">국가별<span class="n" id="n-country"></span></button>
-    <button class="tab" role="tab" id="tab-category" aria-controls="pane-category" data-tab="category">카테고리별<span class="n" id="n-category"></span></button>
-    <button class="tab" role="tab" id="tab-signal" aria-controls="pane-signal" data-tab="signal">선행 신호<span class="n" id="n-signal"></span></button>
-    <button class="tab" role="tab" id="tab-refs" aria-controls="pane-refs" data-tab="refs">레퍼런스 채널<span class="n" id="n-refs"></span></button>
-    <button class="tab" role="tab" id="tab-farm" aria-controls="pane-farm" data-tab="farm">국내 농산물<span class="n" id="n-farm"></span></button>
-    <button class="tab" role="tab" id="tab-saved" aria-controls="pane-saved" data-tab="saved">모아보기<span class="n" id="n-saved"></span></button>
+    <button class="tab" role="tab" id="tab-today" aria-controls="pane-today" data-tab="today">오늘</button>
+    <button class="tab" role="tab" id="tab-bench" aria-controls="pane-bench" data-tab="bench">벤치마크</button>
+    <button class="tab" role="tab" id="tab-trends" aria-controls="pane-trends" data-tab="trends"><span class="lg">해외 트렌드</span><span class="sm">해외</span></button>
+    <button class="tab" role="tab" id="tab-insight" aria-controls="pane-insight" data-tab="insight">인사이트</button>
+    <button class="tab" role="tab" id="tab-mine" aria-controls="pane-mine" data-tab="mine">내 채널</button>
+    <button class="tab" role="tab" id="tab-saved" aria-controls="pane-saved" data-tab="saved">저장<span class="n" id="n-saved"></span></button>
   </div>
 </nav>
 
 <main class="wrap">
-  <section class="pane" id="pane-insight" role="tabpanel" aria-labelledby="tab-insight" hidden>
-    <p class="note">레퍼런스·농산물 채널의 최근 영상에서 <b>평소의 3배 이상 터진 영상</b>이 어떤 제목·길이·시간·단어에 몰리는지 비교합니다. 제목 공식은 <b>같은 채널 안에서</b> 패턴이 있는 영상과 없는 영상을 비교해, 채널마다 다른 제목 습관이 섞이지 않게 했습니다.</p>
-    <div class="ibox" id="i-week" hidden></div>
-    <div class="chips" id="i-scope"></div>
-    <div class="controls">
-      <div class="seg" role="group" aria-label="국내·해외" id="i-market"></div>
-      <div class="seg" role="group" aria-label="영상 길이" id="i-fmt"></div>
-      <button type="button" class="copy" id="i-copy">인사이트 복사</button>
-    </div>
-    <div class="tiles" id="i-tiles"></div>
-    <div class="ibox" id="i-reads"></div>
-    <div class="ibox" id="i-ai" hidden></div>
-    <div class="icols">
-      <div class="ibox" id="i-hooks"></div>
-      <div class="ibox" id="i-words"></div>
-    </div>
-    <div class="icols">
-      <div class="ibox" id="i-format"></div>
-      <div class="ibox" id="i-time"></div>
-    </div>
-    <div class="ibox" id="i-rising"></div>
+  <!-- 오늘: 들어오자마자 볼 것만 -->
+  <section class="pane" id="pane-today" role="tabpanel" aria-labelledby="tab-today" hidden>
+    <div class="ibox" id="t-week" hidden></div>
+    <section class="block">
+      <div class="bhead"><div><h2>지금 터지는 영상</h2><p class="sub" id="t-hot-sub"></p></div><button type="button" class="go" data-go="bench">벤치마크 전체 →</button></div>
+      <div class="grid" id="t-hot"></div>
+    </section>
+    <section class="block">
+      <div class="bhead"><div><h2>해외에서 먼저 뜨는 영상</h2><p class="sub">미국·영국·일본 같은 선행국 차트에 있고 한국 차트에는 아직 없는 영상</p></div><button type="button" class="go" data-go="trends">해외 트렌드 전체 →</button></div>
+      <div class="grid" id="t-sig"></div>
+    </section>
+    <section class="ibox">
+      <div class="bhead"><div><div class="eyebrow">벤치마크 전체에서</div><h2>지금 먹히는 제목 공식</h2></div><button type="button" class="go" data-go="insight">인사이트 →</button></div>
+      <ol class="reads" id="t-reads"></ol>
+    </section>
+    <p class="note small muted" id="t-setup" hidden></p>
   </section>
 
+  <!-- 벤치마크: 레퍼런스 + 농산물 채널의 영상 -->
+  <section class="pane" id="pane-bench" role="tabpanel" aria-labelledby="tab-bench" hidden>
+    <div class="chips" id="b-scope" role="group" aria-label="채널 묶음"></div>
+    <div class="controls">
+      <label class="search"><input id="b-q" type="search" placeholder="제목·요약·채널 검색" aria-label="벤치마크 검색"></label>
+      <div class="seg" role="group" aria-label="영상 길이" id="b-fmt"></div>
+      <label class="field">정렬 <select id="b-sort"></select></label>
+      <label class="field">기간 <select id="b-days">
+        <option value="30">30일</option>
+        <option value="90">90일</option>
+        <option value="365">1년</option>
+        <option value="0">전체</option>
+      </select></label>
+      <label class="check"><input type="checkbox" id="b-hot"> 터진 영상만</label>
+    </div>
+    <p class="summary" id="b-summary"></p>
+    <div class="grid" id="b-grid"></div>
+    <button type="button" class="more" id="b-more" hidden>더 보기</button>
+    <details class="drawer" id="b-chans"><summary id="b-chans-sum">채널 목록</summary><div class="in" id="b-chans-in"></div></details>
+  </section>
+
+  <!-- 해외 트렌드: 한국 미상륙 + 나라별 차트 -->
+  <section class="pane" id="pane-trends" role="tabpanel" aria-labelledby="tab-trends" hidden>
+    <div class="seg big" role="group" aria-label="보기" id="w-mode"></div>
+    <div class="chips" id="w-regions" role="group" aria-label="나라"></div>
+    <div class="controls">
+      <label class="search"><input id="w-q" type="search" placeholder="제목·요약·채널 검색" aria-label="해외 트렌드 검색"></label>
+      <div class="seg" role="group" aria-label="선행국 수" id="w-min"></div>
+      <div class="seg" role="group" aria-label="영상 길이" id="w-fmt"></div>
+      <label class="field">주제 <select id="w-cat"></select></label>
+      <label class="field" id="w-sort-f">정렬 <select id="w-sort">
+        <option value="rank">차트 순위</option>
+        <option value="vel">시간당 조회</option>
+      </select></label>
+    </div>
+    <p class="summary" id="w-summary"></p>
+    <div class="grid" id="w-grid"></div>
+    <button type="button" class="more" id="w-more" hidden>더 보기</button>
+  </section>
+
+  <!-- 인사이트 -->
+  <section class="pane" id="pane-insight" role="tabpanel" aria-labelledby="tab-insight" hidden>
+    <div class="chips" id="i-scope" role="group" aria-label="분석 범위"></div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="영상 길이" id="i-fmt"></div>
+      <button type="button" class="act" id="i-copy">마크다운 복사</button>
+    </div>
+    <div class="ibox" id="i-reads"></div>
+    <div class="ibox tchk" id="i-check">
+      <div><div class="eyebrow">제목 점검기</div><h2>쓰려는 제목을 넣어 보세요</h2></div>
+      <input id="i-title" type="text" placeholder="예: 22살 지게꾼은 하루에 얼마 벌까?" aria-label="점검할 제목" autocomplete="off">
+      <div class="res" id="i-title-res"></div>
+    </div>
+    <div class="ibox" id="i-ai" hidden></div>
+    <div class="ibox" id="i-hooks"></div>
+    <div class="icols">
+      <div class="ibox" id="i-when"></div>
+      <div class="ibox" id="i-words"></div>
+    </div>
+  </section>
+
+  <!-- 내 채널 -->
   <section class="pane" id="pane-mine" role="tabpanel" aria-labelledby="tab-mine" hidden>
     <div class="ibox" id="m-empty">
       <div><div class="eyebrow">내 채널</div><h2>내 영상을 벤치마크와 같은 기준으로 봅니다</h2></div>
-      <p class="note">등록한 채널의 최근 영상 50개에 평소 대비 배수와 시간당 조회 증가를 붙이고, 인사이트 탭의 제목 공식과 비교해 <b>써볼 만한 패턴</b>과 <b>줄여볼 패턴</b>을 알려 줍니다.</p>
+      <p class="note">채널을 등록하면 최근 영상 50개가 평소보다 잘 됐는지 보여 주고, 벤치마크에서 먹힌 제목 공식과 비교해 <b>써볼 만한 패턴</b>과 <b>줄여볼 패턴</b>을 알려 줍니다.</p>
       <ol class="steps">
-        <li>GitHub 저장소에서 <code>trends/my_channels.json</code>을 열고 <code>channels</code>에 <code>{"id": "UC로 시작하는 채널 ID", "title": "채널 이름"}</code>을 한 줄 넣습니다.</li>
-        <li>다음 자동 수집(매일 05:47) 뒤 이 탭에 나타납니다. 바로 보려면 Actions → Collect YouTube Trends → Run workflow.</li>
+        <li>GitHub 저장소의 <code>trends/my_channels.json</code>에서 <code>channels</code>에 <code>{"id": "UC로 시작하는 채널 ID", "title": "채널 이름"}</code>을 넣습니다.</li>
+        <li>다음 자동 수집(매일 05:47) 뒤 여기에 나타납니다. 바로 보려면 Actions → Collect YouTube Trends → Run workflow.</li>
       </ol>
     </div>
     <div id="m-body" class="pane" hidden>
       <div class="chips" id="m-chans"></div>
       <div class="tiles" id="m-tiles"></div>
       <div class="ibox">
-        <div class="ai-head"><div><div class="eyebrow">제목 공식 성적표</div><h2>벤치마크에서 먹힌 패턴, 나는 쓰고 있나</h2></div>
+        <div class="head2"><div><div class="eyebrow">제목 공식 성적표</div><h2>벤치마크에서 먹힌 패턴, 나는 쓰고 있나</h2></div>
           <label class="field">비교 범위 <select id="m-scope"></select></label></div>
         <div id="m-advice"></div>
-        <div class="mtable" id="m-table"></div>
+        <details class="more-d"><summary>패턴별 표 보기</summary><div><div class="mtable" id="m-table"></div></div></details>
       </div>
       <h3 class="sec-h">최근 영상</h3>
       <div class="flist" id="m-videos"></div>
     </div>
   </section>
 
-  <section class="pane" id="pane-country" role="tabpanel" aria-labelledby="tab-country" hidden>
-    <div class="regions" id="regions"></div>
-    <p class="note"><b>선행국</b>은 숏폼 포맷과 밈이 한국보다 먼저 퍼지는 시장입니다. <b>한국 미상륙</b> 표시는 같은 시점 한국 인기 차트에 없는 영상입니다.</p>
-    <div class="controls">
-      <div class="seg" role="group" aria-label="영상 길이" id="c-fmt"></div>
-      <label class="field">카테고리 <select id="c-cat"></select></label>
-      <label class="field">정렬 <select id="c-sort">
-        <option value="rank">차트 순위</option>
-        <option value="vel">시간당 조회</option>
-        <option value="subs">구독자 대비 조회</option>
-        <option value="like">좋아요율</option>
-      </select></label>
-    </div>
-    <p class="summary" id="c-summary"></p>
-    <div class="grid" id="c-grid"></div>
-  </section>
-
-  <section class="pane" id="pane-category" role="tabpanel" aria-labelledby="tab-category" hidden>
-    <div class="chips" id="k-chips"></div>
-    <div class="controls">
-      <div class="seg" role="group" aria-label="국가 범위" id="k-scope"></div>
-      <div class="seg" role="group" aria-label="영상 길이" id="k-fmt"></div>
-      <label class="field">정렬 <select id="k-sort">
-        <option value="spread">확산 국가 수</option>
-        <option value="vel">시간당 조회</option>
-        <option value="views">조회수</option>
-      </select></label>
-    </div>
-    <p class="summary" id="k-summary"></p>
-    <div class="grid" id="k-grid"></div>
-  </section>
-
-  <section class="pane" id="pane-signal" role="tabpanel" aria-labelledby="tab-signal" hidden>
-    <p class="note">선행국 인기 차트에 올랐지만 <b>한국 차트에는 아직 없는</b> 영상입니다. 여러 선행국에 동시에 뜬 영상일수록 위에 놓입니다.</p>
-    <div class="controls">
-      <div class="seg" role="group" aria-label="선행국 수" id="s-min"></div>
-      <div class="seg" role="group" aria-label="영상 길이" id="s-fmt"></div>
-    </div>
-    <p class="summary" id="s-summary"></p>
-    <div class="grid" id="s-grid"></div>
-  </section>
-
-  <section class="pane" id="pane-refs" role="tabpanel" aria-labelledby="tab-refs" hidden>
-    <p class="note">강의에 나온 채널, 국내외 챌린지·사회실험 채널, 10대~30대 초반만 나오는 <b>이팔청춘</b> 인터뷰 벤치마크를 지켜봅니다. <b>배수</b>는 그 채널 최근 영상 중 <b>같은 형식</b>(쇼츠는 쇼츠끼리, 롱폼은 롱폼끼리)의 조회수 중앙값과 비교한 값입니다. 따라 하지 말고 왜 터졌는지 적어 두세요.</p>
-    <div class="chips" id="r-groups"></div>
-    <div class="controls">
-      <div class="seg" role="group" aria-label="국내·해외" id="r-market"></div>
-      <div class="seg" role="group" aria-label="배수 기준" id="r-hot"></div>
-      <div class="seg" role="group" aria-label="영상 길이" id="r-fmt"></div>
-      <label class="field">기간 <select id="r-days">
-        <option value="30">최근 30일</option>
-        <option value="90">최근 90일</option>
-        <option value="365">최근 1년</option>
-        <option value="0">전체</option>
-      </select></label>
-      <label class="field">정렬 <select id="r-sort">
-        <option value="x">배수</option>
-        <option value="new">최신</option>
-        <option value="talk">댓글 반응</option>
-      </select></label>
-    </div>
-    <p class="summary" id="r-summary"></p>
-    <div class="grid" id="r-grid"></div>
-    <h3 class="sec-h">지켜보는 채널</h3>
-    <div class="flist" id="r-list"></div>
-  </section>
-
-  <section class="pane" id="pane-farm" role="tabpanel" aria-labelledby="tab-farm" hidden>
-    <div class="controls"><div class="seg" role="group" aria-label="플랫폼" id="f-plat"></div></div>
-    <p class="note" id="f-ignote" hidden></p>
-    <div class="bench" id="f-bench" hidden></div>
-    <div class="controls">
-      <div class="chips" id="f-types"></div>
-    </div>
-    <div class="controls">
-      <label class="field">검색 <input id="f-q" type="search" placeholder="이름·작물·지역"></label>
-      <label class="field">정렬 <select id="f-sort"></select></label>
-    </div>
-    <p class="summary" id="f-summary"></p>
-    <div class="flist" id="f-list"></div>
-    <div id="f-disc"></div>
-  </section>
-
+  <!-- 저장 -->
   <section class="pane" id="pane-saved" role="tabpanel" aria-labelledby="tab-saved" hidden>
-    <p class="note">카드의 <b>☆</b>를 눌러 모은 영상입니다. 이 브라우저에만 저장됩니다. 마크다운으로 복사해 기획 노트에 붙여 넣으세요.</p>
+    <p class="note">카드의 <b>☆</b>로 모은 영상입니다. 메모를 적어 두고 마크다운으로 복사해 기획 노트에 붙여 넣으세요. 이 브라우저에만 저장됩니다.</p>
     <div class="controls" id="v-actions" hidden><button type="button" class="btn" id="v-copy">마크다운 복사</button><button type="button" class="btn ghost" id="v-clear">모두 지우기</button></div>
     <div class="flist" id="v-list"></div>
   </section>
 </main>
 
 <footer class="wrap">
-  <p><b>인기 급상승</b>은 YouTube Data API의 국가별 mostPopular 차트입니다. <b>시간당 조회</b>는 조회수를 업로드 후 경과 시간(수집 시각 기준)으로 나눈 값, <b>구독자 대비</b>는 조회수 ÷ 채널 구독자 수입니다.</p>
-  <p><b>인사이트</b>의 터질 확률은 평소의 3배 이상인 영상의 비율입니다. 제목 공식은 같은 채널 안에서 패턴이 있는 영상과 없는 영상을 비교하고, 양쪽 모두 8개 이상일 때만 보여 줍니다. 신뢰도는 두 비율 차이의 z 값(2 이상 높음, 1.3 이상 보통)입니다.</p>
-  <p><b>레퍼런스 배수</b>는 영상 조회수 ÷ 그 채널 최근 30개 업로드 중 같은 형식 영상의 조회수 중앙값입니다. 한 형식이 3개 미만이면 비교하지 않습니다.</p>
-  <p><b>인스타그램 배수</b>는 게시물 반응(좋아요 + 댓글) ÷ 그 계정 최근 15개 게시물 반응의 중앙값입니다. 인스타그램은 남의 계정 릴스 조회수를 API로 주지 않아 반응으로 비교합니다.</p>
-  <p><b>농산물 유튜브 배수</b>는 영상 조회수 ÷ 그 채널 최근 업로드 영상 조회수의 중앙값입니다. 3배 이상이면 채널 평소보다 터진 영상으로 봅니다.</p>
+  <details>
+    <summary><b>숫자 읽는 법</b></summary>
+    <div>
+      <p><b>평소의 N배</b>: 영상 조회수 ÷ 그 채널 최근 영상 중 같은 형식(쇼츠는 쇼츠끼리, 롱폼은 롱폼끼리)의 조회수 중앙값. 3배 이상이면 ‘터진 영상’입니다.</p>
+      <p><b>요약</b>: 영상 설명·태그·인기 댓글을 Claude가 2~3줄로 정리한 것입니다. <span class="guess">추정</span> 표시는 설명이 부족해 제목과 채널로 짐작한 요약입니다.</p>
+      <p><b>해외 트렌드</b>: YouTube 나라별 인기 급상승 차트. 선행국(미국·영국·일본·캐나다·호주)은 숏폼 포맷과 밈이 한국보다 먼저 퍼지는 시장입니다.</p>
+      <p><b>제목 공식</b>: 같은 채널 안에서 패턴이 있는 영상과 없는 영상의 터질 확률을 비교합니다. 양쪽 모두 8개 이상일 때만 보여 주고, 신뢰도는 두 비율 차이의 z 값(2 이상 높음, 1.3 이상 보통)입니다. 상관관계이니 가설로 쓰세요.</p>
+      <p><b>시간당 조회</b>: 어제 수집 이후 늘어난 조회수 ÷ 지난 시간. 두 번째 수집부터 보입니다.</p>
+    </div>
+  </details>
   <p id="foot-src"></p>
 </footer>
+
+<dialog class="sheet" id="sheet" aria-labelledby="sheet-h">
+  <div class="in">
+    <div class="head2"><div><div class="eyebrow">Claude 각색 아이디어</div><h2 id="sheet-h"></h2></div><button type="button" class="act" id="sheet-x">닫기</button></div>
+    <p class="muted small" id="sheet-st" role="status"></p>
+    <p class="out" id="sheet-out"></p>
+    <div class="controls"><button type="button" class="act" id="sheet-copy" hidden>메모로 복사</button><button type="button" class="act" id="sheet-stop" hidden>멈추기</button></div>
+  </div>
+</dialog>
 
 <script>
 (() => {
   "use strict";
 
-  const RGROUP = { "솔파": "솔파 스튜디오", "참여형": "참여형 포맷", "인터뷰": "인터뷰·토크", "챌린지": "챌린지", "이팔청춘": "이팔청춘" };
-  const TAGS = { "재배": "직접 재배", "직판": "직판", "유통": "유통·판매", "시장": "도매시장", "리뷰": "리뷰·큐레이션", "정보": "정보·교육", "미디어": "미디어", "브이로그": "브이로그", "기관": "기관" };
-  const GROUPS = [["lead", "선행국"], ["global", "글로벌"], ["base", "기준"]];
-  const FMT = [["all", "전체"], ["short", "3분 이하"], ["long", "롱폼"]];
+  const RGROUP = { "솔파": "솔파 스튜디오", "참여형": "참여형", "인터뷰": "인터뷰", "챌린지": "챌린지", "이팔청춘": "이팔청춘" };
+  // 채널 묶음: 기획 중인 세 채널(이팔청춘·농산물·챌린지)에 맞춘다. digest.py의 SCOPES와 같은 정의
+  const SCOPES = [["all", "전체"], ["이팔청춘", "이팔청춘"], ["farm", "농산물"], ["challenge", "챌린지·참여형"], ["인터뷰", "인터뷰"]];
+  const CHALLENGE = new Set(["챌린지", "참여형", "솔파"]);
+  const TAGS = { "재배": "직접 재배", "직판": "직판", "유통": "유통·판매", "시장": "도매시장", "리뷰": "리뷰", "정보": "정보·교육", "미디어": "미디어", "브이로그": "브이로그", "기관": "기관" };
+  const FMT = [["all", "전체"], ["short", "쇼츠"], ["long", "롱폼"]];
   const SHORT_MAX = 180;
   const HOT_X = 3;
-  const PREF_KEY = "trends.prefs.v1";
+  const PAGE = 24;
+  const PREF_KEY = "trends.prefs.v2";
 
   const S = {
-    tab: "insight", region: "US", fmt: "all", cat: "", sort: "rank",
-    kcat: "", kscope: "all", kfmt: "all", ksort: "spread",
-    smin: 2, sfmt: "all",
-    fplat: "yt", ftype: "all", fq: "", fsort: "subs", fsortig: "followers",
-    rgroup: "all", rmarket: "all", rhot: "hot", rfmt: "all", rdays: "90", rsort: "x",
-    iscope: "all", imarket: "all", ifmt: "all", mch: "", mscope: "",
+    tab: "today",
+    bscope: "all", bfmt: "all", bsort: "x", bdays: "90", bhot: true,
+    wmode: "signal", region: "US", wfmt: "all", wcat: "", wsort: "rank", smin: 2,
+    iscope: "all", ifmt: "all", mch: "", mscope: "all",
   };
+  const Q = { b: "", w: "" }; // 검색어는 저장하지 않는다(다시 열었을 때 결과가 적어 보이는 혼란 방지)
   try { Object.assign(S, JSON.parse(localStorage.getItem(PREF_KEY) || "{}")); } catch (e) { /* 저장소 없음 */ }
   const save = () => { try { localStorage.setItem(PREF_KEY, JSON.stringify(S)); } catch (e) { /* 무시 */ } };
 
-  let T = null, F = null, R = null, D = null, M = null, REF = Date.now();
-  const REG = {}, POOL = {}, RANK = {}, PREV = {}, WHERE = new Map();
+  let T = null, F = null, R = null, D = null, M = null, SUM = {}, REF = Date.now();
+  const REG = {}, POOL = {}, RANK = {}, WHERE = new Map();
 
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const flag = (cc) => String.fromCodePoint(...[...cc].map((c) => 127397 + c.charCodeAt(0)));
+  const nfc = (s) => String(s ?? "").normalize("NFC");
+  const ytUrl = (id) => `https://www.youtube.com/watch?v=${encodeURIComponent(id)}`;
+  const thumbUrl = (id) => `https://i.ytimg.com/vi/${encodeURIComponent(id)}/mqdefault.jpg`;
+  const avatarUrl = (t) => !t ? "" : t.startsWith("http") ? t : `https://yt3.ggpht.com/${t}=s88-c-k-c0x00ffffff-no-rj`;
+  const avatarImg = (ch) => ch.thumb ? `<img loading="lazy" src="${esc(avatarUrl(ch.thumb))}" alt="">` : "";
 
-  function trimNum(x) {
-    if (x >= 100) return String(Math.round(x));
-    return String(Math.round(x * 10) / 10);
-  }
+  function trimNum(x) { return x >= 100 ? String(Math.round(x)) : String(Math.round(x * 10) / 10); }
   function fmtNum(n) {
     if (n == null || Number.isNaN(n)) return "–";
     if (n >= 1e8) return trimNum(n / 1e8) + "억";
@@ -531,23 +518,39 @@ footer b { color: var(--ink-2); font-weight: 600; }
   function fmtAge(p) {
     const h = hoursOld(p);
     if (h < 48) return Math.round(h) + "시간 전";
-    return Math.round(h / 24) + "일 전";
+    if (h < 24 * 60) return Math.round(h / 24) + "일 전";
+    return Math.round(h / 24 / 30) + "달 전";
   }
-  const vel = (v) => v.v / hoursOld(v.p);
-  const fmtOk = (v, f) => f === "all" || (f === "short" ? v.d > 0 && v.d <= SHORT_MAX : !(v.d > 0 && v.d <= SHORT_MAX));
-  const leadN = (id) => (WHERE.get(id) || []).filter((c) => REG[c] && REG[c].group === "lead").length;
-  const inKR = (id) => (WHERE.get(id) || []).includes("KR");
+  const isShort = (v) => v.d > 0 && v.d <= SHORT_MAX;
+  const fmtOk = (v, f) => f === "all" || (f === "short" ? isShort(v) : !isShort(v));
   const hasHangul = (s) => /[가-힣]/.test(s);
-  const avatarUrl = (t) => !t ? "" : t.startsWith("http") ? t : `https://yt3.ggpht.com/${t}=s88-c-k-c0x00ffffff-no-rj`;
 
   async function getJSON(url) {
     const res = await fetch(url, { cache: "no-cache" });
     if (!res.ok) throw new Error(`${url} ${res.status}`);
     return res.json();
   }
+  function seg(el, items, current, onPick) {
+    el.innerHTML = items.map(([val, label]) =>
+      `<button type="button" data-v="${esc(val)}" aria-pressed="${String(val) === String(current)}">${esc(label)}</button>`).join("");
+    el.onclick = (e) => { const b = e.target.closest("button[data-v]"); if (b) onPick(b.dataset.v); };
+  }
+  // 여러 단어는 모두 들어 있어야 한다(제목·한국어 제목·요약·채널)
+  function matches(q, ...fields) {
+    const words = q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    if (!words.length) return true;
+    const hay = fields.map((x) => String(x || "")).join(" ").toLowerCase();
+    return words.every((w) => hay.includes(w));
+  }
 
+  // ── 데이터 정리
+  function nfcTitles() {
+    // macOS에서 올린 제목은 한글이 자모로 풀려(NFD) 오기도 한다. 예전 데이터도 여기서 합친다
+    if (T) for (const v of Object.values(T.videos)) { v.t = nfc(v.t); v.c = nfc(v.c); }
+    for (const d of [R, F, M]) if (d) for (const ch of d.channels || []) { ch.title = nfc(ch.title); for (const r of ch.recent || []) r.t = nfc(r.t); }
+  }
   function indexTrends() {
-    REF = Date.parse(T.generatedAt) || Date.now();
+    if (!T) return;
     for (const r of T.regions) {
       REG[r.code] = r;
       const c = T.charts[r.code] || {};
@@ -558,424 +561,228 @@ footer b { color: var(--ink-2); font-weight: 600; }
       Object.values(c.cat || {}).forEach((l) => l.forEach(push));
       POOL[r.code] = pool;
       RANK[r.code] = new Map((c.all || []).map((id, i) => [id, i + 1]));
-      const p = T.prev && T.prev[r.code];
-      PREV[r.code] = p && p.length ? new Map(p.map((id, i) => [id, i + 1])) : null;
-      for (const id of pool) {
-        if (!WHERE.has(id)) WHERE.set(id, []);
-        WHERE.get(id).push(r.code);
-      }
+      for (const id of pool) { if (!WHERE.has(id)) WHERE.set(id, []); WHERE.get(id).push(r.code); }
     }
     if (!REG[S.region]) S.region = T.regions[0].code;
   }
+  const leadN = (id) => (WHERE.get(id) || []).filter((c) => REG[c] && REG[c].group === "lead").length;
+  const inKR = (id) => (WHERE.get(id) || []).includes("KR");
+  const vel = (v) => v.v / hoursOld(v.p);
 
-  function seg(el, items, current, onPick) {
-    el.innerHTML = items.map(([val, label]) =>
-      `<button type="button" data-v="${esc(val)}" aria-pressed="${String(val) === String(current)}">${esc(label)}</button>`).join("");
-    el.onclick = (e) => {
-      const b = e.target.closest("button[data-v]");
-      if (b) onPick(b.dataset.v);
-    };
-  }
-
-  function card(id, region) {
-    const v = T.videos[id];
-    const where = WHERE.get(id) || [];
-    const rank = region ? RANK[region].get(id) : null;
-    const badges = [];
-    if (region && rank && PREV[region]) {
-      const pr = PREV[region].get(id);
-      if (!pr) badges.push(["b-new", "NEW"]);
-      else if (pr > rank) badges.push(["b-up", "▲" + (pr - rank)]);
-    }
-    if (region !== "KR" && !where.includes("KR")) badges.push(["b-miss", "한국 미상륙"]);
-    if (where.length > 1) badges.push(["b-plain", where.length + "개국"]);
-    if (v.s && v.v / v.s >= 1) badges.push(["b-gold", "구독자의 " + trimNum(v.v / v.s) + "배"]);
-    const cat = T.categories[v.cat] || "기타";
-    const url = `https://www.youtube.com/watch?v=${encodeURIComponent(id)}`;
-    const tr = hasHangul(v.t) ? "" :
-      `<a href="https://translate.google.com/?sl=auto&amp;tl=ko&amp;op=translate&amp;text=${encodeURIComponent(v.t)}" target="_blank" rel="noopener">제목 번역</a>`;
-    const likeRate = v.v ? (v.l / v.v) * 100 : 0;
-    return `<article class="vcard">
-      <a class="thumb" href="${url}" target="_blank" rel="noopener">
-        <img loading="lazy" src="https://i.ytimg.com/vi/${esc(id)}/mqdefault.jpg" alt="">
-        <span class="ph">${esc(cat)}</span>
-        ${rank ? `<span class="rank">${rank}위</span>` : ""}
-        <span class="dur">${fmtDur(v.d)}</span>
-      </a>
-      <div class="vbody">
-        ${badges.length ? `<div class="badges">${badges.map(([k, t]) => `<span class="badge ${k}">${esc(t)}</span>`).join("")}</div>` : ""}
-        <h3 class="vtitle"><a href="${url}" target="_blank" rel="noopener">${esc(v.t)}</a></h3>
-        <p class="vch">${esc(v.c)} · ${esc(cat)}</p>
-        <dl class="vstats">
-          <div><dt>조회</dt><dd>${fmtNum(v.v)}</dd></div>
-          <div><dt>시간당</dt><dd>${fmtNum(vel(v))}</dd></div>
-          <div><dt>업로드</dt><dd>${fmtAge(v.p)}</dd></div>
-          <div><dt>좋아요율</dt><dd>${likeRate ? likeRate.toFixed(1) + "%" : "–"}</dd></div>
-        </dl>
-        <div class="vfoot"><span class="flags" title="${esc(where.map((c) => REG[c].name).join(", "))}">${where.map(flag).join("")}</span><span class="vact">${tr}${starBtn(id)}</span></div>
-      </div>
-    </article>`;
-  }
-
-  function grid(el, ids, region) {
-    el.innerHTML = ids.length ? ids.map((id) => card(id, region)).join("") :
-      `<div class="empty">조건에 맞는 영상이 없습니다. 필터를 바꿔 보세요.</div>`;
-  }
-
-  function catOptions(ids) {
-    const counts = {};
-    for (const id of ids) { const c = T.videos[id].cat; counts[c] = (counts[c] || 0) + 1; }
-    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  }
-
-  // ── 국가별
-  function renderCountry() {
-    $("regions").innerHTML = GROUPS.map(([g, label]) => {
-      const rs = T.regions.filter((r) => r.group === g);
-      if (!rs.length) return "";
-      return `<div class="rgroup"><span class="rlabel">${label}</span><div class="chips">${rs.map((r) =>
-        `<button type="button" class="chip" data-r="${r.code}" aria-pressed="${r.code === S.region}">${flag(r.code)} ${esc(r.name)}<span class="n">${POOL[r.code].length}</span></button>`).join("")}</div></div>`;
-    }).join("");
-    seg($("c-fmt"), FMT, S.fmt, (v) => { S.fmt = v; update(); });
-    const pool = POOL[S.region];
-    const cats = catOptions(pool);
-    if (S.cat && !cats.some(([c]) => c === S.cat)) S.cat = "";
-    $("c-cat").innerHTML = `<option value="">전체 (${pool.length})</option>` +
-      cats.map(([c, n]) => `<option value="${esc(c)}"${c === S.cat ? " selected" : ""}>${esc(T.categories[c] || "기타")} (${n})</option>`).join("");
-    $("c-sort").value = S.sort;
-
-    let ids = pool.filter((id) => fmtOk(T.videos[id], S.fmt) && (!S.cat || T.videos[id].cat === S.cat));
-    const rk = RANK[S.region];
-    const sorters = {
-      rank: (a, b) => (rk.get(a) || 999) - (rk.get(b) || 999),
-      vel: (a, b) => vel(T.videos[b]) - vel(T.videos[a]),
-      subs: (a, b) => ((T.videos[b].v / (T.videos[b].s || Infinity)) - (T.videos[a].v / (T.videos[a].s || Infinity))),
-      like: (a, b) => (T.videos[b].l / (T.videos[b].v || 1)) - (T.videos[a].l / (T.videos[a].v || 1)),
-    };
-    ids = ids.slice().sort(sorters[S.sort] || sorters.rank);
-    const r = REG[S.region];
-    const shortN = pool.filter((id) => fmtOk(T.videos[id], "short")).length;
-    const missN = S.region === "KR" ? null : pool.filter((id) => !inKR(id)).length;
-    const avgH = pool.reduce((s, id) => s + hoursOld(T.videos[id].p), 0) / (pool.length || 1);
-    $("c-summary").innerHTML = `<span><b>${flag(r.code)} ${esc(r.name)}</b> 차트 ${pool.length}개</span><span>3분 이하 ${shortN}</span>` +
-      (missN == null ? "" : `<span>한국 미상륙 ${missN}</span>`) +
-      `<span>업로드 후 평균 ${Math.round(avgH)}시간</span>` + (ids.length !== pool.length ? `<span>표시 ${ids.length}</span>` : "");
-    grid($("c-grid"), ids, S.region);
-  }
-
-  // ── 카테고리별
-  function scopeOk(id) {
-    if (S.kscope === "lead") return leadN(id) > 0;
-    if (S.kscope === "nokr") return !inKR(id);
-    return true;
-  }
-  function renderCategory() {
-    const scoped = [...WHERE.keys()].filter(scopeOk);
-    const cats = catOptions(scoped);
-    if (S.kcat && !cats.some(([c]) => c === S.kcat)) S.kcat = "";
-    $("k-chips").innerHTML = `<button type="button" class="chip" data-k="" aria-pressed="${!S.kcat}">전체<span class="n">${scoped.length}</span></button>` +
-      cats.map(([c, n]) => `<button type="button" class="chip" data-k="${esc(c)}" aria-pressed="${c === S.kcat}">${esc(T.categories[c] || "기타")}<span class="n">${n}</span></button>`).join("");
-    seg($("k-scope"), [["all", "전체 국가"], ["lead", "선행국"], ["nokr", "한국 제외"]], S.kscope, (v) => { S.kscope = v; update(); });
-    seg($("k-fmt"), FMT, S.kfmt, (v) => { S.kfmt = v; update(); });
-    $("k-sort").value = S.ksort;
-    let ids = scoped.filter((id) => (!S.kcat || T.videos[id].cat === S.kcat) && fmtOk(T.videos[id], S.kfmt));
-    const spread = (id) => (WHERE.get(id) || []).length;
-    const sorters = {
-      spread: (a, b) => spread(b) - spread(a) || vel(T.videos[b]) - vel(T.videos[a]),
-      vel: (a, b) => vel(T.videos[b]) - vel(T.videos[a]),
-      views: (a, b) => T.videos[b].v - T.videos[a].v,
-    };
-    ids.sort(sorters[S.ksort] || sorters.spread);
-    const multi = ids.filter((id) => spread(id) > 1).length;
-    $("k-summary").innerHTML = `<span><b>${esc(S.kcat ? T.categories[S.kcat] || "기타" : "전체 카테고리")}</b> ${ids.length}개</span><span>2개국 이상 동시 ${multi}</span>`;
-    grid($("k-grid"), ids, null);
-  }
-
-  // ── 선행 신호
-  function signalIds(min) {
-    return [...WHERE.keys()].filter((id) => !inKR(id) && leadN(id) >= min);
-  }
-  function renderSignal() {
-    seg($("s-min"), [[1, "선행국 1곳 이상"], [2, "2곳 이상"], [3, "3곳 이상"]], S.smin, (v) => { S.smin = Number(v); update(); });
-    seg($("s-fmt"), FMT, S.sfmt, (v) => { S.sfmt = v; update(); });
-    const ids = signalIds(S.smin).filter((id) => fmtOk(T.videos[id], S.sfmt))
-      .sort((a, b) => leadN(b) - leadN(a) || vel(T.videos[b]) - vel(T.videos[a]));
-    const byCat = catOptions(ids).slice(0, 3).map(([c, n]) => `${esc(T.categories[c] || "기타")} ${n}`).join(" · ");
-    $("s-summary").innerHTML = `<span><b>${ids.length}개</b> 영상이 선행국 ${S.smin}곳 이상에서 뜨고 한국에는 아직 없습니다</span>` + (byCat ? `<span>많은 카테고리: ${byCat}</span>` : "");
-    grid($("s-grid"), ids, null);
-  }
-
-  // ── 국내 농산물 (유튜브 + 인스타그램)
-  const IG = () => (F && F.instagram && F.instagram.accounts) || [];
-  const igFollowers = (a) => a.followers ?? (a.seed ? a.seed.followers : null);
-  const igEng = (a) => {
-    const r = a.recent || [];
-    return r.length ? r.reduce((s, p) => s + (p.l || 0) + (p.m || 0), 0) / r.length : null;
-  };
-  const igTop = (a) => Math.max(0, ...(a.recent || []).map((p) => p.x || 0));
-  const IG_TYPE = { REELS: "릴스", FEED: "피드", IMAGE: "사진", CAROUSEL_ALBUM: "슬라이드", VIDEO: "영상" };
-  function farmBenchIG() {
-    const el = $("f-bench");
-    const hot = [];
-    for (const a of IG()) for (const p of a.recent || []) if (p.x >= HOT_X) hot.push({ a, p });
-    if (!hot.length) { el.hidden = true; return; }
-    hot.sort((x, y) => y.p.x - x.p.x);
-    const maxX = Math.max(hot[0].p.x, 1);
-    const bars = hot.slice(0, 12).map(({ a, p }, i) => `<div class="bar${i === 0 ? " is-max" : ""}">
-        <a href="${esc(p.url)}" target="_blank" rel="noopener" title="${esc(p.t)}">@${esc(a.handle)} · ${esc(p.t || IG_TYPE[p.type] || "게시물")}</a>
-        <div class="track"><div class="fill" style="width:${Math.max((p.x / maxX) * 100, 0.6).toFixed(1)}%"></div></div>
-        <span class="val">${trimNum(p.x)}배 · ♥ ${fmtNum(p.l)} · 댓글 ${fmtNum(p.m)}</span>
-      </div>`).join("");
-    el.hidden = false;
-    el.innerHTML = `<div><div class="eyebrow">벤치마크 · 계정 평소보다 반응이 터진 게시물</div><h2>인스타그램 농산물 계정</h2></div>
-      <p class="why">게시물 반응(좋아요 + 댓글)을 그 계정 최근 게시물의 중앙값과 비교했습니다. 맨 위는 @${esc(hot[0].a.handle)}의 ${esc(IG_TYPE[hot[0].p.type] || "게시물")}로 평소의 <b>${trimNum(hot[0].p.x)}배</b>입니다.</p>
-      <div class="bars">${bars}</div>`;
-  }
-  function igRow(a) {
-    const fol = igFollowers(a);
-    const seedOnly = a.followers == null && a.seed;
-    const eng = igEng(a), top = igTop(a);
-    const initial = esc((a.name || a.handle || "?").trim().charAt(0));
-    return `<div class="frow">
-      <div class="avatar">${a.pic ? `<img loading="lazy" src="${esc(a.pic)}" alt="">` : ""}<span class="ph">${initial}</span></div>
-      <div class="fmain">
-        <p class="fname"><a href="https://www.instagram.com/${encodeURIComponent(a.handle)}/" target="_blank" rel="noopener">${esc(a.name || a.handle)}</a><span class="handle">@${esc(a.handle)}</span></p>
-        <p class="fnote">${esc(a.note || "")}${a.error ? ` <span class="seedmark">· API로 조회 불가(개인 계정이거나 아이디 변경)</span>` : ""}</p>
-      </div>
-      <div class="fmeta">
-        <div class="ftags"><span class="ftag ig">인스타그램</span>${(a.tags || []).map((t) => `<span class="ftag t-${esc(t)}">${esc(TAGS[t] || t)}</span>`).join("")}</div>
-      </div>
-      <dl class="fnums">
-        <div><dt>팔로워</dt><dd>${fmtNum(fol)}${seedOnly ? `<span class="seedmark" title="${esc(a.seed.at)} 웹 검색 기준">*</span>` : ""}</dd></div>
-        <div><dt>게시물</dt><dd>${fmtNum(a.posts)}</dd></div>
-        <div><dt>평균 반응</dt><dd>${fmtNum(eng)}</dd></div>
-        <div><dt>최고 배수</dt><dd>${top ? trimNum(top) + "배" : "–"}</dd></div>
-      </dl>
-    </div>`;
-  }
-  function farmBench() {
-    const el = $("f-bench");
-    const hot = [];
-    for (const ch of F.channels) for (const r of ch.recent || []) if (r.x >= HOT_X) hot.push({ ch, r });
-    if (!hot.length) { el.hidden = true; return; }
-    hot.sort((a, b) => b.r.x - a.r.x);
-    const lead = hot[0].ch;
-    const rows = (lead.recent || []).slice().sort((a, b) => Date.parse(a.p) - Date.parse(b.p));
-    const maxX = Math.max(...rows.map((r) => r.x), 1);
-    const bars = rows.map((r) => `<div class="bar${r.x === maxX ? " is-max" : ""}">
-        <a href="https://www.youtube.com/watch?v=${encodeURIComponent(r.id)}" target="_blank" rel="noopener" title="${esc(r.t)}">${esc(r.t)}</a>
-        <div class="track"><div class="fill" style="width:${Math.max((r.x / maxX) * 100, 0.6).toFixed(1)}%"></div></div>
-        <span class="val">${trimNum(r.x)}배 · ${fmtNum(r.v)}회</span>
-      </div>`).join("");
-    const others = hot.filter((h) => h.ch !== lead).slice(0, 8).map((h) =>
-      `<div class="bar"><a href="https://www.youtube.com/watch?v=${encodeURIComponent(h.r.id)}" target="_blank" rel="noopener">${esc(h.ch.title)} · ${esc(h.r.t)}</a><div class="track"><div class="fill" style="width:${Math.min((h.r.x / maxX) * 100, 100).toFixed(1)}%"></div></div><span class="val">${trimNum(h.r.x)}배 · ${fmtNum(h.r.v)}회</span></div>`).join("");
-    const top = hot[0].r;
-    el.hidden = false;
-    el.innerHTML = `<div><div class="eyebrow">벤치마크 · 채널 평소보다 터진 영상</div>
-        <h2>${esc(lead.title)}</h2></div>
-      <p class="why">‘${esc(top.t)}’이 이 채널 최근 영상 조회수 중앙값(${fmtNum(lead.median)}회)의 <b>${trimNum(top.x)}배</b>를 기록했습니다.
-        구독자 ${fmtNum(lead.subs)}명, 개설 ${esc(lead.since || "")}, 영상 ${fmtNum(lead.videos)}개.</p>
-      <div class="bars">${bars}</div>
-      ${others ? `<h3 class="sec-h">다른 채널의 터진 영상</h3><div class="bars">${others}</div>` : ""}`;
-  }
-
-  function farmMatch(ch) {
-    if (S.ftype !== "all" && !(ch.tags || []).includes(S.ftype)) return false;
-    if (!S.fq) return true;
-    const q = S.fq.trim().toLowerCase();
-    return [ch.title, ch.name, ch.handle, ch.crops, ch.region, ch.note].some((s) => String(s || "").toLowerCase().includes(q));
-  }
-
-  function farmRow(ch) {
-    const avg = ch.videos ? ch.views / ch.videos : null;
-    const initial = esc((ch.title || "?").trim().charAt(0));
-    const handle = ch.handle ? `<span class="handle">${esc(ch.handle)}</span>` : "";
-    return `<div class="frow">
-      <div class="avatar">${ch.thumb ? `<img loading="lazy" src="${esc(avatarUrl(ch.thumb))}" alt="">` : ""}<span class="ph">${initial}</span></div>
-      <div class="fmain">
-        <p class="fname"><a href="https://www.youtube.com/channel/${encodeURIComponent(ch.id)}" target="_blank" rel="noopener">${esc(ch.title)}</a>${handle}</p>
-        <p class="fnote">${esc(ch.note || "")}</p>
-      </div>
-      <div class="fmeta">
-        <div class="ftags">${(ch.tags || []).map((t) => `<span class="ftag t-${esc(t)}">${esc(TAGS[t] || t)}</span>`).join("")}</div>
-        <p class="fcrop">${esc([ch.crops, ch.region].filter(Boolean).join(" · "))}</p>
-      </div>
-      <dl class="fnums">
-        <div><dt>구독자</dt><dd>${fmtNum(ch.subs)}</dd></div>
-        <div><dt>총 조회</dt><dd>${fmtNum(ch.views)}</dd></div>
-        <div><dt>영상</dt><dd>${fmtNum(ch.videos)}</dd></div>
-        <div><dt>영상당 평균</dt><dd>${fmtNum(avg)}</dd></div>
-      </dl>
-    </div>`;
-  }
-
-  const SORTS = {
-    yt: [["subs", "구독자"], ["avg", "영상당 평균 조회"], ["views", "총 조회"], ["since", "최근 개설"]],
-    ig: [["followers", "팔로워"], ["eng", "평균 반응"], ["top", "최고 배수"], ["posts", "게시물 수"]],
-  };
-  function renderFarm() {
-    if (!F) {
-      $("f-list").innerHTML = `<div class="empty">농산물 채널 데이터(data/farm.json)를 불러오지 못했습니다.</div>`;
-      return;
-    }
-    const igList = IG();
-    if (S.fplat === "ig" && !igList.length) S.fplat = "yt";
-    seg($("f-plat"), [["yt", `유튜브 ${F.channels.length}`], ["ig", `인스타그램 ${igList.length}`]], S.fplat, (v) => { S.fplat = v; S.ftype = "all"; update(); });
-    const ig = S.fplat === "ig";
-    const pool = ig ? igList : F.channels;
-    const counts = { all: pool.length };
-    for (const ch of pool) for (const t of ch.tags || []) counts[t] = (counts[t] || 0) + 1;
-    if (S.ftype !== "all" && !counts[S.ftype]) S.ftype = "all";
-    $("f-types").innerHTML = [["all", "전체"], ...Object.entries(TAGS)].filter(([k]) => counts[k])
-      .map(([k, label]) => `<button type="button" class="chip" data-f="${esc(k)}" aria-pressed="${k === S.ftype}">${esc(label)}<span class="n">${counts[k]}</span></button>`).join("");
-    if ($("f-q").value !== S.fq) $("f-q").value = S.fq;
-    const sortKey = ig ? "fsortig" : "fsort";
-    $("f-sort").innerHTML = SORTS[ig ? "ig" : "yt"].map(([v, l]) => `<option value="${v}">${l}</option>`).join("");
-    $("f-sort").value = S[sortKey];
-    const note = $("f-ignote");
-    note.hidden = !ig || (F.instagram && F.instagram.api);
-    note.innerHTML = `인스타그램 계정 목록입니다. <b>팔로워 *</b>는 ${esc((igList.find((a) => a.seed) || { seed: { at: "" } }).seed.at)} 웹 검색 기준이고, Meta API를 연결하면 팔로워·게시물·게시물별 반응이 매일 채워집니다.`;
-    if (ig) {
-      farmBenchIG();
-      const sorters = {
-        followers: (a, b) => (igFollowers(b) || 0) - (igFollowers(a) || 0),
-        eng: (a, b) => (igEng(b) || 0) - (igEng(a) || 0),
-        top: (a, b) => igTop(b) - igTop(a),
-        posts: (a, b) => (b.posts || 0) - (a.posts || 0),
-      };
-      const list = igList.filter(farmMatch).sort(sorters[S.fsortig] || sorters.followers);
-      const folSum = list.reduce((s, a) => s + (igFollowers(a) || 0), 0);
-      $("f-summary").innerHTML = `<span><b>${list.length}개</b> 계정</span><span>팔로워 합계 ${fmtNum(folSum)}</span>` +
-        `<span>판매·유통 ${list.filter((a) => (a.tags || []).some((t) => t === "직판" || t === "유통")).length} · 직접 재배 ${list.filter((a) => (a.tags || []).includes("재배")).length}</span>`;
-      $("f-list").innerHTML = list.length ? list.map(igRow).join("") : `<div class="empty">검색 결과가 없습니다.</div>`;
-      $("f-disc").innerHTML = "";
-      return;
-    }
-    farmBench();
-    const sorters = {
-      subs: (a, b) => (b.subs || 0) - (a.subs || 0),
-      avg: (a, b) => (b.views / (b.videos || 1)) - (a.views / (a.videos || 1)),
-      views: (a, b) => (b.views || 0) - (a.views || 0),
-      since: (a, b) => String(b.since || "").localeCompare(String(a.since || "")),
-    };
-    const list = F.channels.filter(farmMatch).sort(sorters[S.fsort] || sorters.subs);
-    const subsSum = list.reduce((s, c) => s + (c.subs || 0), 0);
-    $("f-summary").innerHTML = `<span><b>${list.length}개</b> 채널</span><span>구독자 합계 ${fmtNum(subsSum)}</span>` +
-      `<span>직접 재배 ${list.filter((c) => (c.tags || []).includes("재배")).length} · 판매·유통·시장 ${list.filter((c) => (c.tags || []).some((t) => t === "직판" || t === "유통" || t === "시장")).length}</span>`;
-    $("f-list").innerHTML = list.length ? list.map(farmRow).join("") : `<div class="empty">검색 결과가 없습니다.</div>`;
-    const disc = F.discovered || [];
-    $("f-disc").innerHTML = disc.length ? `<h3 class="sec-h">자동 발굴 후보 ${disc.length}개</h3>
-      <p class="note">검색어로 새로 찾은 채널입니다. 직접 확인한 뒤 farm_channels.json에 추가하면 정식 목록에 들어갑니다.</p>
-      <div class="flist">${disc.map((c) => farmRow({ ...c, tags: [], note: "검색어: " + c.kw })).join("")}</div>` : "";
-  }
-
-  // ── 레퍼런스 채널
-  const talk = (r) => (r.m || 0) / Math.max(r.v, 1) * 1000;
-  const marketOk = (ch) => S.rmarket === "all" || (S.rmarket === "kr") === (ch.market === "KR");
-  function refRows() {
+  // 레퍼런스·농산물 영상(배수가 있는 영상)을 한 줄로 편다
+  let ROWS = null;
+  function benchRows() {
+    if (ROWS) return ROWS;
     const out = [];
-    for (const ch of R.channels) {
-      if ((S.rgroup !== "all" && ch.group !== S.rgroup) || !marketOk(ch)) continue;
-      for (const r of ch.recent || []) out.push({ ch, r });
-    }
-    return out;
+    if (R) for (const ch of R.channels) for (const r of ch.recent || []) out.push({ ...r, ch: ch.title, cid: ch.id, grp: ch.group, mk: ch.market || "US", src: "ref", hot: r.x != null && r.x >= HOT_X });
+    if (F) for (const ch of F.channels) for (const r of ch.recent || []) out.push({ ...r, ch: ch.title, cid: ch.id, grp: "farm", mk: "KR", src: "farm", hot: r.x != null && r.x >= HOT_X });
+    return (ROWS = out);
   }
-  function memoLine(ch, r) {
-    const x = r.x == null ? "" : ` · ${trimNum(r.x)}배`;
-    return `- [${r.t}](https://youtu.be/${r.id}) — ${ch.title}${x} · 한 줄 메모: `;
+  const insightRows = () => benchRows().filter((v) => v.x != null);
+  const scopeLabel = (k) => (SCOPES.find(([key]) => key === k) || [k, k])[1];
+  const inScope = (v, k) => k === "all" || (k === "farm" ? v.src === "farm" : k === "challenge" ? CHALLENGE.has(v.grp) : v.grp === k);
+  const chanInScope = (ch, k, farm) => k === "all" || (k === "farm" ? farm : !farm && (k === "challenge" ? CHALLENGE.has(ch.group) : ch.group === k));
+
+  // ── 카드 하나: 썸네일 · 제목 · 요약 · 한 줄 숫자 · 저장
+  function memoLine(o) {
+    const sum = SUM[o.id];
+    return `- [${o.t}](https://youtu.be/${o.id}) — ${o.ch}${o.x != null ? ` · 평소의 ${trimNum(o.x)}배` : ""} · 조회 ${fmtNum(o.v)}${sum ? `\n  - 요약: ${sum.s}` : ""}\n  - 메모: `;
   }
-  function refCard({ ch, r }) {
-    const url = `https://www.youtube.com/watch?v=${encodeURIComponent(r.id)}`;
-    const short = r.d > 0 && r.d <= SHORT_MAX;
-    const badges = [];
-    if (r.x != null && r.x >= HOT_X) badges.push(["b-gold", `평소의 ${trimNum(r.x)}배`]);
-    badges.push(["b-plain", short ? "쇼츠" : "롱폼"]);
-    if (ch.src) badges.push(["b-new", ch.src + " 언급"]);
-    const tr = hasHangul(r.t) ? "" :
-      `<a href="https://translate.google.com/?sl=auto&amp;tl=ko&amp;op=translate&amp;text=${encodeURIComponent(r.t)}" target="_blank" rel="noopener">제목 번역</a>`;
+  function vcard(o) {
+    const sum = SUM[o.id];
+    const ko = sum && sum.k;
+    const url = ytUrl(o.id);
+    const tl = o.rank ? `<span class="on tl">${o.rank}위</span>` : o.x != null && o.x >= HOT_X ? `<span class="on tl hot">평소의 ${trimNum(o.x)}배</span>` : "";
+    const meta = [`<b>${esc(o.ch)}</b>`, `조회 ${fmtNum(o.v)}`, fmtAge(o.p)];
+    if (o.vph) meta.push(`+${fmtNum(o.vph)}/시간`);
+    if (o.flags) meta.push(`<span title="${esc(o.flagsTitle)}">${o.flags}</span>`);
+    const tr = !ko && !hasHangul(o.t) ? `<a class="act" href="https://translate.google.com/?sl=auto&amp;tl=ko&amp;op=translate&amp;text=${encodeURIComponent(o.t)}" target="_blank" rel="noopener">번역</a>` : "";
     return `<article class="vcard">
-      <a class="thumb" href="${url}" target="_blank" rel="noopener">
-        <img loading="lazy" src="https://i.ytimg.com/vi/${esc(r.id)}/mqdefault.jpg" alt="">
-        <span class="ph">${esc(ch.title)}</span>
-        <span class="dur">${fmtDur(r.d)}</span>
+      <a class="thumb" href="${url}" target="_blank" rel="noopener" aria-label="${esc(o.t)} 유튜브에서 보기">
+        <img loading="lazy" src="${esc(thumbUrl(o.id))}" alt=""><span class="ph">${esc(o.ch)}</span>
+        ${tl}${o.d > 0 ? `<span class="on br">${isShort(o) ? "쇼츠 " : ""}${fmtDur(o.d)}</span>` : ""}
       </a>
       <div class="vbody">
-        <div class="badges">${badges.map(([k, t]) => `<span class="badge ${k}">${esc(t)}</span>`).join("")}</div>
-        <h3 class="vtitle"><a href="${url}" target="_blank" rel="noopener">${esc(r.t)}</a></h3>
-        <p class="vch">${flag(ch.market || "US")} ${esc(ch.title)} · ${esc(RGROUP[ch.group] || ch.group)}</p>
-        <dl class="vstats">
-          <div><dt>조회</dt><dd>${fmtNum(r.v)}</dd></div>
-          <div><dt>배수</dt><dd>${r.x == null ? "–" : trimNum(r.x) + "배"}</dd></div>
-          <div><dt>업로드</dt><dd>${fmtAge(r.p)}</dd></div>
-          <div><dt>댓글/천회</dt><dd>${r.m == null ? "–" : trimNum(talk(r))}</dd></div>
-        </dl>
-        <div class="vfoot"><button type="button" class="copy" data-memo="${esc(memoLine(ch, r))}">메모 복사</button><span class="vact">${tr}${starBtn(r.id)}</span></div>
+        ${o.badge ? `<div class="badges">${o.badge}</div>` : ""}
+        <h3 class="vtitle"><a href="${url}" target="_blank" rel="noopener">${esc(ko || o.t)}</a></h3>
+        ${ko ? `<p class="vorig" title="${esc(o.t)}">${esc(o.t)}</p>` : ""}
+        ${sum ? `<p class="vsum" data-more>${esc(sum.s)}${sum.g ? `<span class="guess" title="설명이 부족해 제목·채널로 짐작한 요약">추정</span>` : ""}</p>` : ""}
+        <p class="vmeta">${meta.join(" · ")}</p>
+        <div class="vfoot"><button type="button" class="act" data-memo="${esc(memoLine(o))}">메모</button>${AI.sample ? `<button type="button" class="act ai" data-idea="${esc(o.id)}">아이디어</button>` : ""}${tr}<span class="sp"></span>${starBtn(o.id)}</div>
       </div>
     </article>`;
   }
-  function refChannelRow(ch) {
-    const last = (ch.recent || []).reduce((a, r) => (!a || r.p > a ? r.p : a), "");
+  const trendObj = (id, extra) => {
+    const v = T.videos[id], w = WHERE.get(id) || [];
+    return { id, t: v.t, ch: v.c, v: v.v, p: v.p, d: v.d, flags: w.map(flag).join(""), flagsTitle: w.map((c) => REG[c].name).join(", ") + "에서 인기", ...extra };
+  };
+  const ITEMS = new Map(); // 아이디어 시트·저장에서 다시 찾기
+  function cards(el, list, emptyMsg) {
+    for (const o of list) ITEMS.set(o.id, o);
+    el.innerHTML = list.length ? list.map(vcard).join("") : `<div class="empty">${emptyMsg || "조건에 맞는 영상이 없습니다. 필터를 바꿔 보세요."}</div>`;
+  }
+
+  // ── 오늘
+  function renderToday() {
+    renderWeek();
+    const rows = benchRows().filter((v) => v.hot);
+    const hasVph = rows.some((v) => v.vph != null);
+    let days = 30, pick = [];
+    for (; days <= 120 && pick.length < 4; days *= 2) pick = rows.filter((v) => hoursOld(v.p) <= days * 24);
+    days = Math.min(days / 2, 120);
+    pick.sort((a, b) => hasVph ? (b.vph || 0) - (a.vph || 0) || b.x - a.x : b.x - a.x);
+    const per = new Map(), top = [];
+    for (const v of pick) { const n = per.get(v.cid) || 0; if (n < 2) { per.set(v.cid, n + 1); top.push(v); } if (top.length >= 6) break; }
+    $("t-hot-sub").textContent = `최근 ${days}일 · 채널 평소의 ${HOT_X}배 이상 · ${hasVph ? "지금 조회가 빨리 오르는 순" : "배수 높은 순"}`;
+    cards($("t-hot"), top, "최근 터진 영상이 없습니다.");
+    if (T) {
+      let ids = signalIds(2);
+      if (ids.length < 4) ids = signalIds(1);
+      ids.sort((a, b) => leadN(b) - leadN(a) || vel(T.videos[b]) - vel(T.videos[a]));
+      cards($("t-sig"), ids.slice(0, 4).map((id) => trendObj(id)), "지금은 한국에 없는 선행국 영상이 없습니다.");
+    } else $("t-sig").innerHTML = `<div class="empty">해외 차트 데이터(data/latest.json)를 불러오지 못했습니다.</div>`;
+    const a = analyze(insightRows());
+    const reads = readsOf(a).slice(0, 3);
+    $("t-reads").innerHTML = reads.length ? reads.map((t) => `<li>${t}</li>`).join("") : `<li class="muted">아직 뚜렷한 신호가 없습니다.</li>`;
+    const setup = $("t-setup");
+    setup.hidden = !(D && !D.ai);
+    setup.textContent = "저장소 시크릿에 ANTHROPIC_API_KEY를 넣으면 매주 Claude 기획 브리핑이 이 화면 맨 위에 붙고, 새 영상마다 요약이 자동으로 달립니다.";
+  }
+  function renderWeek() {
+    const box = $("t-week");
+    const ai = D && D.ai;
+    if (!ai) { box.hidden = true; return; }
+    box.hidden = false;
+    const idea = (i) => `<li><p class="iline">${esc(i.line)}</p>${i.thumb ? `<p class="ithumb">썸네일 ‘${esc(i.thumb)}’</p>` : ""}${i.why ? `<p class="muted small">${esc(i.why)}</p>` : ""}
+      <button type="button" class="act" data-memo="${esc(`- [${i.for}] ${i.line}${i.thumb ? ` (썸네일: ${i.thumb})` : ""}${i.why ? ` — ${i.why}` : ""}`)}">메모</button></li>`;
+    const groups = ["이팔청춘", "농산물", "챌린지"].map((k) => [k, (ai.ideas || []).filter((i) => i.for === k).slice(0, 2)]).filter(([, l]) => l.length);
+    box.innerHTML = `<div class="head2"><div><div class="eyebrow">이번 주 브리핑 · ${esc(D.week.from)} ~ ${esc(D.week.to)}</div><h2>${esc(ai.headline)}</h2></div>
+        ${D.issue ? `<a class="btn ghost" href="${esc(D.issue)}" target="_blank" rel="noopener">GitHub에서 보기</a>` : ""}</div>
+      <div class="ai-grid">
+        <section><h3 class="sub-h">이번 주 발견</h3><ol class="pats">${(ai.findings || []).slice(0, 3).map((f) => `<li><p class="iline">${esc(f.title)}</p><p class="muted small">${esc(f.detail)}</p></li>`).join("")}</ol>
+          ${(ai.watch || []).length ? `<h3 class="sub-h">다음 주에 볼 것</h3><ul class="avoid">${ai.watch.slice(0, 2).map((w) => `<li>${esc(w)}</li>`).join("")}</ul>` : ""}
+          ${ai.mine ? `<h3 class="sub-h">내 채널</h3><p class="small">${esc(ai.mine)}</p>` : ""}</section>
+        <section><h3 class="sub-h">기획 아이디어</h3>${groups.map(([k, l]) => `<p class="ifor">${esc(k)}</p><ul class="ideas">${l.map(idea).join("")}</ul>`).join("")}</section>
+      </div>`;
+  }
+
+  // ── 벤치마크
+  const B = { sig: "", limit: PAGE }, W = { sig: "", limit: PAGE };
+  function renderBench() {
+    if (!R && !F) { $("b-grid").innerHTML = `<div class="empty">벤치마크 데이터(data/refs.json, data/farm.json)를 불러오지 못했습니다.</div>`; return; }
+    const all = benchRows();
+    $("b-scope").innerHTML = SCOPES.filter(([k]) => all.some((v) => inScope(v, k)))
+      .map(([k, label]) => `<button type="button" class="chip" data-s="${esc(k)}" aria-pressed="${k === S.bscope}">${esc(label)}</button>`).join("");
+    if (!all.some((v) => inScope(v, S.bscope))) S.bscope = "all";
+    seg($("b-fmt"), FMT, S.bfmt, (v) => { S.bfmt = v; update(); });
+    const hasVph = all.some((v) => v.vph != null);
+    if (!hasVph && S.bsort === "vph") S.bsort = "x";
+    $("b-sort").innerHTML = [["x", "터진 순"], ["new", "최신순"], ...(hasVph ? [["vph", "지금 오르는 순"]] : [])].map(([v, l]) => `<option value="${v}">${l}</option>`).join("");
+    $("b-sort").value = S.bsort;
+    $("b-days").value = S.bdays;
+    $("b-hot").checked = !!S.bhot;
+    const days = Number(S.bdays);
+    let rows = all.filter((v) => inScope(v, S.bscope) && fmtOk(v, S.bfmt) && (!days || hoursOld(v.p) <= days * 24) && (!S.bhot || v.hot));
+    if (Q.b) rows = rows.filter((v) => { const s = SUM[v.id] || {}; return matches(Q.b, v.t, s.k, s.s, v.ch); });
+    const sorters = {
+      x: (a, b) => (b.x ?? -1) - (a.x ?? -1) || b.v - a.v,
+      new: (a, b) => Date.parse(b.p) - Date.parse(a.p),
+      vph: (a, b) => (b.vph ?? -1) - (a.vph ?? -1),
+    };
+    rows.sort(sorters[S.bsort] || sorters.x);
+    const sig = JSON.stringify([S.bscope, S.bfmt, S.bsort, S.bdays, S.bhot, Q.b]);
+    if (sig !== B.sig) { B.sig = sig; B.limit = PAGE; }
+    const chN = new Set(rows.map((v) => v.cid)).size;
+    $("b-summary").innerHTML = `<b>${rows.length}개</b> 영상 · 채널 ${chN}곳${S.bhot ? ` · 평소의 ${HOT_X}배 이상만` : ""}`;
+    cards($("b-grid"), rows.slice(0, B.limit), Q.b ? `‘${esc(Q.b)}’에 맞는 영상이 없습니다.` : "");
+    $("b-more").hidden = rows.length <= B.limit;
+    $("b-more").textContent = `더 보기 (${rows.length - B.limit}개 남음)`;
+    renderChans();
+  }
+  function chanRow(ch, farm) {
     const top = Math.max(0, ...(ch.recent || []).map((r) => r.x || 0));
-    const initial = esc((ch.title || "?").trim().charAt(0));
-    const handle = ch.handle ? `<span class="handle">${esc(ch.handle)}</span>` : "";
+    const note = farm ? [ch.note, [ch.crops, ch.region].filter(Boolean).join(" · ")].filter(Boolean).join(" — ") : ch.note;
     return `<div class="frow">
-      <div class="avatar">${ch.thumb ? `<img loading="lazy" src="${esc(avatarUrl(ch.thumb))}" alt="">` : ""}<span class="ph">${initial}</span></div>
-      <div class="fmain">
-        <p class="fname"><a href="https://www.youtube.com/channel/${encodeURIComponent(ch.id)}" target="_blank" rel="noopener">${esc(ch.title)}</a>${handle}</p>
-        <p class="fnote">${esc(ch.note || "")}</p>
-      </div>
-      <div class="fmeta">
-        <div class="ftags"><span class="ftag g-${esc(ch.group)}">${esc(RGROUP[ch.group] || ch.group)}</span>${ch.src ? `<span class="ftag src">${esc(ch.src)} 언급</span>` : ""}</div>
-        <p class="fcrop">${flag(ch.market || "US")} 개설 ${esc((ch.since || "").slice(0, 4))}</p>
-      </div>
-      <dl class="fnums">
-        <div><dt>구독자</dt><dd>${fmtNum(ch.subs)}</dd></div>
-        <div><dt>최근 업로드</dt><dd>${last ? fmtAge(last) : "–"}</dd></div>
-        <div><dt>조회 중앙값</dt><dd>${fmtNum(ch.median)}</dd></div>
-        <div><dt>최고 배수</dt><dd>${top ? trimNum(top) + "배" : "–"}</dd></div>
-      </dl>
+      <div class="avatar">${avatarImg(ch)}<span>${esc((ch.title || "?").trim().charAt(0))}</span></div>
+      <div><p class="fname"><a href="https://www.youtube.com/channel/${encodeURIComponent(ch.id)}" target="_blank" rel="noopener">${esc(ch.title)}</a>${ch.handle ? `<span class="handle">${esc(ch.handle)}</span>` : ""}</p>
+        ${note ? `<p class="fnote">${esc(note)}</p>` : ""}</div>
+      <div class="fnum">구독 <b>${fmtNum(ch.subs)}</b> · 보통 ${fmtNum(ch.median)}회${top >= HOT_X ? ` · 최고 <b>${trimNum(top)}배</b>` : ""}</div>
     </div>`;
   }
-  function renderRefs() {
-    if (!R) {
-      $("r-grid").innerHTML = `<div class="empty">레퍼런스 데이터(data/refs.json)를 불러오지 못했습니다.</div>`;
-      return;
-    }
-    const inMarket = R.channels.filter(marketOk);
-    const counts = { all: inMarket.length };
-    for (const ch of inMarket) counts[ch.group] = (counts[ch.group] || 0) + 1;
-    if (S.rgroup !== "all" && !counts[S.rgroup]) S.rgroup = "all";
-    $("r-groups").innerHTML = [["all", "전체"], ...Object.entries(RGROUP)].filter(([k]) => counts[k])
-      .map(([k, label]) => `<button type="button" class="chip" data-g="${esc(k)}" aria-pressed="${k === S.rgroup}" title="${esc((R.groups || {})[k] || "")}">${esc(label)}<span class="n">${counts[k]}</span></button>`).join("");
-    const krN = R.channels.filter((ch) => ch.market === "KR").length;
-    seg($("r-market"), [["all", "전체"], ["kr", `국내 ${krN}`], ["intl", `해외 ${R.channels.length - krN}`]], S.rmarket, (v) => { S.rmarket = v; update(); });
-    seg($("r-hot"), [["hot", `평소의 ${HOT_X}배 이상`], ["all", "모든 최근 영상"]], S.rhot, (v) => { S.rhot = v; update(); });
-    seg($("r-fmt"), [["all", "전체"], ["short", "쇼츠"], ["long", "롱폼"]], S.rfmt, (v) => { S.rfmt = v; update(); });
-    $("r-sort").value = S.rsort;
-    $("r-days").value = S.rdays;
-    const days = Number(S.rdays);
-    const all = refRows().filter(({ r }) => !days || hoursOld(r.p) <= days * 24);
-    let rows = all.filter(({ r }) => fmtOk(r, S.rfmt) && (S.rhot === "all" || (r.x != null && r.x >= HOT_X)));
-    const sorters = {
-      x: (a, b) => (b.r.x ?? -1) - (a.r.x ?? -1) || b.r.v - a.r.v,
-      new: (a, b) => Date.parse(b.r.p) - Date.parse(a.r.p),
-      talk: (a, b) => talk(b.r) - talk(a.r),
+  const IG = () => (F && F.instagram && F.instagram.accounts) || [];
+  function igRow(a) {
+    const fol = a.followers ?? (a.seed ? a.seed.followers : null);
+    const top = Math.max(0, ...(a.recent || []).map((p) => p.x || 0));
+    return `<div class="frow">
+      <div class="avatar">${a.pic ? `<img loading="lazy" src="${esc(a.pic)}" alt="">` : ""}<span>${esc((a.name || a.handle || "?").trim().charAt(0))}</span></div>
+      <div><p class="fname"><a href="https://www.instagram.com/${encodeURIComponent(a.handle)}/" target="_blank" rel="noopener">${esc(a.name || a.handle)}</a><span class="handle">@${esc(a.handle)}</span></p>
+        ${a.note ? `<p class="fnote">${esc(a.note)}</p>` : ""}</div>
+      <div class="fnum">팔로워 <b>${fmtNum(fol)}</b>${top >= HOT_X ? ` · 최고 <b>${trimNum(top)}배</b>` : ""}</div>
+    </div>`;
+  }
+  function chanMatch(ch) {
+    return matches(Q.b, ch.title, ch.name, ch.handle, ch.note, ch.crops, ch.region, (ch.tags || []).map((t) => TAGS[t] || t).join(" "));
+  }
+  function renderChans() {
+    const refs = R ? R.channels.filter((ch) => chanInScope(ch, S.bscope, false)) : [];
+    const farm = F ? F.channels.filter((ch) => chanInScope(ch, S.bscope, true)) : [];
+    const ig = S.bscope === "all" || S.bscope === "farm" ? IG() : [];
+    $("b-chans-sum").textContent = `지켜보는 채널 ${refs.length + farm.length + ig.length}곳`;
+    if (!$("b-chans").open) return;
+    const sec = (title, list, row) => {
+      const l = list.filter(chanMatch);
+      return l.length ? `<h3 class="sub-h">${title} · ${l.length}</h3><div class="flist">${l.map(row).join("")}</div>` : "";
     };
-    rows.sort(sorters[S.rsort] || sorters.x);
-    const hotN = all.filter(({ r }) => r.x != null && r.x >= HOT_X).length;
-    const chN = new Set(rows.map(({ ch }) => ch.id)).size;
-    $("r-summary").innerHTML = `<span><b>${rows.length}개</b> 영상 · 채널 ${chN}곳</span><span>기간 내 영상 ${all.length}개 중 ${HOT_X}배 이상 ${hotN}개</span>`;
-    $("r-grid").innerHTML = rows.length ? rows.map(refCard).join("") : `<div class="empty">조건에 맞는 영상이 없습니다. 필터를 바꿔 보세요.</div>`;
-    const chans = inMarket.filter((ch) => S.rgroup === "all" || ch.group === S.rgroup);
-    $("r-list").innerHTML = chans.map(refChannelRow).join("");
+    const bySubs = (a, b) => (b.subs || 0) - (a.subs || 0);
+    const disc = F && (S.bscope === "all" || S.bscope === "farm") ? F.discovered || [] : [];
+    $("b-chans-in").innerHTML = (sec("레퍼런스 채널", refs.slice().sort(bySubs), (c) => chanRow(c, false)) +
+      sec("농산물 유튜브", farm.slice().sort(bySubs), (c) => chanRow(c, true)) +
+      sec("농산물 인스타그램", ig, igRow) +
+      (disc.length ? sec("새로 찾은 후보 (확인 후 farm_channels.json에 추가)", disc, (c) => chanRow({ ...c, note: "검색어: " + c.kw }, true)) : "")) ||
+      `<div class="empty">검색어에 맞는 채널이 없습니다.</div>`;
+  }
+
+  // ── 해외 트렌드
+  function signalIds(min) { return [...WHERE.keys()].filter((id) => !inKR(id) && leadN(id) >= min); }
+  function renderTrends() {
+    if (!T) { $("w-grid").innerHTML = `<div class="empty">해외 차트 데이터(data/latest.json)를 불러오지 못했습니다.</div>`; return; }
+    const country = S.wmode === "country";
+    seg($("w-mode"), [["signal", "한국에 아직 없는 영상"], ["country", "나라별 차트"]], S.wmode, (v) => { S.wmode = v; update(); });
+    $("w-regions").hidden = !country;
+    $("w-min").hidden = country;
+    $("w-sort-f").hidden = !country;
+    if (country) $("w-regions").innerHTML = T.regions.map((r) => `<button type="button" class="chip" data-r="${r.code}" aria-pressed="${r.code === S.region}">${flag(r.code)} ${esc(r.name)}</button>`).join("");
+    else seg($("w-min"), [[1, "선행국 1곳+"], [2, "2곳+"], [3, "3곳+"]], S.smin, (v) => { S.smin = Number(v); update(); });
+    seg($("w-fmt"), FMT, S.wfmt, (v) => { S.wfmt = v; update(); });
+    const base = country ? POOL[S.region] : signalIds(S.smin);
+    const counts = {};
+    for (const id of base) { const c = T.videos[id].cat; counts[c] = (counts[c] || 0) + 1; }
+    if (S.wcat && !counts[S.wcat]) S.wcat = "";
+    $("w-cat").innerHTML = `<option value="">전체</option>` + Object.entries(counts).sort((a, b) => b[1] - a[1])
+      .map(([c, n]) => `<option value="${esc(c)}"${c === S.wcat ? " selected" : ""}>${esc(T.categories[c] || "기타")} (${n})</option>`).join("");
+    $("w-sort").value = S.wsort;
+    let ids = base.filter((id) => fmtOk(T.videos[id], S.wfmt) && (!S.wcat || T.videos[id].cat === S.wcat));
+    if (Q.w) ids = ids.filter((id) => { const v = T.videos[id], s = SUM[id] || {}; return matches(Q.w, v.t, s.k, s.s, v.c); });
+    const rk = country ? RANK[S.region] : null;
+    if (country) ids.sort(S.wsort === "vel" ? (a, b) => vel(T.videos[b]) - vel(T.videos[a]) : (a, b) => (rk.get(a) || 999) - (rk.get(b) || 999));
+    else ids.sort((a, b) => leadN(b) - leadN(a) || vel(T.videos[b]) - vel(T.videos[a]));
+    const sig = JSON.stringify([S.wmode, S.region, S.smin, S.wfmt, S.wcat, S.wsort, Q.w]);
+    if (sig !== W.sig) { W.sig = sig; W.limit = PAGE; }
+    $("w-summary").innerHTML = country
+      ? `<b>${flag(S.region)} ${esc(REG[S.region].name)}</b> 차트 ${ids.length}개${S.region === "KR" ? "" : ` · 한국 미상륙 ${ids.filter((id) => !inKR(id)).length}개`}`
+      : `<b>${ids.length}개</b> 영상이 선행국 ${S.smin}곳 이상에서 뜨고 한국 차트에는 없습니다`;
+    cards($("w-grid"), ids.slice(0, W.limit).map((id) => trendObj(id, country ? {
+      rank: rk.get(id), badge: S.region !== "KR" && !inKR(id) ? `<span class="badge b-miss">한국 미상륙</span>` : "",
+    } : {})), Q.w ? `‘${esc(Q.w)}’에 맞는 영상이 없습니다.` : "");
+    $("w-more").hidden = ids.length <= W.limit;
+    $("w-more").textContent = `더 보기 (${ids.length - W.limit}개 남음)`;
   }
 
   let toastTimer = 0;
   function toast(msg) {
     let el = document.querySelector(".toast");
     if (!el) { el = document.createElement("div"); el.className = "toast"; el.setAttribute("role", "status"); document.body.append(el); }
-    el.textContent = msg;
-    el.hidden = false;
+    el.textContent = msg; el.hidden = false;
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => { el.hidden = true; }, 1800);
   }
@@ -990,7 +797,7 @@ footer b { color: var(--ink-2); font-weight: 600; }
     return ok;
   }
 
-  // ── 인사이트: 배수(x)가 있는 영상(레퍼런스·농산물)에서 제목·길이·시간·단어별 '터질 확률'을 비교한다
+  // ── 인사이트: 배수가 있는 영상에서 제목·길이·시간·단어별 '터질 확률'을 비교한다
   const MIN_N = 8;
   // 정규식에 g 플래그를 붙이지 않는다(test가 lastIndex를 기억해 결과가 흔들린다)
   const HOOKS = [
@@ -1018,7 +825,6 @@ footer b { color: var(--ink-2); font-weight: 600; }
   const durKey = (d) => !(d > 0) ? null : d <= 60 ? DURS[0] : d <= 180 ? DURS[1] : d <= 600 ? DURS[2] : d <= 1200 ? DURS[3] : DURS[4];
   const kst = (p) => new Date(Date.parse(p) + 9 * 36e5);
   const bandOf = (h) => BANDS[Math.min(Math.floor(h / 6), 3)];
-  const ytUrl = (id) => `https://www.youtube.com/watch?v=${encodeURIComponent(id)}`;
 
   function wordsOf(title, own) {
     const out = new Set();
@@ -1046,24 +852,9 @@ footer b { color: var(--ink-2); font-weight: 600; }
     const z = Math.abs(h1 / n1 - h2 / n2) / Math.sqrt(p * (1 - p) * (1 / n1 + 1 / n2));
     return z >= 2 ? "높음" : z >= 1.3 ? "보통" : "낮음";
   }
-
-  let IROWS = null;
-  function insightRows() {
-    if (IROWS) return IROWS;
-    if (!R && !F) return [];
-    const out = [];
-    if (R) for (const ch of R.channels) for (const r of ch.recent || []) if (r.x != null) out.push({ ...r, ch: ch.title, cid: ch.id, grp: ch.group, mk: ch.market || "US", src: "ref", hot: r.x >= HOT_X });
-    if (F) for (const ch of F.channels) for (const r of ch.recent || []) if (r.x != null) out.push({ ...r, ch: ch.title, cid: ch.id, grp: "farm", mk: "KR", src: "farm", hot: r.x >= HOT_X });
-    return (IROWS = out);
-  }
-  const scopeLabel = (k) => k === "all" ? "전체" : k === "ref" ? "레퍼런스 전체" : k === "farm" ? "농산물" : RGROUP[k] || k;
-  const inScope = (v, k) => k === "all" || (k === "ref" ? v.src === "ref" : v.grp === k);
   function scopedRows() {
-    return insightRows().filter((v) => inScope(v, S.iscope) &&
-      (S.imarket === "all" || (S.imarket === "kr") === (v.mk === "KR")) &&
-      (S.ifmt === "all" || (v.d > 0 && (S.ifmt === "short") === (v.d <= SHORT_MAX))));
+    return insightRows().filter((v) => inScope(v, S.iscope) && (S.ifmt === "all" || (v.d > 0 && (S.ifmt === "short") === isShort(v))));
   }
-
   function analyze(rows) {
     const n = rows.length, hot = rows.filter((v) => v.hot).length;
     const base = { n, hot, rate: n ? hot / n : 0 };
@@ -1081,7 +872,7 @@ footer b { color: var(--ink-2); font-weight: 600; }
         ex.push(...w.filter((v) => v.hot));
       }
       const lift = ((wh + 0.5) / (wn + 1)) / ((oh + 0.5) / (on + 1));
-      return { key, label, n: wn, hot: wh, rate: wn ? wh / wn : 0, nOff: on, hotOff: oh, rateOff: on ? oh / on : 0, chs, lift,
+      return { key, label, re, n: wn, hot: wh, rate: wn ? wh / wn : 0, nOff: on, hotOff: oh, rateOff: on ? oh / on : 0, chs, lift,
         ok: wn >= MIN_N && on >= MIN_N, conf: conf(wn, wh, on, oh), ex: ex.sort((a, b) => b.x - a.x).slice(0, 3) };
     }).sort((a, b) => b.lift - a.lift);
     const fmt = bucket(rows, (v) => durKey(v.d), DURS);
@@ -1100,7 +891,6 @@ footer b { color: var(--ink-2); font-weight: 600; }
     const words = [...df.values()].filter((d) => d.n >= 5 && d.hot >= 3 && d.chs.size >= 2)
       .map((d) => ({ ...d, rate: d.hot / d.n, lift: base.rate ? d.hot / d.n / base.rate : 0 }))
       .filter((d) => d.lift >= 1.2).sort((a, b) => b.lift - a.lift || b.n - a.n).slice(0, 12);
-    // 요즘 자주 터지는 채널: 최근 60일 터진 영상 수
     const form = new Map();
     for (const v of rows) {
       if (!v.hot || hoursOld(v.p) > 60 * 24) continue;
@@ -1110,42 +900,38 @@ footer b { color: var(--ink-2); font-weight: 600; }
     const chans = [...form.values()].filter((f) => f.n >= 2).sort((a, b) => b.n - a.n || b.top.x - a.top.x).slice(0, 6);
     return { base, hooks, fmt, dow, hour, words, chans, chN: byCh.size };
   }
-
   function bestOf(list, base, minN) {
     const ok = list.filter((b) => b.n >= minN);
     if (ok.length < 2) return null;
     const top = ok.reduce((a, b) => (b.rate > a.rate ? b : a));
     return top.rate >= base.rate * 1.3 && top.hot >= 3 ? top : null;
   }
+  const exLink = (v) => `<a href="${ytUrl(v.id)}" target="_blank" rel="noopener">‘${esc((SUM[v.id] && SUM[v.id].k) || v.t)}’</a>`;
   // 숫자를 문장으로: 강한 신호만, 근거 개수와 함께
   function readsOf(a) {
     const out = [];
     const strong = a.hooks.filter((h) => h.ok);
     for (const h of strong.filter((x) => x.lift >= 1.3).slice(0, 2)) {
-      const ex = h.ex[0] ? ` 예: <a href="${ytUrl(h.ex[0].id)}" target="_blank" rel="noopener">‘${esc(h.ex[0].t)}’</a> (평소의 ${trimNum(h.ex[0].x)}배)` : "";
-      out.push(`제목에 <b>${esc(h.label)}</b>${josa(h.label, "이", "가")} 들어간 영상은 같은 채널 다른 영상보다 터질 확률이 <b>${trimNum(h.lift)}배</b>입니다 (${pct(h.rate)} vs ${pct(h.rateOff)}, 영상 ${h.n}개 · 신뢰도 ${h.conf}).${ex}`);
+      out.push(`제목에 <b>${esc(h.label)}</b>${josa(h.label, "이", "가")} 들어가면 같은 채널 다른 영상보다 <b>${trimNum(h.lift)}배</b> 잘 터졌습니다 <span class="muted">(${pct(h.rate)} vs ${pct(h.rateOff)} · 신뢰도 ${h.conf})</span>.${h.ex[0] ? ` 예: ${exLink(h.ex[0])}` : ""}`);
     }
     const weak = strong.filter((x) => x.lift <= 0.7);
     if (weak.length) {
       const h = weak[weak.length - 1];
-      out.push(`<b>${esc(h.label)}</b>${josa(h.label, "은", "는")} 오히려 덜 터졌습니다 (${pct(h.rate)} vs ${pct(h.rateOff)}). 이 범위에서는 차별점이 되지 않습니다.`);
+      out.push(`<b>${esc(h.label)}</b>${josa(h.label, "은", "는")} 오히려 덜 터졌습니다 <span class="muted">(${pct(h.rate)} vs ${pct(h.rateOff)})</span>. 이 범위에서는 차별점이 되지 않습니다.`);
     }
     const f = bestOf(a.fmt, a.base, MIN_N);
-    if (f) out.push(`길이는 <b>${esc(f.key)}</b> 영상이 가장 잘 터졌습니다 (${f.n}개 중 ${f.hot}개, ${pct(f.rate)} · 전체 ${pct(a.base.rate)}).`);
-    const t = bestOf([...a.dow.map((b) => ({ ...b, key: b.key + "요일" })), ...a.hour], a.base, 20);
-    if (t) out.push(`업로드는 <b>${esc(t.key)}</b>(한국 시간)에 올린 영상이 잘 터졌습니다 (${t.n}개 중 ${t.hot}개, ${pct(t.rate)}). 채널마다 올리는 시간이 정해져 있어 영향이 섞였을 수 있습니다.`);
+    if (f) out.push(`길이는 <b>${esc(f.key)}</b>가 가장 잘 터졌습니다 <span class="muted">(${f.n}개 중 ${f.hot}개 · 전체 ${pct(a.base.rate)})</span>.`);
     if (a.words[0]) {
       const w = a.words[0];
-      out.push(`단어로는 <b>‘${esc(w.w)}’</b>${josa(w.w, "이", "가")} 들어간 제목이 ${w.n}개 중 ${w.hot}개 터졌습니다 (전체의 ${trimNum(w.lift)}배).`);
+      out.push(`<b>‘${esc(w.w)}’</b>${josa(w.w, "이", "가")} 들어간 제목이 ${w.n}개 중 ${w.hot}개 터졌습니다 <span class="muted">(전체의 ${trimNum(w.lift)}배)</span>.`);
     }
-    if (a.chans[0]) out.push(`요즘 가장 자주 터지는 채널은 <b>${esc(a.chans[0].ch)}</b>입니다 (최근 60일 ${a.chans[0].n}개).`);
+    if (a.chans[0]) out.push(`요즘 가장 자주 터지는 채널은 <b>${esc(a.chans[0].ch)}</b>입니다 <span class="muted">(최근 60일 ${a.chans[0].n}개)</span>.`);
     return out;
   }
-
   function rateRows(list, base, minN, scale) {
     return list.map((b) => {
       const thin = b.n < minN;
-      const tone = thin ? "thin" : b.rate >= base.rate * 1.2 ? "up" : b.rate <= base.rate * 0.8 ? "down" : "";
+      const tone = thin ? "thin" : b.rate >= base.rate * 1.2 ? "up" : "";
       return `<div class="lrow ${tone}" title="${esc(`${b.key}: ${b.n}개 중 ${b.hot}개 터짐`)}">
         <span class="lname">${esc(b.key)}</span>
         <span class="ltrack"><span class="lfill" style="width:${Math.max((b.rate / scale) * 100, 0.8).toFixed(1)}%"></span><span class="lbase" style="left:${Math.min((base.rate / scale) * 100, 100).toFixed(1)}%"></span></span>
@@ -1153,13 +939,12 @@ footer b { color: var(--ink-2); font-weight: 600; }
       </div>`;
     }).join("");
   }
-
   function hookRows(a) {
     const shown = a.hooks.filter((h) => h.ok);
     const scale = Math.max(0.01, ...shown.map((h) => Math.max(h.rate, h.rateOff))) * 1.12;
     const rows = shown.map((h) => {
-      const tone = h.lift >= 1.2 ? "up" : h.lift <= 0.83 ? "down" : "";
-      const ex = h.ex.length ? h.ex.map((v) => `<li><a href="${ytUrl(v.id)}" target="_blank" rel="noopener">${esc(v.t)}</a> <span class="muted">${esc(v.ch)} · 평소의 ${trimNum(v.x)}배</span></li>`).join("")
+      const tone = h.lift >= 1.2 ? "up" : "";
+      const ex = h.ex.length ? h.ex.map((v) => `<li>${exLink(v)} <span class="muted">${esc(v.ch)} · 평소의 ${trimNum(v.x)}배</span></li>`).join("")
         : `<li class="muted">이 패턴으로 터진 영상은 없습니다.</li>`;
       return `<details class="lrow ${tone}">
         <summary>
@@ -1167,80 +952,72 @@ footer b { color: var(--ink-2); font-weight: 600; }
           <span class="ltrack" title="${esc(`패턴 있음 ${pct(h.rate)} · 없음 ${pct(h.rateOff)}`)}"><span class="lfill" style="width:${Math.max((h.rate / scale) * 100, 0.8).toFixed(1)}%"></span><span class="lbase" style="left:${Math.min((h.rateOff / scale) * 100, 100).toFixed(1)}%"></span></span>
           <span class="lval"><b>${trimNum(h.lift)}배</b> · ${pct(h.rate)} vs ${pct(h.rateOff)}</span>
         </summary>
-        <div class="lex"><p class="muted">같은 채널 ${h.chs}곳에서 패턴 있는 영상 ${h.n}개(터짐 ${h.hot}) vs 없는 영상 ${h.nOff}개(터짐 ${h.hotOff}) · 신뢰도 ${h.conf}</p><ul>${ex}</ul></div>
+        <div class="lex"><p class="muted">같은 채널 ${h.chs}곳 · 패턴 있는 영상 ${h.n}개(터짐 ${h.hot}) vs 없는 영상 ${h.nOff}개(터짐 ${h.hotOff}) · 신뢰도 ${h.conf}</p><ul>${ex}</ul></div>
       </details>`;
     }).join("");
-    const hidden = a.hooks.filter((h) => !h.ok);
-    return (rows || `<p class="muted">비교할 만큼 영상이 모인 패턴이 없습니다. 범위를 넓혀 보세요.</p>`) +
-      (hidden.length ? `<p class="muted small">표본이 ${MIN_N}개 미만이라 뺀 패턴: ${hidden.map((h) => `${esc(h.label)}(${h.n})`).join(", ")}</p>` : "");
+    return rows || `<p class="muted">비교할 만큼 영상이 모인 패턴이 없습니다. 범위를 넓혀 보세요.</p>`;
   }
 
-  function risingBox(rows) {
-    const withV = rows.filter((v) => v.vph != null);
-    const rising = withV.length > 0;
-    const list = rising ? withV.slice().sort((a, b) => b.vph - a.vph).slice(0, 10)
-      : rows.filter((v) => v.hot && hoursOld(v.p) <= 30 * 24).sort((a, b) => b.x - a.x).slice(0, 10);
-    if (!list.length) return `<div class="eyebrow">지금 뜨는 영상</div><p class="muted">최근 30일 안에 터진 영상이 없습니다.</p>`;
-    const val = (v) => rising ? v.vph : v.x;
-    const maxV = Math.max(...list.map(val), 1);
-    return `<div><div class="eyebrow">${rising ? "어제 수집 이후 시간당 조회 증가" : "최근 30일 · 평소의 3배 이상"}</div><h2>${rising ? "지금 오르는 중" : "최근 터진 영상"}</h2></div>
-      <div class="bars">${list.map((v, i) => `<div class="bar${i === 0 ? " is-max" : ""}">
-        <a href="${ytUrl(v.id)}" target="_blank" rel="noopener" title="${esc(v.t)}">${esc(v.ch)} · ${esc(v.t)}</a>
-        <div class="track"><div class="fill" style="width:${Math.max((val(v) / maxV) * 100, 0.6).toFixed(1)}%"></div></div>
-        <span class="val">${rising ? `+${fmtNum(v.vph)}/시간 · ` : ""}평소의 ${trimNum(v.x)}배 · ${fmtNum(v.v)}회</span>
-      </div>`).join("")}</div>`;
-  }
-
-  let LAST_INSIGHT = null;
+  let LAST = null;
   function renderInsight() {
     const all = insightRows();
-    if (!all.length) {
-      $("i-reads").innerHTML = `<div class="empty">레퍼런스·농산물 데이터(data/refs.json, data/farm.json)를 불러오지 못했습니다.</div>`;
-      return;
-    }
-    const counts = { all: all.length, ref: 0, farm: 0 };
-    for (const v of all) { counts[v.grp] = (counts[v.grp] || 0) + 1; if (v.src === "ref") counts.ref++; }
-    const keys = ["all", "ref", ...Object.keys(RGROUP), "farm"].filter((k) => counts[k]);
-    if (!keys.includes(S.iscope)) S.iscope = "all";
-    $("i-scope").innerHTML = keys.map((k) => `<button type="button" class="chip" data-i="${esc(k)}" aria-pressed="${k === S.iscope}">${esc(scopeLabel(k))}<span class="n">${counts[k]}</span></button>`).join("");
-    seg($("i-market"), [["all", "전체"], ["kr", "국내"], ["intl", "해외"]], S.imarket, (v) => { S.imarket = v; update(); });
-    seg($("i-fmt"), [["all", "전체 길이"], ["short", "쇼츠"], ["long", "롱폼"]], S.ifmt, (v) => { S.ifmt = v; update(); });
-
+    if (!all.length) { $("i-reads").innerHTML = `<div class="empty">벤치마크 데이터(data/refs.json, data/farm.json)를 불러오지 못했습니다.</div>`; return; }
+    if (!all.some((v) => inScope(v, S.iscope))) S.iscope = "all";
+    $("i-scope").innerHTML = SCOPES.filter(([k]) => all.some((v) => inScope(v, k)))
+      .map(([k, label]) => `<button type="button" class="chip" data-i="${esc(k)}" aria-pressed="${k === S.iscope}">${esc(label)}</button>`).join("");
+    seg($("i-fmt"), FMT, S.ifmt, (v) => { S.ifmt = v; update(); });
     const rows = scopedRows();
     const a = analyze(rows);
-    LAST_INSIGHT = { a, rows, label: scopeLabel(S.iscope) + (S.imarket === "all" ? "" : S.imarket === "kr" ? " · 국내" : " · 해외") + (S.ifmt === "all" ? "" : S.ifmt === "short" ? " · 쇼츠" : " · 롱폼") };
-    const top = rows.reduce((m, v) => (!m || v.x > m.x ? v : m), null);
-    const lead = a.hooks.find((h) => h.ok && h.lift >= 1.2);
-    $("i-tiles").innerHTML = `
-      <div class="tile"><div class="lbl">분석한 영상</div><div class="num">${fmtNum(a.base.n)}</div><div class="sub">채널 ${a.chN}곳의 최근 업로드</div></div>
-      <div class="tile"><div class="lbl">평소의 ${HOT_X}배 이상</div><div class="num">${pct(a.base.rate)}</div><div class="sub">${a.base.hot}개가 터짐</div></div>
-      <div class="tile"><div class="lbl">가장 강한 제목 패턴</div><div class="num">${lead ? esc(lead.label) : "–"}</div><div class="sub">${lead ? `같은 채널 대비 ${trimNum(lead.lift)}배` : "뚜렷한 패턴 없음"}</div></div>
-      <div class="tile"><div class="lbl">최고 배수</div><div class="num">${top ? trimNum(top.x) + "배" : "–"}</div><div class="sub">${top ? `<a href="${ytUrl(top.id)}" target="_blank" rel="noopener">${esc(top.ch)}</a>` : ""}</div></div>`;
+    LAST = { a, rows, label: scopeLabel(S.iscope) + (S.ifmt === "all" ? "" : S.ifmt === "short" ? " · 쇼츠" : " · 롱폼") };
     const reads = readsOf(a);
-    $("i-reads").innerHTML = `<div><div class="eyebrow">데이터가 말하는 것 · ${esc(LAST_INSIGHT.label)}</div><h2>이번 범위에서 읽히는 신호</h2></div>` +
-      (reads.length ? `<ol class="reads">${reads.map((t) => `<li>${t}</li>`).join("")}</ol>` : `<p class="muted">영상이 적어 뚜렷한 신호가 없습니다. 범위를 넓혀 보세요.</p>`) +
-      `<p class="muted small">상관관계입니다. 기획 가설로 쓰고, 직접 만든 영상의 결과로 확인하세요.</p>`;
+    $("i-reads").innerHTML = `<div><div class="eyebrow">${esc(LAST.label)} · 영상 ${a.base.n}개 중 ${a.base.hot}개(${pct(a.base.rate)})가 평소의 ${HOT_X}배 이상</div><h2>데이터가 말하는 것</h2></div>` +
+      (reads.length ? `<ol class="reads">${reads.map((t) => `<li>${t}</li>`).join("")}</ol>` : `<p class="muted">영상이 적어 뚜렷한 신호가 없습니다. 범위를 넓혀 보세요.</p>`);
     $("i-hooks").innerHTML = `<div><div class="eyebrow">제목 공식 · 같은 채널 안에서 비교</div><h2>어떤 제목이 더 터지나</h2></div>
       <p class="muted small">막대는 패턴이 들어간 영상의 터질 확률, 세로선은 같은 채널에서 패턴이 없는 영상의 확률입니다. 줄을 누르면 예시가 열립니다.</p>${hookRows(a)}`;
+    const f = bestOf(a.fmt, a.base, MIN_N);
+    const d = bestOf(a.dow.map((b) => ({ ...b, key: b.key + "요일" })), a.base, 20);
+    const h = bestOf(a.hour, a.base, 20);
+    const tip = (k, b) => `<li><span class="k">${k}</span><span>${b ? `<b>${esc(b.key)}</b> <span class="muted">${pct(b.rate)} · ${b.hot}/${b.n}</span>` : `<span class="muted">뚜렷한 차이 없음</span>`}</span></li>`;
+    const fScale = Math.max(0.01, ...a.fmt.map((b) => b.rate), a.base.rate) * 1.12;
+    const tScale = Math.max(0.01, ...a.dow.map((b) => b.rate), ...a.hour.map((b) => b.rate), a.base.rate) * 1.12;
+    $("i-when").innerHTML = `<div><div class="eyebrow">길이·업로드 시간(한국 시간)</div><h2>언제, 몇 분짜리가 터지나</h2></div>
+      <ul class="tips">${tip("길이", f)}${tip("요일", d)}${tip("시간대", h)}</ul>
+      <details class="more-d"><summary>막대로 보기</summary><div>
+        ${a.fmt.length ? rateRows(a.fmt, a.base, MIN_N, fScale) : ""}
+        ${rateRows(a.dow.map((b) => ({ ...b, key: b.key + "요일" })), a.base, 20, tScale)}${rateRows(a.hour, a.base, 20, tScale)}
+        <p class="muted small">세로선은 이 범위 전체의 터질 확률(${pct(a.base.rate)})입니다. 채널마다 올리는 시간이 정해져 있어 영향이 섞였을 수 있습니다.</p>
+      </div></details>`;
     $("i-words").innerHTML = `<div><div class="eyebrow">단어 · 채널 두 곳 이상에서 쓰인 단어</div><h2>터진 제목에 자주 나온 단어</h2></div>` +
       (a.words.length ? `<div class="kws">${a.words.map((w) => `<a class="kw" href="${w.best ? ytUrl(w.best.id) : "#"}" target="_blank" rel="noopener" title="${esc(w.best ? w.best.t : "")}">${esc(w.w)} <b>${trimNum(w.lift)}배</b><span class="muted">${w.hot}/${w.n}</span></a>`).join("")}</div>`
         : `<p class="muted">채널 두 곳 이상에서 반복해 터진 단어가 아직 없습니다.</p>`) +
       (a.chans.length ? `<h3 class="sub-h">요즘 자주 터지는 채널 · 최근 60일</h3><div class="kws">${a.chans.map((c) => `<a class="kw" href="${ytUrl(c.top.id)}" target="_blank" rel="noopener" title="${esc(c.top.t)}">${esc(c.ch)} <b>${c.n}개</b><span class="muted">최고 ${trimNum(c.top.x)}배</span></a>`).join("")}</div>` : "");
-    const fScale = Math.max(0.01, ...a.fmt.map((b) => b.rate), a.base.rate) * 1.12;
-    $("i-format").innerHTML = `<div><div class="eyebrow">길이</div><h2>몇 분짜리가 터지나</h2></div>
-      <p class="muted small">세로선은 이 범위 전체의 터질 확률(${pct(a.base.rate)})입니다. 레퍼런스는 쇼츠·롱폼을 따로 비교한 배수라 형식끼리의 차이보다 같은 형식 안의 길이 차이를 보세요.</p>
-      ${a.fmt.length ? rateRows(a.fmt, a.base, MIN_N, fScale) : `<p class="muted">길이 정보가 있는 영상이 없습니다.</p>`}`;
-    const tScale = Math.max(0.01, ...a.dow.map((b) => b.rate), ...a.hour.map((b) => b.rate), a.base.rate) * 1.12;
-    $("i-time").innerHTML = `<div><div class="eyebrow">업로드 시간 · 한국 시간</div><h2>언제 올린 영상이 터지나</h2></div>
-      <div class="tcols"><div>${rateRows(a.dow.map((b) => ({ ...b, key: b.key + "요일" })), a.base, 20, tScale)}</div><div>${rateRows(a.hour, a.base, 20, tScale)}</div></div>`;
-    $("i-rising").innerHTML = risingBox(rows);
-    renderWeek();
+    renderCheck();
     renderAI();
   }
-
+  // 제목 점검기: 쓰려는 제목이 지금 범위에서 먹힌 패턴을 쓰는지, 빠진 강한 패턴은 뭔지
+  function renderCheck() {
+    const title = $("i-title").value.trim();
+    const box = $("i-title-res");
+    if (!LAST) { box.innerHTML = ""; return; }
+    const ok = LAST.a.hooks.filter((h) => h.ok);
+    if (!title) {
+      const top = ok.filter((h) => h.lift >= 1.2).slice(0, 3);
+      box.innerHTML = `<p class="muted">${esc(LAST.label)} 범위에서 먹힌 패턴: ${top.length ? top.map((h) => `<span class="tag up">${esc(h.label)} <b>${trimNum(h.lift)}배</b></span>`).join("") : "아직 뚜렷한 패턴이 없습니다."}</p>`;
+      return;
+    }
+    const used = LAST.a.hooks.filter((h) => h.re.test(title));
+    const tag = (h) => !h.ok ? `<span class="tag" title="비교할 영상이 적습니다">${esc(h.label)} <span class="muted">표본 적음</span></span>`
+      : `<span class="tag ${h.lift >= 1.2 ? "up" : h.lift <= 0.83 ? "down" : ""}">${esc(h.label)} <b>${trimNum(h.lift)}배</b></span>`;
+    const missing = ok.filter((h) => h.lift >= 1.3 && !used.includes(h)).slice(0, 2);
+    const weak = used.filter((h) => h.ok && h.lift <= 0.83);
+    box.innerHTML = `<p>${used.length ? `이 제목에 든 패턴: ${used.map(tag).join("")}` : `<span class="muted">벤치마크에서 비교하는 제목 패턴이 하나도 없습니다.</span>`}</p>` +
+      (missing.length ? `<p>더해 볼 만한 패턴: ${missing.map((h) => `<span class="tag up">${esc(h.label)} <b>${trimNum(h.lift)}배</b></span>${h.ex[0] ? ` <span class="muted small">예: ${exLink(h.ex[0])}</span>` : ""}`).join(" ")}</p>` : "") +
+      (weak.length ? `<p class="muted">${weak.map((h) => esc(h.label)).join(", ")}${josa(weak[weak.length - 1].label, "은", "는")} 이 범위에서 오히려 덜 터졌습니다.</p>` : "") +
+      `<p class="muted small">${esc(LAST.label)} 범위 기준 · 숫자는 같은 채널에서 패턴이 없는 영상 대비 터질 확률입니다.</p>`;
+  }
   function insightMarkdown() {
-    if (!LAST_INSIGHT) return "";
-    const { a, label } = LAST_INSIGHT;
+    if (!LAST) return "";
+    const { a, label } = LAST;
     const when = new Date(REF).toISOString().slice(0, 10);
     const lines = [`## 인사이트 — ${label} (${when})`, `- 영상 ${a.base.n}개 중 ${a.base.hot}개(${pct(a.base.rate)})가 평소의 ${HOT_X}배 이상`];
     const hs = a.hooks.filter((h) => h.ok);
@@ -1248,7 +1025,7 @@ footer b { color: var(--ink-2); font-weight: 600; }
     const f = a.fmt.filter((b) => b.n >= MIN_N);
     if (f.length) lines.push(`- 길이: ${f.map((b) => `${b.key} ${pct(b.rate)}(${b.n})`).join(" · ")}`);
     if (a.words.length) lines.push(`- 단어: ${a.words.map((w) => `${w.w} ${trimNum(w.lift)}배(${w.hot}/${w.n})`).join(" · ")}`);
-    for (const h of hs.filter((x) => x.lift >= 1.3).slice(0, 2)) for (const v of h.ex.slice(0, 2)) lines.push(`  - [${h.label}] [${v.t}](https://youtu.be/${v.id}) — ${v.ch} · ${trimNum(v.x)}배`);
+    for (const h of hs.filter((x) => x.lift >= 1.3).slice(0, 2)) for (const v of h.ex.slice(0, 2)) lines.push(`  - [${h.label}] [${v.t}](https://youtu.be/${v.id}) — ${v.ch} · ${trimNum(v.x)}배${SUM[v.id] ? ` · ${SUM[v.id].s}` : ""}`);
     if (AI.data && AI.key === aiKey()) {
       lines.push("", "### Claude 분석");
       for (const p of AI.data.patterns || []) lines.push(`- **${p.name}**: ${p.formula} — ${p.why}`);
@@ -1257,10 +1034,10 @@ footer b { color: var(--ink-2); font-weight: 600; }
     return lines.join("\n");
   }
 
-  // ── Claude 분석: Claude 앱 안에서 열었을 때만 켜진다(sample 기능). 다른 곳에서는 숨긴다
+  // ── Claude: Claude 앱 안에서 열었을 때만 켜진다(sample 기능). 다른 곳에서는 숨긴다
   const AI = { sample: null, off: true, ctl: null, timer: 0, started: 0, data: null, at: 0, key: "", err: "" };
   const agoNow = (t) => { const m = Math.round((Date.now() - t) / 6e4); return m < 1 ? "방금" : m < 60 ? m + "분 전" : m < 1440 ? Math.round(m / 60) + "시간 전" : Math.round(m / 1440) + "일 전"; };
-  const AI_STORE = "trends.ai.v1";
+  const AI_STORE = "trends.ai.v2";
   const AI_HIDE = new Set(["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed"]);
   const AI_ERR = {
     rate_limited: "요청이 몰렸습니다. 잠시 뒤 다시 눌러 주세요.",
@@ -1268,28 +1045,29 @@ footer b { color: var(--ink-2); font-weight: 600; }
     refused: "이 범위는 분석하지 못했습니다. 범위를 바꿔 보세요.",
     prompt_too_large: "데이터가 너무 많습니다. 범위를 좁혀 주세요.",
     session_expired: "Claude에 다시 로그인한 뒤 눌러 주세요.",
-    empty_completion: "빈 답이 왔습니다. 범위를 바꿔 다시 눌러 주세요.",
+    empty_completion: "빈 답이 왔습니다. 다시 눌러 주세요.",
   };
-  const aiKey = () => [S.iscope, S.imarket, S.ifmt, R ? R.generatedAt : "", F ? F.generatedAt : ""].join("|");
-  function aiLoad() {
-    try {
-      const all = JSON.parse(localStorage.getItem(AI_STORE) || "{}");
-      const hit = all[aiKey()];
-      return hit && Date.now() - hit.at < 7 * 864e5 ? hit : null;
-    } catch (e) { return null; }
+  const CHANNELS_BRIEF = `- 이팔청춘: 16~32세만 출연하는 인터뷰 채널. 출연자에게 실제 거래(돈·과일·시간)를 걸어 대화를 끌어낸다.
+- 농산물: 과일 위탁·사입 판매를 하며 농장을 준비하는 사업가의 채널.
+- 챌린지: 제한을 걸고 끝까지 가는 사회실험·도전.`;
+  const aiKey = () => [S.iscope, S.ifmt, R ? R.generatedAt : "", F ? F.generatedAt : ""].join("|");
+  function store(key) {
+    return {
+      get(k, maxAge) { try { const hit = JSON.parse(localStorage.getItem(key) || "{}")[k]; return hit && Date.now() - hit.at < maxAge ? hit : null; } catch (e) { return null; } },
+      set(k, data) {
+        try {
+          const all = JSON.parse(localStorage.getItem(key) || "{}");
+          all[k] = { at: Date.now(), data };
+          localStorage.setItem(key, JSON.stringify(Object.fromEntries(Object.entries(all).sort((x, y) => y[1].at - x[1].at).slice(0, 30))));
+        } catch (e) { /* 저장소 없음 */ }
+      },
+    };
   }
-  function aiSave(data) {
-    try {
-      const all = JSON.parse(localStorage.getItem(AI_STORE) || "{}");
-      all[aiKey()] = { at: Date.now(), data };
-      const keep = Object.entries(all).sort((x, y) => y[1].at - x[1].at).slice(0, 12);
-      localStorage.setItem(AI_STORE, JSON.stringify(Object.fromEntries(keep)));
-    } catch (e) { /* 저장소 없음 */ }
-  }
+  const AI_CACHE = store(AI_STORE), IDEA_CACHE = store("trends.idea.v1");
   function aiPrompt() {
-    const { a, rows, label } = LAST_INSIGHT;
-    const fmtOf = (v) => !(v.d > 0) ? "?" : v.d <= SHORT_MAX ? "쇼츠" : Math.round(v.d / 60) + "분";
-    const line = (v) => `${trimNum(v.x)}배 | ${fmtOf(v)} | ${v.ch} | ${String(v.t).slice(0, 110)}`;
+    const { a, rows, label } = LAST;
+    const fmtOf = (v) => !(v.d > 0) ? "?" : isShort(v) ? "쇼츠" : Math.round(v.d / 60) + "분";
+    const line = (v) => `${trimNum(v.x)}배 | ${fmtOf(v)} | ${v.ch} | ${String(v.t).slice(0, 110)}${SUM[v.id] ? ` | 요약: ${SUM[v.id].s}` : ""}`;
     const hot = rows.filter((v) => v.hot).sort((x, y) => y.x - x.x).slice(0, 40);
     const cold = rows.filter((v) => !v.hot && v.v > 0).sort((x, y) => x.x - y.x).slice(0, 15);
     const hooks = a.hooks.filter((h) => h.ok).map((h) => `- ${h.label}: 있으면 ${pct(h.rate)}, 없으면 ${pct(h.rateOff)} (${trimNum(h.lift)}배, 영상 ${h.n}개, 신뢰도 ${h.conf})`).join("\n");
@@ -1301,7 +1079,7 @@ footer b { color: var(--ink-2); font-weight: 600; }
 ${hooks || "- 비교할 만큼 모인 패턴 없음"}
 [길이별 터질 확률] ${fmt || "길이 정보 부족"}
 
-[터진 영상 ${hot.length}개] 배수 | 길이 | 채널 | 제목
+[터진 영상 ${hot.length}개] 배수 | 길이 | 채널 | 제목 | 요약
 ${hot.map(line).join("\n")}
 
 [평소보다 덜 나온 영상 ${cold.length}개] 배수 | 길이 | 채널 | 제목
@@ -1310,9 +1088,7 @@ ${cold.map(line).join("\n")}
 할 일
 1. 터진 영상에 반복되는 '훅 공식'을 3~5개 뽑아라. 각 공식은 제목에 바로 쓰는 틀(예: "[나이]살 [의외의 직업]의 [숫자]")로 쓰고, 왜 먹히는지 시청자 심리로 한 줄, 근거가 된 제목 2~3개를 위 목록에서 그대로 옮겨라.
 2. 이 공식을 아래 세 채널 기획으로 옮긴 아이디어 6개를 "A가 B한다" 한 줄로 써라(채널마다 2개). 각 아이디어에 썸네일 문구(12자 이내)를 붙여라.
-   - 이팔청춘: 16~32세만 출연하는 인터뷰 채널. 출연자에게 실제 거래(돈·과일·시간)를 걸어 대화를 끌어낸다.
-   - 농산물: 과일 위탁·사입 판매를 하며 농장을 준비하는 사업가의 채널.
-   - 챌린지: 제한을 걸고 끝까지 가는 사회실험·도전.
+${CHANNELS_BRIEF}
 3. 이 데이터에서 피해야 할 것 2~3개.
 숫자는 상관관계일 뿐이니 과장하지 말고, 근거가 적은 건 적다고 말해라.
 
@@ -1330,26 +1106,26 @@ JSON 하나로만 답하라. 형식:
   }
   function renderAI() {
     const box = $("i-ai");
-    if (AI.off || !LAST_INSIGHT) { box.hidden = true; return; }
+    if (AI.off || !LAST) { box.hidden = true; return; }
     box.hidden = false;
     const key = aiKey();
     if (AI.key !== key && !AI.ctl) {
-      const hit = aiLoad();
+      const hit = AI_CACHE.get(key, 7 * 864e5);
       AI.key = key; AI.data = hit ? hit.data : null; AI.at = hit ? hit.at : 0; AI.err = "";
     }
     const running = !!AI.ctl;
     const secs = running ? Math.round((Date.now() - AI.started) / 1000) : 0;
-    const status = running ? `Claude가 ${LAST_INSIGHT.a.base.hot}개 터진 영상을 읽는 중입니다… ${secs}초 (보통 30초~1분)`
+    const status = running ? `Claude가 ${LAST.a.base.hot}개 터진 영상을 읽는 중입니다… ${secs}초 (보통 30초~1분)`
       : AI.err ? AI.err
-      : AI.data ? `${esc(LAST_INSIGHT.label)} 범위 · ${agoNow(AI.at)} 분석`
-      : `위 숫자와 터진 영상 제목을 Claude에게 보내 훅 공식과 이팔청춘·농산물·챌린지 기획 아이디어를 받습니다. 내 Claude 사용량이 쓰입니다.`;
+      : AI.data ? `${esc(LAST.label)} 범위 · ${agoNow(AI.at)} 분석`
+      : `위 숫자와 터진 영상의 제목·요약을 Claude에게 보내 훅 공식과 기획 아이디어를 받습니다. 내 Claude 사용량이 쓰입니다.`;
     const d = AI.data;
     const group = (k) => (d ? d.ideas.filter((i) => i.for.includes(k)) : []);
     const otherIdeas = d ? d.ideas.filter((i) => !["이팔청춘", "농산물", "챌린지"].some((k) => i.for.includes(k))) : [];
     const ideaCard = (i) => `<li><p class="iline">${esc(i.line)}</p>${i.thumb ? `<p class="ithumb">썸네일 ‘${esc(i.thumb)}’</p>` : ""}${i.why ? `<p class="muted small">${esc(i.why)}</p>` : ""}
-      <button type="button" class="copy" data-memo="${esc(`- [${i.for}] ${i.line}${i.thumb ? ` (썸네일: ${i.thumb})` : ""}${i.why ? ` — ${i.why}` : ""}`)}">메모 복사</button></li>`;
-    $("i-ai").innerHTML = `<div class="ai-head"><div><div class="eyebrow">Claude 분석</div><h2>왜 터졌고, 우리 채널엔 어떻게 쓸까</h2></div>
-        <div class="ai-btns">${running ? `<button type="button" class="btn ghost" id="i-ai-stop">멈추기</button>` : `<button type="button" class="btn" id="i-ai-run">${d ? "다시 분석" : "분석하기"}</button>`}</div></div>
+      <button type="button" class="act" data-memo="${esc(`- [${i.for}] ${i.line}${i.thumb ? ` (썸네일: ${i.thumb})` : ""}${i.why ? ` — ${i.why}` : ""}`)}">메모</button></li>`;
+    box.innerHTML = `<div class="head2"><div><div class="eyebrow">Claude 분석</div><h2>왜 터졌고, 우리 채널엔 어떻게 쓸까</h2></div>
+        <div>${running ? `<button type="button" class="btn ghost" id="i-ai-stop">멈추기</button>` : `<button type="button" class="btn" id="i-ai-run">${d ? "다시 분석" : "분석하기"}</button>`}</div></div>
       <p class="muted small" role="status">${status}</p>
       ${d ? `<div class="ai-grid">
         <section><h3 class="sub-h">훅 공식</h3><ol class="pats">${d.patterns.map((p) => `<li><p class="iline">${esc(p.name)}${p.formula ? ` — <span class="formula">${esc(p.formula)}</span>` : ""}</p>${p.why ? `<p class="muted small">${esc(p.why)}</p>` : ""}${p.evidence.length ? `<ul class="evi">${p.evidence.map((e) => `<li>${esc(e)}</li>`).join("")}</ul>` : ""}</li>`).join("")}</ol></section>
@@ -1358,7 +1134,7 @@ JSON 하나로만 답하라. 형식:
       </div>` : ""}`;
   }
   async function runAI() {
-    if (AI.ctl || !AI.sample || !LAST_INSIGHT) return;
+    if (AI.ctl || !AI.sample || !LAST) return;
     const key = aiKey();
     AI.ctl = new AbortController(); AI.started = Date.now(); AI.err = "";
     AI.timer = setInterval(() => { if (S.tab === "insight") renderAI(); }, 1000);
@@ -1367,7 +1143,7 @@ JSON 하나로만 답하라. 형식:
       const data = aiClean(await AI.sample.json(aiPrompt(), { signal: AI.ctl.signal, modelTier: "default", cache: { gcTime: 6 * 36e5 } }));
       if (!data.patterns.length && !data.ideas.length) throw { code: "invalid_json" };
       AI.key = key; AI.data = data; AI.at = Date.now();
-      aiSave(data);
+      AI_CACHE.set(key, data);
     } catch (e) {
       const code = e && e.code;
       if (AI_HIDE.has(code)) AI.off = true;
@@ -1378,34 +1154,72 @@ JSON 하나로만 답하라. 형식:
       if (S.tab === "insight") renderAI();
     }
   }
+
+  // 영상 하나 → 우리 채널 각색 아이디어(카드의 '아이디어' 버튼)
+  const SHEET = { ctl: null, id: "", text: "" };
+  function ideaPrompt(o) {
+    const sum = SUM[o.id];
+    return `너는 유튜브 기획 PD다. 아래 영상이 왜 반응을 얻었는지 짚고, 우리 채널로 옮길 아이디어를 줘라.
+
+[영상]
+제목: ${o.t}${sum && sum.k ? ` (${sum.k})` : ""}
+채널: ${o.ch} | 길이: ${isShort(o) ? "쇼츠" : Math.round((o.d || 0) / 60) + "분"} | 조회: ${fmtNum(o.v)}${o.x != null ? ` | 채널 평소의 ${trimNum(o.x)}배` : ""}
+요약: ${sum ? sum.s : "없음(제목만 보고 판단)"}
+
+[우리 채널]
+${CHANNELS_BRIEF}
+
+아래 형식으로, 마크다운 기호 없이 짧게 한국어로 답해라. 근거가 약하면 약하다고 말해라.
+왜 먹혔나: 한두 문장
+가져올 장치: 훅·구성·편집 중 2가지, 각각 한 줄
+우리 버전:
+- 이팔청춘: "A가 B한다" 한 줄 / 썸네일 문구
+- 농산물: "A가 B한다" 한 줄 / 썸네일 문구
+- 챌린지: "A가 B한다" 한 줄 / 썸네일 문구`;
+  }
+  function sheetState(st, running) {
+    $("sheet-st").textContent = st;
+    $("sheet-stop").hidden = !running;
+    $("sheet-copy").hidden = running || !SHEET.text;
+  }
+  async function openIdea(id) {
+    const o = ITEMS.get(id);
+    if (!o || !AI.sample) return;
+    if (SHEET.ctl) SHEET.ctl.abort();
+    SHEET.id = id; SHEET.text = "";
+    $("sheet-h").textContent = (SUM[id] && SUM[id].k) || o.t;
+    $("sheet-out").textContent = "";
+    const dlg = $("sheet");
+    if (!dlg.open) dlg.showModal();
+    const hit = IDEA_CACHE.get(id, 7 * 864e5);
+    if (hit) { SHEET.text = hit.data; $("sheet-out").textContent = hit.data; sheetState(`${agoNow(hit.at)} 받은 답입니다.`, false); return; }
+    const ctl = SHEET.ctl = new AbortController();
+    const started = Date.now();
+    sheetState("Claude가 생각하는 중… (보통 10~30초)", true);
+    const tick = setInterval(() => { if (!SHEET.text) sheetState(`Claude가 생각하는 중… ${Math.round((Date.now() - started) / 1000)}초`, true); }, 1000);
+    try {
+      const res = await AI.sample(ideaPrompt(o), { signal: ctl.signal, modelTier: "default", cache: false,
+        onText: ({ text }) => { if (SHEET.id === id) { SHEET.text = text; $("sheet-out").textContent = text; sheetState("받는 중…", true); } } });
+      if (SHEET.id !== id) return;
+      SHEET.text = res.text; $("sheet-out").textContent = res.text;
+      IDEA_CACHE.set(id, res.text);
+      sheetState(res.truncated ? "답이 길어 잘렸습니다." : "내 Claude 사용량으로 받은 답입니다.", false);
+    } catch (e) {
+      const code = e && e.code;
+      if (AI_HIDE.has(code)) { AI.off = true; AI.sample = null; dlg.close(); update(); return; }
+      if (SHEET.id === id) { if (e && e.text) { SHEET.text = e.text; $("sheet-out").textContent = e.text; } sheetState(code === "cancelled" ? "멈췄습니다." : AI_ERR[code] || "연결이 끊겼습니다. 다시 눌러 주세요.", false); }
+    } finally {
+      clearInterval(tick);
+      if (SHEET.ctl === ctl) SHEET.ctl = null;
+    }
+  }
+
   if (window.claude && typeof window.claude.use === "function") {
     window.claude.use("sample").then((s) => {
       if (!s) return;
       AI.sample = s; AI.off = false;
-      if (S.tab === "insight") renderAI();
+      update();
     }).catch(() => { /* 쓸 수 없는 환경 */ });
-  }
-
-  // ── 주간 요약(수집기가 매주 만든 data/digest.json) — 인사이트 탭 맨 위
-  function renderWeek() {
-    const box = $("i-week");
-    if (!D || !D.week) { box.hidden = true; return; }
-    box.hidden = false;
-    const ai = D.ai;
-    const hot = (D.week.hot || []).slice(0, 6);
-    const idea = (i) => `<li><p class="iline">${esc(i.line)}</p>${i.thumb ? `<p class="ithumb">썸네일 ‘${esc(i.thumb)}’</p>` : ""}${i.why ? `<p class="muted small">${esc(i.why)}</p>` : ""}
-      <button type="button" class="copy" data-memo="${esc(`- [${i.for}] ${i.line}${i.thumb ? ` (썸네일: ${i.thumb})` : ""}${i.why ? ` — ${i.why}` : ""}`)}">메모 복사</button></li>`;
-    const groups = ai ? ["이팔청춘", "농산물", "챌린지"].map((k) => [k, (ai.ideas || []).filter((i) => i.for === k)]).filter(([, l]) => l.length) : [];
-    box.innerHTML = `<div class="ai-head"><div><div class="eyebrow">주간 요약 · ${esc(D.week.from)} ~ ${esc(D.week.to)}${ai && D.model ? ` · ${esc(D.model)}` : ""}</div>
-        <h2>${ai ? esc(ai.headline) : "이번 주 터진 영상"}</h2></div>
-        ${D.issue ? `<a class="btn ghost" href="${esc(D.issue)}" target="_blank" rel="noopener">GitHub에서 보기</a>` : ""}</div>
-      ${ai ? `<div class="ai-grid">
-        <section><h3 class="sub-h">이번 주 발견</h3><ol class="pats">${(ai.findings || []).map((f) => `<li><p class="iline">${esc(f.title)}</p><p class="muted small">${esc(f.detail)}</p>${(f.evidence || []).length ? `<ul class="evi">${f.evidence.slice(0, 3).map((e) => `<li>${esc(e)}</li>`).join("")}</ul>` : ""}</li>`).join("")}</ol>
-          ${(ai.watch || []).length ? `<h3 class="sub-h">다음 주에 지켜볼 것</h3><ul class="avoid">${ai.watch.map((w) => `<li>${esc(w)}</li>`).join("")}</ul>` : ""}
-          ${ai.mine ? `<h3 class="sub-h">내 채널</h3><p class="small">${esc(ai.mine)}</p>` : ""}</section>
-        <section><h3 class="sub-h">기획 아이디어</h3>${groups.map(([k, l]) => `<p class="ifor">${esc(k)}</p><ul class="ideas">${l.map(idea).join("")}</ul>`).join("")}</section>
-      </div>` : `<p class="muted small">통계만 정리한 요약입니다. 저장소 시크릿에 <b>ANTHROPIC_API_KEY</b>를 넣으면 매주 Claude가 발견·기획 아이디어·다음 주 체크포인트를 붙입니다.</p>`}
-      ${hot.length ? `<h3 class="sub-h">이번 주 업로드 중 터진 영상</h3><div class="kws">${hot.map((v) => `<a class="kw" href="${ytUrl(v.id)}" target="_blank" rel="noopener" title="${esc(v.t)}">${esc(v.ch)} <b>${trimNum(v.x)}배</b><span class="muted">${esc(String(v.t).slice(0, 24))}${String(v.t).length > 24 ? "…" : ""}</span></a>`).join("")}</div>` : ""}`;
   }
 
   // ── 내 채널: my_channels.json에 넣은 채널을 벤치마크와 같은 기준으로 본다
@@ -1424,21 +1238,20 @@ JSON 하나로만 답하라. 형식:
     $("m-body").hidden = !chans.length;
     if (!chans.length) return;
     if (!chans.some((c) => c.id === S.mch)) S.mch = chans[0].id;
-    $("m-chans").innerHTML = chans.length > 1 ? chans.map((c) => `<button type="button" class="chip" data-m="${esc(c.id)}" aria-pressed="${c.id === S.mch}">${esc(c.title)}<span class="n">${c.recent.length}</span></button>`).join("") : "";
+    $("m-chans").innerHTML = chans.length > 1 ? chans.map((c) => `<button type="button" class="chip" data-m="${esc(c.id)}" aria-pressed="${c.id === S.mch}">${esc(c.title)}</button>`).join("") : "";
     const ch = chans.find((c) => c.id === S.mch);
-    const keys = ["all", "ref", ...Object.keys(RGROUP), "farm"].filter((k) => insightRows().some((v) => inScope(v, k)));
-    if (!keys.includes(S.mscope)) S.mscope = "all";
-    $("m-scope").innerHTML = keys.map((k) => `<option value="${esc(k)}"${k === S.mscope ? " selected" : ""}>${esc(scopeLabel(k))}</option>`).join("");
+    const all = insightRows();
+    const keys = SCOPES.filter(([k]) => all.some((v) => inScope(v, k)));
+    if (!keys.some(([k]) => k === S.mscope)) S.mscope = "all";
+    $("m-scope").innerHTML = keys.map(([k, l]) => `<option value="${esc(k)}"${k === S.mscope ? " selected" : ""}>${esc(l)}</option>`).join("");
     const mine = ch.recent.map((r) => ({ ...r, hot: r.x != null && r.x >= HOT_X, tags: hookTags(r.t) }));
     const scored = mine.filter((r) => r.x != null);
     const hotN = scored.filter((r) => r.hot).length;
-    const last = mine.reduce((a, r) => (!a || r.p > a ? r.p : a), "");
+    const bench = analyze(all.filter((v) => inScope(v, S.mscope)));
     $("m-tiles").innerHTML = `
       <div class="tile"><div class="lbl">구독자</div><div class="num">${fmtNum(ch.subs)}</div><div class="sub">${esc(ch.title)}</div></div>
-      <div class="tile"><div class="lbl">최근 영상</div><div class="num">${mine.length}</div><div class="sub">마지막 업로드 ${last ? fmtAge(last) : "–"}</div></div>
-      <div class="tile"><div class="lbl">평소의 ${HOT_X}배 이상</div><div class="num">${scored.length ? pct(hotN / scored.length) : "–"}</div><div class="sub">${hotN}개 · 벤치마크 ${pct(analyze(insightRows()).base.rate)}</div></div>
-      <div class="tile"><div class="lbl">조회 중앙값</div><div class="num">${fmtNum(ch.median)}</div><div class="sub">최근 업로드 기준</div></div>`;
-    const bench = analyze(insightRows().filter((v) => inScope(v, S.mscope)));
+      <div class="tile"><div class="lbl">평소의 ${HOT_X}배 이상 터진 비율</div><div class="num">${scored.length ? pct(hotN / scored.length) : "–"}</div><div class="sub">${hotN}개 · ${esc(scopeLabel(S.mscope))} 벤치마크 ${pct(bench.base.rate)}</div></div>
+      <div class="tile"><div class="lbl">보통 조회수</div><div class="num">${fmtNum(ch.median)}</div><div class="sub">최근 업로드 중앙값</div></div>`;
     const rows = bench.hooks.map((b) => {
       const use = mine.filter((r) => r.tags.includes(b.label));
       const m = { n: use.length, hot: use.filter((r) => r.hot).length, total: mine.length };
@@ -1448,9 +1261,9 @@ JSON 하나로만 답하라. 형식:
     const tries = (strong.length ? strong : rows.filter((r) => r.v[0] === "v-hint")).slice(0, 2);
     const weak = !strong.length;
     const cuts = rows.filter((r) => r.v[0] === "v-cut").slice(0, 1);
-    $("m-advice").innerHTML = (tries.length || cuts.length) ? `<ol class="reads">${tries.map(({ b, m }) => `<li><b>${esc(b.label)}</b>${josa(b.label, "을", "를")} 제목에 더 써 보세요. ${esc(scopeLabel(S.mscope))} 채널에서는 같은 채널 대비 ${trimNum(b.lift)}배 더 터졌는데(신뢰도 ${b.conf}), 내 영상은 ${m.total}개 중 ${m.n}개에만 썼습니다.${weak ? " 표본이 적어 참고만 하세요." : ""}${b.ex[0] ? ` 예: <a href="${ytUrl(b.ex[0].id)}" target="_blank" rel="noopener">‘${esc(b.ex[0].t)}’</a>` : ""}</li>`).join("")}${cuts.map(({ b, m }) => `<li><b>${esc(b.label)}</b>${josa(b.label, "은", "는")} 내 영상 ${m.n}개에 쓰였지만 벤치마크에서는 오히려 덜 터졌습니다(${trimNum(b.lift)}배). 다른 훅으로 바꿔 실험해 보세요.</li>`).join("")}</ol>`
+    $("m-advice").innerHTML = (tries.length || cuts.length) ? `<ol class="reads">${tries.map(({ b, m }) => `<li><b>${esc(b.label)}</b>${josa(b.label, "을", "를")} 제목에 더 써 보세요. ${esc(scopeLabel(S.mscope))} 채널에서는 같은 채널 대비 ${trimNum(b.lift)}배 더 터졌는데(신뢰도 ${b.conf}), 내 영상은 ${m.total}개 중 ${m.n}개에만 썼습니다.${weak ? " 표본이 적어 참고만 하세요." : ""}${b.ex[0] ? ` 예: ${exLink(b.ex[0])}` : ""}</li>`).join("")}${cuts.map(({ b, m }) => `<li><b>${esc(b.label)}</b>${josa(b.label, "은", "는")} 내 영상 ${m.n}개에 쓰였지만 벤치마크에서는 오히려 덜 터졌습니다(${trimNum(b.lift)}배). 다른 훅으로 바꿔 실험해 보세요.</li>`).join("")}</ol>`
       : `<p class="muted">지금 벤치마크와 비교해 바로 권할 만한 제목 패턴이 없습니다. 범위를 바꿔 보세요.</p>`;
-    $("m-table").innerHTML = `<div class="mrow head"><span>패턴</span><span>내 영상</span><span>벤치마크(같은 채널 비교)</span><span>판정</span></div>` + rows.map(({ b, m, v }) => `<div class="mrow">
+    $("m-table").innerHTML = `<div class="mrow head"><span>패턴</span><span>내 영상</span><span>벤치마크</span><span>판정</span></div>` + rows.map(({ b, m, v }) => `<div class="mrow">
         <span class="lname">${esc(b.label)}</span>
         <span>${m.n ? `${m.n}개 · 터짐 ${m.hot}` : `<span class="muted">안 씀</span>`}</span>
         <span>${b.ok ? `${trimNum(b.lift)}배 <span class="muted small">${b.conf}</span>` : `<span class="muted">표본 적음</span>`}</span>
@@ -1458,165 +1271,157 @@ JSON 하나로만 답하라. 형식:
       </div>`).join("");
     const list = mine.slice().sort((a, b) => Date.parse(b.p) - Date.parse(a.p));
     $("m-videos").innerHTML = list.map((r) => `<div class="srow">
-        <div class="smain"><p class="fname"><a href="${ytUrl(r.id)}" target="_blank" rel="noopener">${esc(r.t)}</a></p>
-          <p class="fnote">${fmtAge(r.p)} · ${r.d > 0 && r.d <= SHORT_MAX ? "쇼츠" : "롱폼"} · 조회 ${fmtNum(r.v)}${r.vph != null ? ` · +${fmtNum(r.vph)}/시간` : ""}</p>
+        <div><p class="fname"><a href="${ytUrl(r.id)}" target="_blank" rel="noopener">${esc(r.t)}</a></p>
+          <p class="vmeta">${fmtAge(r.p)} · ${isShort(r) ? "쇼츠" : "롱폼"} · 조회 ${fmtNum(r.v)}${r.vph != null ? ` · +${fmtNum(r.vph)}/시간` : ""}</p>
           ${r.tags.length ? `<div class="ftags">${r.tags.map((t) => `<span class="ftag">${esc(t)}</span>`).join("")}</div>` : ""}</div>
         <span class="badge ${r.hot ? "b-gold" : "b-plain"}">${r.x == null ? "비교 불가" : `평소의 ${trimNum(r.x)}배`}</span>
       </div>`).join("");
   }
 
-  // ── 모아보기: 카드의 ☆로 모은 영상(이 브라우저에만 저장)
+  // ── 저장: 카드의 ☆로 모은 영상과 메모(이 브라우저에만 저장)
   const SAVE_KEY = "trends.saved.v1";
   let SAVED = [];
   try { SAVED = JSON.parse(localStorage.getItem(SAVE_KEY) || "[]"); if (!Array.isArray(SAVED)) SAVED = []; } catch (e) { SAVED = []; }
   const isSaved = (id) => SAVED.some((s) => s.id === id);
   const persistSaved = () => { try { localStorage.setItem(SAVE_KEY, JSON.stringify(SAVED)); } catch (e) { /* 무시 */ } };
-  const starBtn = (id) => `<button type="button" class="star" data-save="${esc(id)}" aria-pressed="${isSaved(id)}" aria-label="모아보기에 저장" title="모아보기에 저장">${isSaved(id) ? "★" : "☆"}</button>`;
+  const starBtn = (id) => `<button type="button" class="star" data-save="${esc(id)}" aria-pressed="${isSaved(id)}" aria-label="저장" title="저장">${isSaved(id) ? "★" : "☆"}</button>`;
   function lookup(id) {
-    if (T && T.videos[id]) { const v = T.videos[id]; return { id, t: v.t, ch: v.c, v: v.v, p: v.p, d: v.d, x: null, from: "트렌드" }; }
-    const r = insightRows().find((x) => x.id === id);
-    return r ? { id, t: r.t, ch: r.ch, v: r.v, p: r.p, d: r.d, x: r.x, from: r.src === "farm" ? "농산물" : "레퍼런스" } : null;
+    const o = ITEMS.get(id) || (T && T.videos[id] ? trendObj(id) : benchRows().find((x) => x.id === id));
+    if (!o) return null;
+    const sum = SUM[id];
+    return { id, t: o.t, ch: o.ch, v: o.v, p: o.p, d: o.d, x: o.x ?? null, k: sum && sum.k || "", s: sum && sum.s || "" };
   }
   function toggleSave(id) {
     if (isSaved(id)) SAVED = SAVED.filter((s) => s.id !== id);
-    else { const it = lookup(id); if (!it) return; SAVED.unshift({ ...it, at: Date.now() }); }
+    else { const it = lookup(id); if (!it) return; SAVED.unshift({ ...it, memo: "", at: Date.now() }); }
     persistSaved();
     for (const b of document.querySelectorAll(`[data-save="${CSS.escape(id)}"]`)) { b.setAttribute("aria-pressed", String(isSaved(id))); b.textContent = isSaved(id) ? "★" : "☆"; }
     $("n-saved").textContent = SAVED.length || "";
     if (S.tab === "saved") renderSaved();
   }
-  const savedMarkdown = () => [`## 모아본 영상 (${SAVED.length})`, ...SAVED.map((s) => `- [${s.t}](https://youtu.be/${s.id}) — ${s.ch}${s.x != null ? ` · ${trimNum(s.x)}배` : ""} · 조회 ${fmtNum(s.v)} · 메모: `)].join("\n");
+  const savedMarkdown = () => [`## 모아본 영상 (${SAVED.length})`, ...SAVED.map((s) => {
+    const sum = (SUM[s.id] && SUM[s.id].s) || s.s;
+    return `- [${s.k || s.t}](https://youtu.be/${s.id}) — ${s.ch}${s.x != null ? ` · 평소의 ${trimNum(s.x)}배` : ""} · 조회 ${fmtNum(s.v)}${sum ? `\n  - 요약: ${sum}` : ""}\n  - 메모: ${s.memo || ""}`;
+  })].join("\n");
   function renderSaved() {
     $("v-actions").hidden = !SAVED.length;
-    $("v-list").innerHTML = SAVED.length ? SAVED.map((s) => `<div class="srow">
-        <div class="smain"><p class="fname"><a href="${ytUrl(s.id)}" target="_blank" rel="noopener">${esc(s.t)}</a></p>
-          <p class="fnote">${esc(s.from)} · ${esc(s.ch)}${s.x != null ? ` · 평소의 ${trimNum(s.x)}배` : ""} · 조회 ${fmtNum(s.v)}${s.p ? ` · ${fmtAge(s.p)} 업로드` : ""}</p></div>
+    $("v-list").innerHTML = SAVED.length ? SAVED.map((s) => {
+      const sum = (SUM[s.id] && SUM[s.id].s) || s.s;
+      return `<div class="srow">
+        <div class="vbody" style="padding:0">
+          <p class="fname"><a href="${ytUrl(s.id)}" target="_blank" rel="noopener">${esc(s.k || s.t)}</a></p>
+          ${sum ? `<p class="vsum">${esc(sum)}</p>` : ""}
+          <p class="vmeta">${esc(s.ch)}${s.x != null ? ` · 평소의 ${trimNum(s.x)}배` : ""} · 조회 ${fmtNum(s.v)}${s.p ? ` · ${fmtAge(s.p)}` : ""}</p>
+          <textarea class="memo" rows="1" data-memo-id="${esc(s.id)}" placeholder="한 줄 메모: 왜 저장했나, 우리 채널엔 어떻게?" aria-label="메모">${esc(s.memo || "")}</textarea>
+        </div>
         ${starBtn(s.id)}
-      </div>`).join("") : `<div class="empty">아직 모은 영상이 없습니다. 카드 오른쪽 아래 ☆를 누르면 여기에 모입니다.</div>`;
+      </div>`;
+    }).join("") : `<div class="empty">아직 모은 영상이 없습니다. 카드 오른쪽 아래 ☆를 누르면 여기에 모입니다.</div>`;
   }
 
   // ── 공통
+  const TABS = ["today", "bench", "trends", "insight", "mine", "saved"];
+  // 예전 주소(#refs, #farm, #country …)도 새 탭으로 연다
+  const OLD = { refs: ["bench", {}], farm: ["bench", { bscope: "farm" }], country: ["trends", { wmode: "country" }], category: ["trends", { wmode: "country" }], signal: ["trends", { wmode: "signal" }] };
   function setTab(tab, push) {
-    if (!["insight", "mine", "country", "category", "signal", "refs", "farm", "saved"].includes(tab)) tab = "insight";
+    if (OLD[tab]) { Object.assign(S, OLD[tab][1]); tab = OLD[tab][0]; push = true; }
+    if (!TABS.includes(tab)) tab = "today";
     S.tab = tab;
     for (const b of document.querySelectorAll(".tab")) b.setAttribute("aria-selected", String(b.dataset.tab === tab));
-    for (const p of document.querySelectorAll(".pane")) p.hidden = p.id !== "pane-" + tab;
+    for (const p of document.querySelectorAll("main > .pane")) p.hidden = p.id !== "pane-" + tab;
     if (push && location.hash !== "#" + tab) history.replaceState(null, "", "#" + tab);
     update();
   }
-
+  let booted = false;
   function update() {
     save();
-    if (!T) return;
-    if (S.tab === "insight") renderInsight();
-    else if (S.tab === "mine") renderMine();
-    else if (S.tab === "country") renderCountry();
-    else if (S.tab === "category") renderCategory();
-    else if (S.tab === "signal") renderSignal();
-    else if (S.tab === "refs") renderRefs();
-    else if (S.tab === "saved") renderSaved();
-    else renderFarm();
+    if (!booted) return;
+    ({ today: renderToday, bench: renderBench, trends: renderTrends, insight: renderInsight, mine: renderMine, saved: renderSaved }[S.tab] || renderToday)();
   }
-
   function renderMeta() {
-    const when = new Date(REF).toLocaleString("ko-KR", { timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false });
-    const seed = /시드/.test(T.source);
-    $("meta").innerHTML = `<span>기준 <b>${esc(when)} KST</b></span><span>${T.regions.length}개국 · 영상 ${fmtNum(Object.keys(T.videos).length)}개</span>` +
-      (R ? `<span>레퍼런스 채널 ${R.channels.length}개</span>` : "") +
-      (F ? `<span>농산물 유튜브 ${F.channels.length} · 인스타 ${IG().length}</span>` : "") +
-      (seed ? `<span class="pill-note">시드 데이터 · API 키 연결 후 매일 자동 갱신</span>` : "");
-    $("foot-src").innerHTML = `출처: <b>${esc(T.source)}</b>` + (R ? ` / 레퍼런스: <b>${esc(R.source)}</b>` : "") + (F ? ` / 농산물: <b>${esc(F.source)}</b>${F.instagram && F.instagram.api ? " + Instagram Graph API" : ""}` : "");
-    $("n-country").textContent = T.regions.length;
-    $("n-category").textContent = Object.keys(T.categories).filter((c) => [...WHERE.keys()].some((id) => T.videos[id].cat === c)).length;
-    $("n-signal").textContent = signalIds(2).length;
-    $("n-refs").textContent = R ? R.channels.length : "";
-    $("n-farm").textContent = F ? F.channels.length + IG().length : "";
-    $("n-insight").textContent = insightRows().filter((v) => v.hot).length || "";
+    const when = new Date(REF).toLocaleString("ko-KR", { timeZone: "Asia/Seoul", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false });
+    const seed = [T, R, F].some((d) => d && /시드/.test(d.source || ""));
+    $("meta").innerHTML = `<span>${esc(when)} 업데이트</span>` + (seed ? `<span class="pill" title="API 키를 연결하면 매일 05:47에 자동으로 새로 모읍니다">샘플 데이터</span>` : "");
+    const src = [T && `해외 차트: ${T.source}`, R && `레퍼런스: ${R.source}`, F && `농산물: ${F.source}`, Object.keys(SUM).length && `요약: ${SUM_SRC}`].filter(Boolean);
+    $("foot-src").textContent = "출처 — " + src.join(" / ");
     $("n-saved").textContent = SAVED.length || "";
-    $("n-mine").textContent = M && M.channels ? M.channels.reduce((s, c) => s + (c.recent || []).length, 0) || "" : "";
   }
 
-  // 이벤트 (한 번만 연결)
-  document.querySelector(".tabs").addEventListener("click", (e) => {
-    const b = e.target.closest(".tab");
-    if (b) setTab(b.dataset.tab, true);
-  });
-  $("regions").addEventListener("click", (e) => {
-    const b = e.target.closest("[data-r]");
-    if (b) { S.region = b.dataset.r; S.cat = ""; update(); }
-  });
-  $("c-cat").addEventListener("change", (e) => { S.cat = e.target.value; update(); });
-  $("c-sort").addEventListener("change", (e) => { S.sort = e.target.value; update(); });
-  $("k-chips").addEventListener("click", (e) => {
-    const b = e.target.closest("[data-k]");
-    if (b) { S.kcat = b.dataset.k; update(); }
-  });
-  $("k-sort").addEventListener("change", (e) => { S.ksort = e.target.value; update(); });
-  $("f-types").addEventListener("click", (e) => {
-    const b = e.target.closest("[data-f]");
-    if (b) { S.ftype = b.dataset.f; update(); }
-  });
-  $("f-q").addEventListener("input", (e) => { S.fq = e.target.value; update(); });
-  $("f-sort").addEventListener("change", (e) => { S[S.fplat === "ig" ? "fsortig" : "fsort"] = e.target.value; update(); });
-  $("r-groups").addEventListener("click", (e) => {
-    const b = e.target.closest("[data-g]");
-    if (b) { S.rgroup = b.dataset.g; update(); }
-  });
-  $("r-sort").addEventListener("change", (e) => { S.rsort = e.target.value; update(); });
-  $("r-days").addEventListener("change", (e) => { S.rdays = e.target.value; update(); });
+  // 이벤트(한 번만 연결)
+  document.querySelector(".tabs").addEventListener("click", (e) => { const b = e.target.closest(".tab"); if (b) setTab(b.dataset.tab, true); });
   document.addEventListener("click", async (e) => {
+    const go = e.target.closest("[data-go]");
+    if (go) { setTab(go.dataset.go, true); window.scrollTo({ top: 0 }); return; }
     const star = e.target.closest("[data-save]");
     if (star) { toggleSave(star.dataset.save); return; }
-    const b = e.target.closest("[data-memo]");
-    if (b) toast(await copyText(b.dataset.memo) ? "메모 줄을 복사했습니다" : "복사하지 못했습니다");
+    const idea = e.target.closest("[data-idea]");
+    if (idea) { openIdea(idea.dataset.idea); return; }
+    const m = e.target.closest("[data-memo]");
+    if (m) { toast(await copyText(m.dataset.memo) ? "메모 줄을 복사했습니다" : "복사하지 못했습니다"); return; }
+    const sum = e.target.closest(".vsum[data-more]");
+    if (sum) sum.classList.toggle("open");
   });
-  $("i-scope").addEventListener("click", (e) => {
-    const b = e.target.closest("[data-i]");
-    if (b) { S.iscope = b.dataset.i; update(); }
-  });
+  const debounce = (fn, ms) => { let t = 0; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+  $("b-scope").addEventListener("click", (e) => { const b = e.target.closest("[data-s]"); if (b) { S.bscope = b.dataset.s; update(); } });
+  $("b-q").addEventListener("input", debounce((e) => { Q.b = e.target.value; update(); }, 150));
+  $("b-sort").addEventListener("change", (e) => { S.bsort = e.target.value; update(); });
+  $("b-days").addEventListener("change", (e) => { S.bdays = e.target.value; update(); });
+  $("b-hot").addEventListener("change", (e) => { S.bhot = e.target.checked; update(); });
+  $("b-more").addEventListener("click", () => { B.limit += PAGE; renderBench(); });
+  $("b-chans").addEventListener("toggle", () => { if ($("b-chans").open) renderChans(); });
+  $("w-regions").addEventListener("click", (e) => { const b = e.target.closest("[data-r]"); if (b) { S.region = b.dataset.r; S.wcat = ""; update(); } });
+  $("w-q").addEventListener("input", debounce((e) => { Q.w = e.target.value; update(); }, 150));
+  $("w-cat").addEventListener("change", (e) => { S.wcat = e.target.value; update(); });
+  $("w-sort").addEventListener("change", (e) => { S.wsort = e.target.value; update(); });
+  $("w-more").addEventListener("click", () => { W.limit += PAGE; renderTrends(); });
+  $("i-scope").addEventListener("click", (e) => { const b = e.target.closest("[data-i]"); if (b) { S.iscope = b.dataset.i; update(); } });
   $("i-copy").addEventListener("click", async () => toast(await copyText(insightMarkdown()) ? "인사이트를 마크다운으로 복사했습니다" : "복사하지 못했습니다"));
+  $("i-title").addEventListener("input", debounce(renderCheck, 120));
   $("i-ai").addEventListener("click", (e) => {
     if (e.target.closest("#i-ai-run")) runAI();
     else if (e.target.closest("#i-ai-stop") && AI.ctl) AI.ctl.abort();
   });
-  $("m-chans").addEventListener("click", (e) => {
-    const b = e.target.closest("[data-m]");
-    if (b) { S.mch = b.dataset.m; update(); }
-  });
+  $("m-chans").addEventListener("click", (e) => { const b = e.target.closest("[data-m]"); if (b) { S.mch = b.dataset.m; update(); } });
   $("m-scope").addEventListener("change", (e) => { S.mscope = e.target.value; update(); });
   $("v-copy").addEventListener("click", async () => toast(await copyText(savedMarkdown()) ? `${SAVED.length}개를 마크다운으로 복사했습니다` : "복사하지 못했습니다"));
   $("v-clear").addEventListener("click", () => {
     if (!SAVED.length || !confirm(`모은 영상 ${SAVED.length}개를 모두 지울까요?`)) return;
     SAVED = []; persistSaved(); $("n-saved").textContent = ""; update();
   });
-  document.addEventListener("error", (e) => {
-    const img = e.target;
-    if (img && img.tagName === "IMG") {
-      img.remove();
-    }
-  }, true);
+  $("v-list").addEventListener("input", debounce((e) => {
+    const ta = e.target.closest("[data-memo-id]");
+    if (!ta) return;
+    const it = SAVED.find((s) => s.id === ta.dataset.memoId);
+    if (it) { it.memo = ta.value; persistSaved(); }
+  }, 300));
+  $("sheet-x").addEventListener("click", () => { if (SHEET.ctl) SHEET.ctl.abort(); $("sheet").close(); });
+  $("sheet").addEventListener("close", () => { if (SHEET.ctl) SHEET.ctl.abort(); });
+  $("sheet-stop").addEventListener("click", () => { if (SHEET.ctl) SHEET.ctl.abort(); });
+  $("sheet-copy").addEventListener("click", async () => {
+    const o = ITEMS.get(SHEET.id);
+    const text = `### ${o ? o.t : ""} (https://youtu.be/${SHEET.id})\n${SHEET.text}`;
+    toast(await copyText(text) ? "아이디어를 복사했습니다" : "복사하지 못했습니다");
+  });
+  document.addEventListener("error", (e) => { const img = e.target; if (img && img.tagName === "IMG") img.remove(); }, true);
   window.addEventListener("hashchange", () => setTab(location.hash.slice(1), false));
 
+  let SUM_SRC = "";
   async function boot() {
-    const hashTab = location.hash.slice(1);
-    setTab(hashTab || S.tab, false);
-    try {
-      const [t, f, r, d, m] = await Promise.all([
-        getJSON("data/latest.json"),
-        getJSON("data/farm.json").catch(() => null),
-        getJSON("data/refs.json").catch(() => null),
-        getJSON("data/digest.json").catch(() => null),
-        getJSON("data/mine.json").catch(() => null),
-      ]);
-      D = d; M = m;
-      T = t; F = f; R = r;
-      indexTrends();
-      renderMeta();
-      update();
-    } catch (err) {
-      $("meta").textContent = "데이터를 불러오지 못했습니다. trends/data/latest.json 이 있는지, 페이지를 http(s)로 열었는지 확인하세요.";
-      console.error(err);
+    setTab(location.hash.slice(1) || S.tab, false);
+    const [t, f, r, d, m, s] = await Promise.all(["latest", "farm", "refs", "digest", "mine", "summaries"]
+      .map((n) => getJSON(`data/${n}.json`).catch(() => null)));
+    T = t; F = f; R = r; D = d; M = m;
+    SUM = (s && s.items) || {}; SUM_SRC = (s && s.source) || "";
+    if (!T && !R && !F) {
+      $("meta").textContent = "데이터를 불러오지 못했습니다. trends/data/*.json 이 있는지, 페이지를 http(s)로 열었는지 확인하세요.";
+      return;
     }
+    REF = Date.parse((T || R || F).generatedAt) || Date.now();
+    nfcTitles();
+    indexTrends();
+    booted = true;
+    renderMeta();
+    update();
   }
   boot();
 })();
