@@ -46,7 +46,7 @@ HOOKS = [
     ("emoji", "이모지", EMOJI),
 ]
 HOOK_RE = [(k, label, re.compile(p, re.IGNORECASE | re.ASCII)) for k, label, p in HOOKS]
-SCOPES = [("all", "전체"), ("이팔청춘", "이팔청춘"), ("farm", "농산물"), ("challenge", "챌린지·참여형")]
+SCOPES = [("all", "전체"), ("이팔청춘", "이팔청춘"), ("farm", "농산물"), ("산", "산·아웃도어"), ("challenge", "챌린지·참여형")]
 
 
 def log(msg: str) -> None:

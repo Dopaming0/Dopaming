@@ -1,11 +1,12 @@
 {
- "updated": "2026-10-04",
+ "updated": "2026-10-23",
  "groups": {
    "솔파": "윤성원 PD의 스튜디오 솔파 채널",
    "참여형": "일반인 참여형 게임·대화·실험 포맷",
    "인터뷰": "질문 하나로 굴러가는 인터뷰·토크 포맷",
    "챌린지": "제한을 걸고 끝까지 가는 챌린지·여정",
-   "이팔청춘": "10대~30대 초반만 나오는 인터뷰·인사이트. 이팔청춘 채널 기획용"
+   "이팔청춘": "10대~30대 초반만 나오는 인터뷰·인사이트. 이팔청춘 채널 기획용",
+   "산": "국내외 등산·트레킹·백패킹 채널. 혼산·노숙·장거리 종주처럼 '산 + 제한'으로 굴러가는 포맷"
  },
  "channels": [
   {"id": "UC6XZ4fmiUPQk6ws6fGs2rQg", "title": "Solfa", "group": "솔파", "market": "KR", "src": "13·15강", "note": "40 대 1 이상형 찾기, 절대 악플 달지 말 것. 2020년 이후 업로드가 없어 포맷 원형 아카이브로 봅니다"},
@@ -41,6 +42,18 @@
   {"id": "UC9ISPZsMaBi5mutsgX6LC1g", "title": "i-D", "group": "이팔청춘", "market": "GB", "src": "", "note": "신진 아티스트에게 카메라롤·플레이리스트처럼 소품으로 묻는 질문 포맷"},
   {"id": "UCJATm9C8Xp8gMBKDIKPnvog", "title": "Dazed", "group": "이팔청춘", "market": "GB", "src": "", "note": "유스컬처 아티스트 인터뷰. 'Chopped Or Not' 같은 코너형 질문으로 취향을 꺼냅니다"},
   {"id": "UCr7ZFxNlDvb3waeoTN1_3mA", "title": "Teen Vogue", "group": "이팔청춘", "market": "US", "src": "", "note": "10대 독자 매체. 노래·별자리·가방 속처럼 가벼운 소재로 인물을 보여줍니다"},
-  {"id": "UC9zY_E8mcAo_Oq772LEZq8Q", "title": "THE FIRST TAKE", "group": "이팔청춘", "market": "JP", "src": "", "note": "흰 스튜디오, 마이크 하나, 한 번에. 규칙 하나가 곧 채널의 감각이 되는 예"}
+  {"id": "UC9zY_E8mcAo_Oq772LEZq8Q", "title": "THE FIRST TAKE", "group": "이팔청춘", "market": "JP", "src": "", "note": "흰 스튜디오, 마이크 하나, 한 번에. 규칙 하나가 곧 채널의 감각이 되는 예"},
+  {"id": "UCwc5yW-HBQrYnkPEI8kRl8w", "title": "산 속에 백만송희", "group": "산", "market": "KR", "src": "", "note": "여자 혼산 브이로그. '신발을 왜 벗어?', '200만 원?'처럼 산에서 생긴 의문을 제목으로 겁니다"},
+  {"id": "UCsmUmhaFVpRd3_Tq13YVOgg", "title": "산타은지 SantaEunji", "group": "산", "market": "KR", "src": "", "note": "27살 퇴사자의 섬·산 노숙과 1톤 트럭 포도 장사. 산 × 과일 기획에 가장 가까운 레퍼런스"},
+  {"id": "UCWDpv948WJO7QgH5dtpGsqw", "title": "트레킹 코리아", "group": "산", "market": "KR", "src": "", "note": "'대중교통 당일치기 N km' 코스 소개. 거리·교통비·개통 소식을 숫자로 거는 정보형 제목 공식"},
+  {"id": "UC5mw63Yj12G7dD-fb-QOSEw", "title": "자연에빠지다 healingjin", "group": "산", "market": "KR", "src": "", "note": "자연 속 힐링 산행·캠핑 브이로그. 말 적고 풍경 위주의 롱폼"},
+  {"id": "UC38BB0nvxIaEo5XJtGbta4A", "title": "싼타TV", "group": "산", "market": "KR", "src": "", "note": "명산 코스를 거리·시간·원점회귀로 정리하는 코스 가이드. 검색으로 오래 보는 롱테일"},
+  {"id": "UCpnuadQ_w3r6f4Q_NRlqd-w", "title": "Kraig Adams", "group": "산", "market": "US", "src": "", "note": "말 없는 장거리 솔로 하이킹. '85 Miles Alone'처럼 거리와 '혼자'를 제목에 박는 공식"},
+  {"id": "UC18exdGWh7piVWisrnDXiZg", "title": "Darwin onthetrail", "group": "산", "market": "US", "src": "", "note": "애팔래치안·PCT 스루하이킹 일기. 수개월짜리 여정을 에피소드로 쪼개는 연재형"},
+  {"id": "UCQhqmV26773qZhzqJz4VFcw", "title": "Homemade Wanderlust", "group": "산", "market": "US", "src": "", "note": "부부 장거리 트레일 연재. 트레일 하나를 수십 편 시리즈로 끌고 가는 구조"},
+  {"id": "UCF8HpP-lEx8W9OlMSOW6kGA", "title": "Matthew Posa", "group": "산", "market": "US", "src": "", "note": "개와 함께하는 솔로 오지 캠핑. 3~5시간짜리 확장판까지 보는 충성 시청층"},
+  {"id": "UCq0VNPiFtr3ihDewjtkZXBQ", "title": "Dan Becker", "group": "산", "market": "US", "src": "", "note": "백패킹 장비 리뷰와 국립공원 하이킹. 장비·요리처럼 실용 정보를 산행에 섞는 포맷"},
+  {"id": "UC1Q990j5wBf8DsUAmFHHogg", "title": "かほの登山日記", "group": "산", "market": "JP", "src": "", "note": "퇴사 후 혼자 오르는 일본 알프스. 1인 촬영·편집, 산 위 밥 먹방이 시그니처"},
+  {"id": "UC8eNyF9eYwgr_K-Nl4gSHWw", "title": "Adam Ondra", "group": "산", "market": "CZ", "src": "", "note": "세계 최정상 클라이머의 등반 도전. '못 할 것 같은 루트' 하나로 끝까지 가는 챌린지 구조"}
  ]
 }

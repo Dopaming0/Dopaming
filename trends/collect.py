@@ -194,12 +194,21 @@ def norm_video(item: dict) -> dict:
     }
 
 
-def videos_by_ids(ids: list[str]) -> dict[str, dict]:
+_PROMO = re.compile(r"[#＃](?:PR|AD|광고|유료광고|sponsored)\b", re.I)
+
+
+def is_regular(item: dict) -> bool:
+    """라이브 다시보기(10시간짜리 스트림)와 광고 표기 영상은 채널 평소 조회수를 대표하지 않는다."""
+    return "liveStreamingDetails" not in item and not _PROMO.search(item["snippet"]["title"])
+
+
+def videos_by_ids(ids: list[str], keep=None) -> dict[str, dict]:
     out = {}
     for chunk in chunks(list(dict.fromkeys(ids)), 50):
-        res = api("videos", part="snippet,statistics,contentDetails", id=",".join(chunk), maxResults=50)
+        res = api("videos", part="snippet,statistics,contentDetails,liveStreamingDetails", id=",".join(chunk), maxResults=50)
         for it in res.get("items", []):
-            out[it["id"]] = norm_video(it)
+            if keep is None or keep(it):
+                out[it["id"]] = norm_video(it)
     return out
 
 
@@ -303,7 +312,7 @@ def collect_trends(prev_doc: dict | None) -> dict:
 def recent_uploads(channel_id: str, limit: int = FARM_RECENT) -> list[tuple[str, dict]]:
     res = api("playlistItems", part="contentDetails", playlistId="UU" + channel_id[2:], maxResults=limit)
     ids = [it["contentDetails"]["videoId"] for it in res.get("items", [])]
-    vids = videos_by_ids(ids)
+    vids = videos_by_ids(ids, keep=is_regular)
     return [(i, vids[i]) for i in ids if i in vids]
 
 
